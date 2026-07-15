@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this code or results, please cite the paper."
+title: "sgl-time-domain-imaging: Time-Domain Imaging of Rotating,
+  Cloud-Covered Exoplanets with the Solar Gravitational Lens"
+authors:
+  - family-names: Sontakke
+    given-names: Sanskar
+    orcid: "https://orcid.org/0009-0008-4531-5707"
+    email: sanskarsontakke@gmail.com
+version: "1.0"
+date-released: "2026-07-15"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with
+    the Solar Gravitational Lens: Reconstruction Algorithms,
+    Observing-Cadence Requirements, and Mission Targets"
+  authors:
+    - family-names: Sontakke
+      given-names: Sanskar
+      orcid: "https://orcid.org/0009-0008-4531-5707"
+  year: 2026
+  status: preprint

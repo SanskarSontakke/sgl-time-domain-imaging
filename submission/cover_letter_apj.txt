@@ -1,0 +1,46 @@
+To the Editors, The Astrophysical Journal
+
+Dear Editors,
+
+Please consider the enclosed manuscript, "Time-Domain Imaging of
+Rotating, Cloud-Covered Exoplanets with the Solar Gravitational Lens:
+Reconstruction Algorithms, Observing-Cadence Requirements, and Mission
+Targets," for publication in ApJ.
+
+The solar gravitational lens (SGL) is the only known route to
+multipixel imaging of terrestrial exoplanets, and its literature has
+recently converged on a single dominant open problem: the target
+rotates and its clouds evolve while the image plane is raster-scanned,
+so the data are temporally aliased. Toth (2025) concluded from
+clouds-as-noise averaging that Earth-like cloud cover may defeat the
+concept; Turyshev (2026) explicitly defers a dynamic retrieval pipeline
+as a next-stage deliverable. This manuscript supplies that missing
+analysis. Its contributions are:
+
+1. A validated, open, end-to-end simulator reproducing the published
+   SGL kernel, photon-rate, and deconvolution-penalty benchmarks.
+2. A time-domain inversion estimator that removes the rotation problem
+   outright (r = 0.99 vs the previously reported SNR <~ 2).
+3. The first quantitative cloud-degradation curves for SGL imaging,
+   showing clouds exceed coronal noise by an order of magnitude and
+   identifying the covariance structure responsible.
+4. A new observing-cadence law - at fixed photons and duration, many
+   short revisits beat few long dwells by factors of ~4 - which
+   converts cloud cover from a feasibility veto into a swarm-sizing
+   requirement, and a hard precursor requirement on the rotation
+   period (1e-4).
+5. A ranked, quantitative target study of the five nearest confirmed
+   potentially habitable planets, including focal-line placements,
+   image-plane dynamics, and transportation/power budgets tied to the
+   current architecture literature.
+
+All results are reproducible from the included code (fixed seeds; ~40
+core-minutes). I suggest as potential referees researchers active in
+SGL imaging theory, exocartography, and deep-space mission design. This
+work has not been submitted elsewhere. I have no conflicts of interest
+and received no external funding.
+
+Sincerely,
+Sanskar Sontakke
+Independent Researcher
+sanskarsontakke@gmail.com | ORCID 0009-0008-4531-5707

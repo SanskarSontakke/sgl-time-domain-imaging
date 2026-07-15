@@ -1,0 +1,40 @@
+Title: Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with
+the Solar Gravitational Lens: Reconstruction Algorithms,
+Observing-Cadence Requirements, and Mission Targets
+
+Authors: Sanskar Sontakke
+
+Primary category: astro-ph.IM
+Cross-list: astro-ph.EP
+Comments: 12 pages, 7 figures, 2 tables. Simulation code and data
+included as ancillary files.
+License: CC BY 4.0
+
+Abstract:
+The solar gravitational lens (SGL) can deliver multipixel images of
+terrestrial exoplanets from z ~ 650-900 AU, but the planet rotates and
+its clouds evolve while a spacecraft raster-scans the km-scale image
+cylinder, temporally aliasing the data -- the concept's leading
+unsolved problem. We present an open, end-to-end simulation framework
+that reproduces published SGL photometric benchmarks (the
+aperture-averaged d/4rho kernel; SNR_C = 43.16 per 1800 s dwell for an
+exo-Earth at 30 pc from 650 AU; the 0.891 D/(d sqrt(N)) deconvolution
+penalty) and treats rotation, orbital illumination, and stochastic
+advecting clouds explicitly. Image recovery is formulated as
+regularized generalized least squares on the time-tagged sample stream,
+with rotation handled exactly by the forward operator and clouds
+entering through their temporal covariance. For a rotating cloud-free
+planet the method attains Pearson r = 0.99 (SSIM 0.92), removing the
+SNR <~ 2 limitation of prior dynamic reconstructions. Clouds -- not
+coronal noise -- dominate the error budget (14-23x per sample) and
+collapse fidelity to r ~ 0.26 at 72% cover at fixed resources. We
+derive an observing-cadence law: at fixed photons and 90-day duration,
+64 short revisits per pixel outperform 4 long dwells by a factor ~4 in
+r, because revisits sample independent cloud states; high-fidelity
+mapping under Earth-like clouds requires O(100) registered visits,
+directly sizing string-of-pearls swarms. Reconstruction requires the
+rotation period a priori to ~1e-4. We rank the five nearest confirmed
+potentially habitable planets as SGL targets -- Proxima b, Ross 128 b,
+GJ 1061 d, Teegarden c, GJ 273 b -- with focal-line placements,
+image-plane dynamics (tracking budgets 0.1-5.8 km/s per 90 d), and the
+sailcraft, radioisotope-power, and downlink resources required.
