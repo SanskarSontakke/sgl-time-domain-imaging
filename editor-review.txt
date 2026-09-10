@@ -1,0 +1,106 @@
+Comments from the editor
+Dear Dr. Sontakke:
+
+I attach the referee reports on your paper “Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar Gravitational Lens: Reconstruction Algorithms, Observing-Cadence Requirements, and Mission Targets.” Based on these reports, we would like to invite you to submit a revised manuscript responding to the referee comments.
+
+I look forward to reading your revised paper. If you have any questions, please let me know.
+
+Best regards,
+
+Alexis
+
+–
+Dr. Alexis Smith
+Editor, Open Journal of Astrophysics
+
+
+Open response questions
+Comments to author
+Comments to the authors
+The manuscript presents an end-to-end simulation of time-domain SGL imaging in which planetary rota-tion and orbital illumination are incorporated directly into a linear forward operator and cloud variabil-ity is treated statistically. The topic is timely, the formulation is sensible, and the manuscript has several strengths: it preserves time-tagged measurements rather than forming a static raster, compares several reconstruction strategies, freezes its regularization choice on a held-out seed, uses a finer truth grid than reconstruction grid, and states many important limitations explicitly.
+
+The paper’s strongest result is not, in my opinion, the specific covariance model. It is the demonstration that a time-dependent forward model can recover a cloud-free rotating surface accurately under favora-ble geometric and calibration assumptions. The claim that cadence can mitigate weather noise is also plausible and potentially important. The present experiments, however, do not yet establish the quanti-tative cadence law or the mission scaling derived from it. The following major comments are intended to distinguish what is already demonstrated from what still requires evidence.
+
+Cadence-law experiment must isolate the causal mechanism
+Figure 5 compares campaigns with (dwell time, passes) ranging from (7200 s, 4) to (450 s, 64), at fixed photon budget and nearly fixed wall-clock duration. Section 3.1 states that each dwell is averaged over three sub-exposures so that rotational smear is present in the simulated data but absent from the recon-struction operator. Consequently, the long-dwell configurations incur a much larger model error. The comparison also changes rotational-phase sampling and, because the cloud correlation time is 4 d, changes the temporal correlation among successive visits. All three mechanisms can affect the recon-struction.
+
+Please repeat or augment this experiment with a factorial ablation that includes at least:
+
+An exposure-integrated forward operator that models the same sub-exposure averaging used to gen-erate the data.
+A cloud-free control at every cadence, which will reveal any cadence dependence caused by rota-tional smear, phase coverage, conditioning, or regularization alone.
+A comparison between temporally independent cloud realizations and OU-correlated clouds with the same one-point variance.
+Where practical, matched rotational phases or a design that separates the number of phases from the number of statistically distinct cloud states.
+A quantitative accounting of slew, settling, readout, inter-spacecraft synchronization, and calibra-tion overheads as dwell times become short.
+If the improvement remains after these controls, the cadence result will be substantially stronger. If some of the gain comes from reduced exposure smear or improved rotational conditioning, the result remains useful, but the paper should attribute the gain correctly and revise the proposed scaling law.
+
+Separate the gain from time-aware modeling, deflation, and covariance weighting
+The results show that the main advantage comes from using the time-dependent forward operator, whereas the incremental benefit of the assumed temporal covariance is comparatively small. At mean cloud cover near 0.56, Table 1 gives r = 0.334 for TDI and r = 0.308 for white-noise GLS. At the highest revisit count in Figure 5, the white-noise variant is reported to outperform the deflated, covariance-aware variant. Thus, the manuscript’s broad algorithmic result is stronger than the evidence for its par-ticular covariance model.
+
+Please provide a clean component-wise ablation using identical data and paired seeds:
+
+Time-dependent forward operator with diagonal weighting only.
+The same operator with temporal whitening but no slot deflation.
+The same operator with slot deflation but diagonal weighting.
+The full method with both temporal whitening and slot deflation.
+Report paired differences and uncertainty intervals, not only mean correlations. This will clarify which elements are essential at each cadence and prevent the term ‘covariance-aware’ from receiving credit for improvements mainly produced by time registration and revisiting.
+
+Cloud climatology assumptions require broader robustness tests
+The cloud process is a useful controlled nuisance model, but it is much simpler than terrestrial weather. It is stationary, generated by a single-layer opacity field, assigned a fixed cloud albedo, and represented by an approximately exponential temporal covariance. Real clouds have geographically and seasonally structured means, surface-correlated occurrence, latitude-dependent dynamics, anisotropic advection, phase-dependent scattering, and persistent regimes. Several of these effects could create rotationally coherent signals that are difficult to distinguish from the surface.
+
+In addition, the affine correction uses the mean cloud fraction and cloud albedo. The sensitivity study varies the cloud standard deviation and correlation time but does not test errors in these mean quanti-ties. The statement that only order-of-magnitude cloud climatology is needed is therefore incomplete.
+
+At minimum, please add tests for:
+
+Misestimated mean cloud fraction and mean cloud albedo.
+A spatially nonuniform persistent cloud climatology, including a component correlated with the surface map.
+At least two additional spatial correlation lengths, advection rates, and decorrelation times.
+A cloud process with a non-exponential or multi-timescale temporal covariance.
+A GCM-based experiment would be ideal but is not required for this revision. A small collection of delib-erately misspecified synthetic processes would already establish whether the qualitative conclusion is model-specific.
+
+The rotation requirement extends beyond the period
+Section 5.5 varies the rotation period while keeping the rest of the spin and viewing geometry exact. The forward operator also requires the spin-axis orientation, rotational phase at an epoch, obliquity, view-ing inclination, and illumination geometry. Errors in these quantities can produce structured residuals similar to surface or cloud signals. The present result therefore establishes a period-accuracy require-ment conditional on an otherwise exact geometry; it does not yet establish the complete precursor-knowledge requirement.
+
+Please test sensitivity to at least the pole orientation and initial rotational phase, and discuss whether these parameters would be fixed externally or estimated jointly from the SGL data. A profile-likelihood or grid search over period, phase, and pole orientation would be particularly informative. The claim that rotation and illumination are ‘solved problems’ should be replaced by language such as ‘tractable under accurately known spin and illumination geometry’ unless joint recovery is demonstrated.
+
+The statement that tidally synchronized M-dwarf planets automatically satisfy the period requirement should also be qualified. A precise orbital period does not by itself prove synchronous rotation; reso-nance state, libration, eccentricity, and atmospheric or oceanic torques may matter.
+
+Optical validation is useful but presently limited
+The checks against the approximate aperture-averaged kernel, photon-rate benchmark, and deconvolu-tion penalty are valuable. They should nevertheless be described as partial validation of a simplified for-ward model rather than end-to-end validation of SGL imaging. For example, at n = 128 the measured de-convolution penalty is 0.106 versus an analytic value of 0.073, a difference of roughly 45 percent. Please explain the source of this discrepancy, show numerical-convergence tests, and avoid describing the agreement as exact.
+
+The limitations section correctly identifies the solar quadrupole, structured coronal residuals, flat-field requirements, pointing jitter, navigation error, and PSF mismatch. These effects are central because the paper concludes that planetary weather rather than the corona controls the error budget. That state-ment is only true after assuming ideal mean-corona subtraction and the stated calibration model. Please either include at least one structured calibration or coronal-residual experiment, or consistently qualify the result as ‘within the adopted photon-noise and calibration assumptions.’ A simple low-rank drift, multiplicative gain error, or slowly varying coronal residual would already reveal whether revisit ca-dence continues to help or instead repeats a coherent systematic.
+
+Image quality, uncertainty, and effective spatial resolution
+Pearson correlation and SSIM summarize reconstruction fidelity but do not fully characterize what sur-face information is recoverable. At mean cloud cover near 0.56, the reported TDI values are r = 0.334 and SSIM = 0.109; at 0.72 cover they are r = 0.263 and SSIM = 0.065. These values support the limited claim that a broad land-ocean asymmetry may remain detectable, but not detailed surface imaging.
+
+Please strengthen the statistical and spatial characterization by reporting:
+
+Results over substantially more than three cloud/noise seeds, with confidence intervals or paired bootstrap intervals.
+Spatial power spectra, spherical-harmonic recovery, or scale-dependent correlations to identify the effective resolvable scales.
+Uncertainty or resolution maps, including the dependence on latitude and illumination coverage.
+A detection-oriented metric for the claimed land-ocean dichotomy, evaluated against appropriate null maps.
+Sensitivity to the regularization weight and to substantially different surface-map morphologies.
+The cloud-free r = 0.99 result is encouraging, but the problem contains approximately 65,000 measure-ments for 2,592 unknowns and uses a nearly exact forward model. Please also compare the rotating so-lution with a static ideal-data reference under the same photon budget, and report the information or resolution loss attributable specifically to rotation.
+
+Mission and swarm conclusions should not rely on untested extrapolation
+The manuscript extrapolates the trend through 64 revisits to suggest that several hundred visits may yield r greater than or approximately equal to 0.8 at Earth-like cloud cover, and then connects this to an order-100-spacecraft architecture. This is an important architectural conclusion, but it is not directly simulated. Correlated clouds, calibration systematics, overheads, and regularization can all change the asymptotic scaling.
+
+Please either simulate the several-hundred-visit regime with realistic overhead and at least one systemat-ic-error model, or relabel this result as a speculative scenario rather than a derived requirement. A fitted scaling law should include uncertainty and should not be extrapolated outside the tested range without justification. The distinction between ‘registered visits per pixel’ and ‘number of spacecraft’ should also remain explicit: the mapping depends on campaign duration, per-pass dwell, parallel sampling geome-try, duty cycle, and spacecraft availability.
+
+The target-ranking table is a useful synthesis, but its uncertainties should be propagated more visibly. The planets do not transit, radii are inferred from minimum masses, atmospheric and cloud properties are unknown, and target-specific stellar contamination and illumination may dominate the nominal photon ranking. The transportation, power, and communications discussion should be clearly separated into adopted literature values versus new results derived here.
+
+Minor comments
+
+Disambiguate the multiple 2026 Turyshev references consistently as 2026a, 2026b, and so forth in both text and bibliography. The present bibliography lists several entries simply as ‘Turyshev 2026.’
+State explicitly whether the reported mean and range are computed by averaging metrics over seeds or by averaging reconstructed maps before computing a metric.
+Show sensitivity to the fixed regularization parameter lambda = 3 x 10^-3. A curve for representative cloud-free and cloudy cases would be sufficient.
+Describe the spatial arrangement of the 16 simultaneous samples in each dwell slot. This is im-portant for interpreting slot deflation and the common-mode cloud signal.
+Provide the rank or condition number before and after slot deflation, and explain precisely which map modes are lost. The statement that only a global mode is removed deserves a linear-algebra demonstration for the actual sampling groups.
+Clarify how the uniform mean cloud contribution and the global surface-albedo mode are separated after deflation. Quantify bias if the assumed mean cloud correction is wrong.
+Use ‘surface albedo’ consistently. The paper occasionally contrasts its results with prior recovery of ‘topography,’ but the present state vector is an albedo map.
+Qualify the raw-data-volume estimate as photometric science data only; navigation, calibration, me-trology, health, and relay overheads may be much larger.
+Consider noting that ‘TDI’ commonly denotes time-delay integration in imaging systems; an alterna-tive acronym may reduce ambiguity.
+Add uncertainties to the Table 2 derived quantities and distinguish confirmed orbital parameters from assumed radii, albedos, cloud properties, and spin states.
+Explain why the campaign’s approximately 90 degrees of changing orbital illumination is representa-tive of the short-period target systems later discussed.
+Report numerical precision checks for accumulating the normal matrix in single precision and solv-ing in double precision, especially for the most ill-conditioned cases.
+Recommendation
+I recommend major revision. The manuscript contains a promising and potentially publishable contri-bution: a clear demonstration that time-tagged, rotation-aware inversion is superior to applying a static reconstruction to a dynamic planet. The cadence insight is also plausible and important. Before the pa-per can support its stronger claims, however, the authors should isolate the mechanism behind the ca-dence result, broaden the cloud and geometry robustness tests, quantify uncertainty and effective reso-lution, and either validate or substantially soften the mission-level extrapolations.

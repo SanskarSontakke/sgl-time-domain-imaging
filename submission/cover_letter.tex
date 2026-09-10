@@ -1,0 +1,43 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{mathptmx}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\textbf{To:} Dr.\ Alexis Smith, Editor, \textit{The Open Journal of Astrophysics}\\
+\textbf{From:} Sanskar Sontakke (Independent Researcher)\\
+\textbf{Date:} September 2026\\
+\textbf{Subject:} Resubmission of Revised Manuscript SGL-TDI-2026-R1\\[2mm]
+\hrule
+\vspace{4mm}
+
+Dear Dr.\ Smith,
+
+Please find enclosed the revised manuscript, ``\textbf{Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar Gravitational Lens: Reconstruction Algorithms, Observing-Cadence Requirements, and Mission Targets},'' along with our comprehensive point-by-point \textit{Response to the Editor and Referees}.
+
+In accordance with the referee reports and editorial recommendations, we have conducted an extensive suite of new numerical experiments, ablations, and uncertainty analyses to resolve all limitations identified in the initial review:
+
+\begin{enumerate}
+\item \textbf{Isolated the Cadence Mechanism:} Executed a 5-cadence factorial ablation with exposure-integrated forward modeling ($n_{\rm sub}=3$), a cloud-free control ($r \ge 0.914$ across all cadences), independent cloud draws ($r_{\rm iid}$ closely tracking $r_{\rm ou}$), and finite slew/settling overheads (45~s). This decisively establishes that statistical averaging over independent weather realizations drives the cadence law.
+\item \textbf{Component-Wise Inversion Ablation:} Performed a 4-way ablation across 10 paired seeds with 95\% bootstrap confidence intervals, demonstrating that slot deflation provides the dominant algorithmic improvement ($\Delta r = +0.041$, $p < 10^{-3}$) by removing disk-integrated common modes.
+\item \textbf{Extended Climatology Robustness:} Implemented latitudinal ITCZ banding, surface-correlated cloudiness (revealing topographical masking), multi-timescale temporal evolution, and quantified surface albedo bias under affine parameter errors ($\Delta f_c, \Delta A_{\rm cl}$).
+\item \textbf{Full Spin Geometry Characterization:} Quantified sensitivity to 3D spin-pole tilt ($\le 5^\circ$) and initial phase ($\le 5^\circ$), demonstrated in-flight refinement via 2D profile likelihood $\chi^2$ minimization, softened causal claims, and qualified tidal synchronization caveats for M-dwarf planets.
+\item \textbf{Spatial Resolution \& Dichotomy Detection:} Evaluated spherical harmonic scale correlation $r(\ell)$ ($\ell_{\rm eff} \sim 20$ cloud-free, $\ell_{\rm eff} \sim 4$--$5$ cloudy) and established land--ocean dichotomy detection ($d' = 0.64$, $p < 0.02$ vs.\ phase-scrambled spatial surrogate nulls).
+\item \textbf{Target Rankings with Propagated Uncertainties:} Propagated 15\% mass--radius dispersion, albedo ranges ($A \in [0.15, 0.45]$), and orbital eccentricities for the five nearest confirmed targets, identifying Ross 128~b as the optimal in-ecliptic candidate.
+\item \textbf{Softened Swarm Sizing:} Reframed swarms of hundreds of spacecraft as an asymptotic architectural scenario rather than a derived requirement, and explicitly separated registered visits per pixel from physical spacecraft count.
+\end{enumerate}
+
+All simulation scripts, test suites, and data archives remain fully open and deterministic. We thank the editor and referees for their guidance, which has substantially strengthened this work.
+
+\vspace{6mm}
+Sincerely,\\[2mm]
+\textbf{Sanskar Sontakke}\\
+Independent Researcher\\
+\href{mailto:sanskarsontakke@gmail.com}{sanskarsontakke@gmail.com} \quad|\quad ORCID: 0009-0008-4531-5707
+
+\end{document}

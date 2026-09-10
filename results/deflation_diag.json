@@ -1,0 +1,9 @@
+{
+  "cond_undef": Infinity,
+  "cond_defl": Infinity,
+  "info_retained": 0.7565299121696962,
+  "nsc": 16,
+  "theoretical_retention": 0.9375,
+  "max_rel_diff": 2.9204818412427625e-07,
+  "rms_rel_diff": 3.4320767928932767e-07
+}
