@@ -11,6 +11,9 @@ ENV/
 *.egg-info/
 dist/
 build/
+node_modules/
+.next/
+out/
 
 # Testing & profiling caches
 .pytest_cache/
