@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Code, Copy, Check, FileText, Terminal, ExternalLink } from "lucide-react";
+import { Code, Copy, Check, Terminal } from "lucide-react";
 import codeSnippets from "../data/codeSnippets.json";
+import LatexMath from "./LatexMath";
 
 interface CodeViewerProps {
   initialFile?: string;
@@ -10,7 +11,7 @@ interface CodeViewerProps {
 
 export default function CodeViewer({ initialFile = "sglsim.py" }: CodeViewerProps) {
   const [selectedFile, setSelectedFile] = useState<string>(initialFile);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<boolean>(false);
 
   const files = Object.keys(codeSnippets);
   const currentCode = (codeSnippets as Record<string, string>)[selectedFile] || "";
@@ -21,10 +22,18 @@ export default function CodeViewer({ initialFile = "sglsim.py" }: CodeViewerProp
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const fileDescriptions: Record<string, string> = {
-    "sglsim.py": "Monolithic core engine: SGL optical kernel (d/4ρ), forward time-dependent matrix F(t), advecting cloud spatio-temporal OU generator, slot deflation operator P⊥, and regularized GLS solver.",
+  const fileDescriptions: Record<string, React.ReactNode> = {
+    "sglsim.py": (
+      <span>
+        Monolithic core engine: SGL optical kernel (<LatexMath math="d / (4\rho)" />), forward time-dependent matrix <LatexMath math="\mathbf{F}(t)" />, advecting cloud spatio-temporal OU generator, slot deflation operator <LatexMath math="\mathbf{P}_\perp" />, and regularized GLS solver.
+      </span>
+    ),
     "run_experiments.py": "Scientific experimentation pipeline: executes benchmark validation, cadence trade study, 4-way component ablation with paired bootstrap CIs, and spin ephemeris sweeps.",
-    "targets.py": "Astrophysical target catalog: computes image cylinder dimensions, photon arrival rates, optical depths, and 90-day focal tracking Δv budgets for 6 exo-Earths.",
+    "targets.py": (
+      <span>
+        Astrophysical target catalog: computes image cylinder dimensions, photon arrival rates, optical depths, and 90-day focal tracking <LatexMath math="\Delta v" /> budgets for 6 exo-Earths.
+      </span>
+    ),
     "make_figures.py": "Publication figure renderer: loads results and formats publication-ready EPS/PDF/PNG figures with font sizing and styling conforming to AAS/ApJ guidelines.",
     "cad_solve_one.py": "Standalone MPI/subprocess worker for high-throughput parallel execution of individual cadence parameter configurations.",
   };
