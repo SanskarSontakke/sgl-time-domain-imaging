@@ -313,18 +313,18 @@ export default function PlanetRotationPlayer() {
       </div>
 
       {/* Main View Area */}
-      <div className="relative w-full aspect-[640/355] bg-black flex items-center justify-center overflow-hidden">
+      <div className="relative w-full aspect-video bg-black flex items-center justify-center overflow-hidden">
         {viewMode === "live" ? (
           <canvas
             ref={canvasRef}
-            width={640}
-            height={355}
+            width={960}
+            height={540}
             className="w-full h-full object-contain"
           />
         ) : (
           <img
             src="/videos/planet_rotation_clouds.gif"
-            alt="Exo-Earth Rotation & Cloud Simulation"
+            alt="Exo-Earth Rotation & Cloud Simulation (1080p Full HD)"
             className="w-full h-full object-contain"
           />
         )}
