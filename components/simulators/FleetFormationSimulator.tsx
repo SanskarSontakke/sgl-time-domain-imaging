@@ -232,11 +232,12 @@ export default function FleetFormationSimulator() {
                 ].map((f) => (
                   <button
                     key={f.id}
+                    type="button"
                     onClick={() => setFormation(f.id as FormationMode)}
-                    className={`py-1.5 px-2 rounded text-[11px] font-medium border ${
+                    className={`py-1.5 px-2 rounded-lg text-[11px] font-bold border transition-all ${
                       formation === f.id
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                        ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
                     }`}
                   >
                     {f.label}
@@ -247,9 +248,9 @@ export default function FleetFormationSimulator() {
 
             {/* Target Image Plane Drift Speed */}
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-              <div className="flex justify-between font-semibold text-slate-700">
-                <span>Exoplanet Focal Drift Velocity:</span>
-                <span className="font-mono font-bold text-blue-600">{driftSpeed.toFixed(1)} m/s</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-slate-700">Exoplanet Focal Drift Velocity:</span>
+                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{driftSpeed.toFixed(1)} m/s</span>
               </div>
               <input
                 type="range"
@@ -260,10 +261,19 @@ export default function FleetFormationSimulator() {
                 onChange={(e) => setDriftSpeed(parseFloat(e.target.value))}
                 className="w-full range-slider"
               />
-              <div className="flex justify-between text-[10px] text-slate-400">
-                <span>31 m/s (τ Cet e)</span>
-                <span>51 m/s (Ross 128 b)</span>
-                <span>114 m/s (Prox b)</span>
+              <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-500 pt-1 text-center">
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">31 m/s</span>
+                  <span className="text-[9px] text-slate-400">τ Ceti e</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">51 m/s</span>
+                  <span className="text-[9px] text-slate-400">Ross 128 b</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">114 m/s</span>
+                  <span className="text-[9px] text-slate-400">Prox Cen b</span>
+                </div>
               </div>
             </div>
 
@@ -278,11 +288,12 @@ export default function FleetFormationSimulator() {
                 ].map((t) => (
                   <button
                     key={t.id}
+                    type="button"
                     onClick={() => setThrusterType(t.id as any)}
-                    className={`py-1.5 px-1 rounded text-[10px] font-medium border text-center ${
+                    className={`py-1.5 px-1 rounded-lg text-[10px] font-bold border text-center transition-all ${
                       thrusterType === t.id
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                        ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
                     }`}
                   >
                     {t.label}

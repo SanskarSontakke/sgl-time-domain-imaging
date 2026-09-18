@@ -58,13 +58,16 @@ export default function CadenceExplorer() {
 
       <div className="card-body">
         {/* Presets */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-5">
           {presets.map((p) => (
             <button
               key={p.k}
+              type="button"
               onClick={() => setRevisits(p.k)}
-              className={`btn btn-sm text-xs ${
-                revisits === p.k ? "btn-primary" : "btn-outline"
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                revisits === p.k
+                  ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                  : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
               {p.label}
@@ -76,10 +79,10 @@ export default function CadenceExplorer() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           {/* Controls */}
           <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-slate-700">Revisit Passes per Slot (K):</span>
-                <span className="font-mono font-bold text-blue-600">{revisits} passes</span>
+                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{revisits} passes</span>
               </div>
               <input
                 type="range"
@@ -90,17 +93,26 @@ export default function CadenceExplorer() {
                 onChange={(e) => setRevisits(parseInt(e.target.value))}
                 className="w-full range-slider"
               />
-              <div className="flex justify-between text-xs text-slate-400 mt-0.5">
-                <span>1 pass (Long single dwell)</span>
-                <span>8 (Optimal)</span>
-                <span>24 (Overhead limited)</span>
+              <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-500 pt-1 text-center">
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">K = 1</span>
+                  <span className="text-[9px] text-slate-400">Single dwell</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-emerald-700 block">K = 8</span>
+                  <span className="text-[9px] text-emerald-600 font-bold">Optimal TDI</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">K = 24</span>
+                  <span className="text-[9px] text-slate-400">Overhead limit</span>
+                </div>
               </div>
             </div>
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-slate-700">Spacecraft Slew + Settling Overhead:</span>
-                <span className="font-mono font-bold text-slate-700">{overheadSec} s</span>
+                <span className="font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">{overheadSec} s</span>
               </div>
               <input
                 type="range"
@@ -111,10 +123,19 @@ export default function CadenceExplorer() {
                 onChange={(e) => setOverheadSec(parseInt(e.target.value))}
                 className="w-full range-slider"
               />
-              <div className="flex justify-between text-xs text-slate-400 mt-0.5">
-                <span>15 s (Ion micro-thrusters)</span>
-                <span>45 s (Nominal laser sync)</span>
-                <span>90 s (Conservative)</span>
+              <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-500 pt-1 text-center">
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">15 s</span>
+                  <span className="text-[9px] text-slate-400">Micro-thrusters</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-blue-700 block">45 s</span>
+                  <span className="text-[9px] text-blue-600 font-bold">Nominal sync</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">90 s</span>
+                  <span className="text-[9px] text-slate-400">Conservative</span>
+                </div>
               </div>
             </div>
 

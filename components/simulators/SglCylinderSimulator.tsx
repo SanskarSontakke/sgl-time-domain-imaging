@@ -302,36 +302,42 @@ export default function SglCylinderSimulator() {
 
         {/* Controls and Physical Legend */}
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-slate-100 text-sm">
-          <div>
-            <label className="text-xs font-semibold text-slate-600 block mb-1">
-              Planet Rotation Speed ({rotSpeed.toFixed(1)}×)
-            </label>
-            <input
-              type="range"
-              min="0.2"
-              max="3.0"
-              step="0.1"
-              value={rotSpeed}
-              onChange={(e) => setRotSpeed(parseFloat(e.target.value))}
-              className="w-full range-slider"
-            />
-            <span className="text-xs text-slate-400">Earth-like: ~24 hr diurnal period</span>
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1">
+                <span className="font-semibold text-slate-700">Planet Rotation Speed:</span>
+                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{rotSpeed.toFixed(1)}×</span>
+              </div>
+              <input
+                type="range"
+                min="0.2"
+                max="3.0"
+                step="0.1"
+                value={rotSpeed}
+                onChange={(e) => setRotSpeed(parseFloat(e.target.value))}
+                className="w-full range-slider"
+              />
+            </div>
+            <span className="text-[10px] text-slate-500 font-mono">Earth-like: ~24 hr diurnal period</span>
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-slate-600 block mb-1">
-              Cloud Advection / Evolution ({cloudSpeed.toFixed(1)}×)
-            </label>
-            <input
-              type="range"
-              min="0.2"
-              max="4.0"
-              step="0.2"
-              value={cloudSpeed}
-              onChange={(e) => setCloudSpeed(parseFloat(e.target.value))}
-              className="w-full range-slider"
-            />
-            <span className="text-xs text-slate-400">Timescale τ ≈ 3.5 days advection</span>
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1">
+                <span className="font-semibold text-slate-700">Cloud Advection / Evolution:</span>
+                <span className="font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">{cloudSpeed.toFixed(1)}×</span>
+              </div>
+              <input
+                type="range"
+                min="0.2"
+                max="4.0"
+                step="0.2"
+                value={cloudSpeed}
+                onChange={(e) => setCloudSpeed(parseFloat(e.target.value))}
+                className="w-full range-slider"
+              />
+            </div>
+            <span className="text-[10px] text-slate-500 font-mono">Timescale τ ≈ 3.5 days advection</span>
           </div>
 
           <div className="bg-slate-50 p-2.5 rounded border border-slate-200 text-xs">

@@ -15,6 +15,7 @@ import ImageReconstructionSandbox from "./simulators/ImageReconstructionSandbox"
 import EinsteinRingSimulator from "./simulators/EinsteinRingSimulator";
 import FleetFormationSimulator from "./simulators/FleetFormationSimulator";
 import PlanetRotationPlayer from "./simulators/PlanetRotationPlayer";
+import MediaZoomViewer from "./MediaZoomViewer";
 import LatexMath from "./LatexMath";
 
 interface Slide {
@@ -365,7 +366,7 @@ export default function JudgePresentation() {
 
   return (
     <div 
-      className="presentation-container max-w-6xl mx-auto space-y-3 sm:space-y-4"
+      className="presentation-container w-full space-y-4"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -448,9 +449,9 @@ export default function JudgePresentation() {
         </div>
 
         {/* Slide Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 my-auto items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 my-auto items-start">
           {/* Key Bullet Takeaways */}
-          <div className={slide.interactiveComponent ? "lg:col-span-5 space-y-2 sm:space-y-3" : "lg:col-span-8 space-y-2 sm:space-y-3"}>
+          <div className={slide.interactiveComponent ? "lg:col-span-4 xl:col-span-4 space-y-2 sm:space-y-3" : "lg:col-span-8 space-y-2 sm:space-y-3"}>
             <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
               Key Board Takeaways:
             </h4>
@@ -465,31 +466,33 @@ export default function JudgePresentation() {
           </div>
 
           {/* Interactive Simulation / Right Card */}
-          <div className={slide.interactiveComponent ? "lg:col-span-7" : "lg:col-span-4"}>
+          <div className={slide.interactiveComponent ? "lg:col-span-8 xl:col-span-8" : "lg:col-span-4"}>
             {/* View Switcher Bar if slide has both simulator and media */}
             {slide.mediaSrc && slide.interactiveComponent !== "planet-video" && (
               <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Display Mode:</span>
-                <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                <div className="inline-flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                   <button
                     onClick={() => setMediaToggle(prev => ({ ...prev, [slide.id]: "sim" }))}
-                    className={`px-2 py-0.5 text-[10px] font-bold rounded transition-all ${
+                    className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
                       (mediaToggle[slide.id] || "sim") === "sim"
                         ? "bg-white text-blue-700 shadow-xs"
                         : "text-slate-500 hover:text-slate-800"
                     }`}
                   >
-                    Interactive Sim
+                    <Zap size={12} className={(mediaToggle[slide.id] || "sim") === "sim" ? "text-amber-500" : "text-slate-400"} />
+                    <span>Interactive Sim</span>
                   </button>
                   <button
                     onClick={() => setMediaToggle(prev => ({ ...prev, [slide.id]: "media" }))}
-                    className={`px-2 py-0.5 text-[10px] font-bold rounded transition-all ${
+                    className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
                       mediaToggle[slide.id] === "media"
                         ? "bg-blue-600 text-white shadow-xs"
                         : "text-slate-500 hover:text-slate-800"
                     }`}
                   >
-                    {slide.mediaBadge || "Demonstration Asset"}
+                    <Video size={12} className={mediaToggle[slide.id] === "media" ? "text-sky-200" : "text-slate-400"} />
+                    <span>{slide.mediaBadge || "1080p Master Video"}</span>
                   </button>
                 </div>
               </div>
@@ -500,40 +503,15 @@ export default function JudgePresentation() {
               <PlanetRotationPlayer />
             )}
 
-            {/* Display Media Mode for other slides */}
+            {/* Display Media Mode for other slides with 1080p Zoom Viewer */}
             {slide.interactiveComponent !== "planet-video" && slide.mediaSrc && mediaToggle[slide.id] === "media" && (
-              <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-md flex flex-col">
-                <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-                  <span className="text-[10px] sm:text-xs font-mono font-bold text-blue-400 flex items-center gap-1.5 truncate max-w-[280px]">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                    {slide.mediaTitle || "Demonstration Asset"}
-                  </span>
-                  {slide.mediaSrc && (
-                    <a
-                      href={slide.mediaSrc}
-                      download
-                      className="text-[10px] bg-white/10 hover:bg-white/20 text-white px-2 py-1 rounded font-mono font-semibold flex items-center gap-1 shrink-0 transition-colors"
-                    >
-                      <Download size={11} />
-                      <span>Save</span>
-                    </a>
-                  )}
-                </div>
-                <div className="relative aspect-video w-full bg-black flex items-center justify-center p-1">
-                  <img
-                    src={slide.mediaSrc}
-                    alt={slide.mediaTitle || slide.title}
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-                {slide.mediaDesc && (
-                  <div className="p-2.5 bg-slate-900/90 text-slate-300 text-[11px] border-t border-slate-800">
-                    <p className="text-[10px] sm:text-[11px] text-slate-400 leading-snug">
-                      {slide.mediaDesc}
-                    </p>
-                  </div>
-                )}
-              </div>
+              <MediaZoomViewer
+                src={slide.mediaSrc}
+                title={slide.mediaTitle || slide.title}
+                badge={slide.mediaBadge || "1080p Full HD"}
+                desc={slide.mediaDesc}
+                downloadName={slide.mediaSrc.split("/").pop()}
+              />
             )}
 
             {/* Display Interactive Simulator Mode */}

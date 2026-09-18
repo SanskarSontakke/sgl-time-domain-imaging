@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import { Play, Pause, RotateCcw, Download, Sparkles, Sliders, Eye } from "lucide-react";
+import { 
+  Play, Pause, RotateCcw, Download, Sparkles, Sliders, 
+  Eye, Zap, Video, Maximize2, ZoomIn, ZoomOut, Move, RefreshCw
+} from "lucide-react";
+import MediaZoomViewer from "../MediaZoomViewer";
 
 export default function PlanetRotationPlayer() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -9,6 +13,7 @@ export default function PlanetRotationPlayer() {
   const [speed, setSpeed] = useState<number>(1);
   const [cloudCover, setCloudCover] = useState<number>(55); // 55% fiducial
   const [viewMode, setViewMode] = useState<"live" | "gif">("live");
+  const [gifKey, setGifKey] = useState<number>(1);
 
   const animRef = useRef<number | null>(null);
   const angleRef = useRef<number>(0);
@@ -39,30 +44,29 @@ export default function PlanetRotationPlayer() {
 
       // Top Title Bar
       ctx.fillStyle = "#38bdf8";
-      ctx.font = "bold 13px -apple-system, BlinkMacSystemFont, monospace";
-      ctx.fillText("SOLAR GRAVITATIONAL LENS: TIME-DOMAIN SIMULATION", 16, 22);
+      ctx.font = "bold 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+      ctx.fillText("SOLAR GRAVITATIONAL LENS: TIME-DOMAIN SIMULATION", 20, 24);
 
       ctx.fillStyle = "#94a3b8";
-      ctx.font = "11px -apple-system, BlinkMacSystemFont, monospace";
-      ctx.fillText("EXO-EARTH ROTATION WITH DYNAMIC CLOUD ADVECTION & DIURNAL LIGHT CURVE", 16, 38);
+      ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+      ctx.fillText("EXO-EARTH ROTATION WITH DYNAMIC CLOUD ADVECTION & DIURNAL LIGHT CURVE", 20, 42);
 
       ctx.strokeStyle = "#1e293b";
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(16, 48);
-      ctx.lineTo(w - 16, 48);
+      ctx.moveTo(20, 52);
+      ctx.lineTo(w - 20, 52);
       ctx.stroke();
 
-      const cx = 175;
-      const cy = 205;
-      const R = 120;
+      const cx = 200;
+      const cy = 275;
+      const R = 170;
       const rotAngle = angleRef.current;
       const cloudAdvect = rotAngle * 1.4;
 
-      // Draw 3D Sphere
-      // Base glow
+      // Draw 3D Sphere Base glow
       const glowGrad = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 1.25);
-      glowGrad.addColorStop(0, "rgba(56, 189, 248, 0.3)");
+      glowGrad.addColorStop(0, "rgba(56, 189, 248, 0.35)");
       glowGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
       ctx.fillStyle = glowGrad;
       ctx.beginPath();
@@ -92,8 +96,8 @@ export default function PlanetRotationPlayer() {
         if (cosLon > -0.2) {
           const px = cx + sinLon * (R * 0.85);
           const py = cy - Math.sin(cLat) * (R * 0.7);
-          const landW = 38 * Math.max(0.1, cosLon);
-          const landH = 34;
+          const landW = 54 * Math.max(0.1, cosLon);
+          const landH = 48;
 
           ctx.beginPath();
           ctx.ellipse(px, py, landW, landH, 0.2, 0, Math.PI * 2);
@@ -101,7 +105,7 @@ export default function PlanetRotationPlayer() {
 
           // Sub-feature continent
           ctx.beginPath();
-          ctx.ellipse(px + 10 * cosLon, py + 18, landW * 0.7, landH * 0.8, -0.3, 0, Math.PI * 2);
+          ctx.ellipse(px + 14 * cosLon, py + 24, landW * 0.7, landH * 0.8, -0.3, 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -111,10 +115,10 @@ export default function PlanetRotationPlayer() {
         const cOpacity = (cloudCover / 100) * 0.85;
         ctx.fillStyle = `rgba(240, 249, 255, ${cOpacity})`;
 
-        const numBands = 6;
+        const numBands = 7;
         for (let b = 0; b < numBands; b++) {
           const bLon = (b * 1.1) + cloudAdvect;
-          const bLat = -0.6 + b * 0.25;
+          const bLat = -0.65 + b * 0.22;
 
           const cosLon = Math.cos(bLon);
           const sinLon = Math.sin(bLon);
@@ -122,8 +126,8 @@ export default function PlanetRotationPlayer() {
           if (cosLon > -0.3) {
             const px = cx + sinLon * (R * 0.9);
             const py = cy - bLat * (R * 0.8);
-            const cloudW = (40 + b * 6) * Math.max(0.1, cosLon);
-            const cloudH = 14 + (b % 3) * 4;
+            const cloudW = (55 + b * 8) * Math.max(0.1, cosLon);
+            const cloudH = 18 + (b % 3) * 5;
 
             ctx.beginPath();
             ctx.ellipse(px, py, cloudW, cloudH, 0.1, 0, Math.PI * 2);
@@ -136,16 +140,16 @@ export default function PlanetRotationPlayer() {
       ctx.fillStyle = "#e2e8f0";
       // North
       ctx.beginPath();
-      ctx.ellipse(cx, cy - R + 14, R * 0.55, 14, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, cy - R + 20, R * 0.55, 20, 0, 0, Math.PI * 2);
       ctx.fill();
       // South
       ctx.beginPath();
-      ctx.ellipse(cx, cy + R - 14, R * 0.55, 14, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, cy + R - 20, R * 0.55, 20, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Day / Night Terminator Shading (Star illumination from left)
       const termGrad = ctx.createLinearGradient(cx - R, cy, cx + R * 0.8, cy);
-      termGrad.addColorStop(0, "rgba(255, 255, 255, 0.15)");
+      termGrad.addColorStop(0, "rgba(255, 255, 255, 0.18)");
       termGrad.addColorStop(0.55, "rgba(0, 0, 0, 0.0)");
       termGrad.addColorStop(0.75, "rgba(0, 0, 0, 0.65)");
       termGrad.addColorStop(1, "rgba(5, 8, 15, 0.95)");
@@ -156,9 +160,9 @@ export default function PlanetRotationPlayer() {
 
       // Limb Atmosphere Ring
       ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.arc(cx, cy, R + 1, 0, Math.PI * 2);
+      ctx.arc(cx, cy, R + 1.5, 0, Math.PI * 2);
       ctx.stroke();
 
       // Calculate Integrated Flux for Light Curve
@@ -169,10 +173,10 @@ export default function PlanetRotationPlayer() {
       }
 
       // Right Side: Diurnal Light Curve Graph
-      const gx = 350;
-      const gy = 60;
-      const gw = 260;
-      const gh = 120;
+      const gx = 440;
+      const gy = 75;
+      const gw = 480;
+      const gh = 180;
 
       ctx.fillStyle = "#0f172a";
       ctx.strokeStyle = "#334155";
@@ -181,19 +185,19 @@ export default function PlanetRotationPlayer() {
       ctx.strokeRect(gx, gy, gw, gh);
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 11px -apple-system, BlinkMacSystemFont, monospace";
-      ctx.fillText("DIURNAL LIGHT CURVE F(t)", gx + 10, gy + 18);
+      ctx.font = "bold 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+      ctx.fillText("DIURNAL LIGHT CURVE F(t)", gx + 16, gy + 24);
 
       ctx.fillStyle = "#94a3b8";
-      ctx.font = "10px -apple-system, BlinkMacSystemFont, monospace";
-      ctx.fillText("Normalized Disk-Averaged Photometry", gx + 10, gy + 32);
+      ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+      ctx.fillText("Normalized Disk-Averaged Photometry vs. Time", gx + 16, gy + 42);
 
       // Grid lines
       ctx.strokeStyle = "#1e293b";
-      for (let y = gy + 48; y < gy + gh; y += 24) {
+      for (let y = gy + 60; y < gy + gh; y += 32) {
         ctx.beginPath();
-        ctx.moveTo(gx + 8, y);
-        ctx.lineTo(gx + gw - 8, y);
+        ctx.moveTo(gx + 12, y);
+        ctx.lineTo(gx + gw - 12, y);
         ctx.stroke();
       }
 
@@ -201,35 +205,35 @@ export default function PlanetRotationPlayer() {
       const history = lightHistoryRef.current;
       if (history.length > 1) {
         ctx.strokeStyle = "#fbbf24";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
         const minF = 0.08;
         const maxF = 0.26;
         for (let i = 0; i < history.length; i++) {
-          const px = gx + 12 + (i / 50) * (gw - 24);
-          const py = gy + gh - 10 - ((history[i] - minF) / (maxF - minF)) * (gh - 55);
+          const px = gx + 16 + (i / 50) * (gw - 32);
+          const py = gy + gh - 15 - ((history[i] - minF) / (maxF - minF)) * (gh - 75);
           if (i === 0) ctx.moveTo(px, py);
           else ctx.lineTo(px, py);
         }
         ctx.stroke();
 
         // Pulsing marker
-        const lastX = gx + 12 + ((history.length - 1) / 50) * (gw - 24);
-        const lastY = gy + gh - 10 - ((history[history.length - 1] - minF) / (maxF - minF)) * (gh - 55);
+        const lastX = gx + 16 + ((history.length - 1) / 50) * (gw - 32);
+        const lastY = gy + gh - 15 - ((history[history.length - 1] - minF) / (maxF - minF)) * (gh - 75);
         ctx.fillStyle = "#ef4444";
         ctx.beginPath();
-        ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+        ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.5;
         ctx.stroke();
       }
 
       // Telemetry Box
-      const tx = 350;
-      const ty = 195;
-      const tw = 260;
-      const th = 135;
+      const tx = 440;
+      const ty = 280;
+      const tw = 480;
+      const th = 210;
 
       ctx.fillStyle = "#0f172a";
       ctx.strokeStyle = "#334155";
@@ -238,39 +242,39 @@ export default function PlanetRotationPlayer() {
       ctx.strokeRect(tx, ty, tw, th);
 
       ctx.fillStyle = "#38bdf8";
-      ctx.font = "bold 11px -apple-system, BlinkMacSystemFont, monospace";
-      ctx.fillText("SIMULATION TELEMETRY", tx + 10, ty + 16);
+      ctx.font = "bold 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+      ctx.fillText("SIMULATION TELEMETRY", tx + 16, ty + 24);
 
       const telemetry = [
         ["DIURNAL PERIOD", "P = 24.0 hours"],
-        ["CLOUD FRACTION", `f_c = ${cloudCover}% (fiducial)`],
-        ["ZONAL JET STREAM", "v_zonal = +21 m/s"],
+        ["CLOUD FRACTION", `fc = ${cloudCover}% (fiducial)`],
+        ["ZONAL JET STREAM", "v_zonal = +21 m/s (eastward)"],
         ["AXIAL OBLIQUITY", "23.4° tilt"],
-        ["NOISE RATIO", "Clouds:Photons = 21:1"],
+        ["NOISE COVARIANCE", "Clouds:Photons = 21:1 (dominant)"],
       ];
 
       telemetry.forEach(([label, val], idx) => {
-        const rowY = ty + 36 + idx * 18;
+        const rowY = ty + 56 + idx * 28;
         ctx.fillStyle = "#94a3b8";
-        ctx.font = "10px -apple-system, BlinkMacSystemFont, monospace";
-        ctx.fillText(label, tx + 10, rowY);
+        ctx.font = "12px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+        ctx.fillText(label, tx + 16, rowY);
         ctx.fillStyle = "#ffffff";
-        ctx.fillText(val, tx + 130, rowY);
+        ctx.fillText(val, tx + 180, rowY);
       });
 
       // Bottom Footer Bar
       ctx.strokeStyle = "#1e293b";
       ctx.beginPath();
-      ctx.moveTo(16, h - 22);
-      ctx.lineTo(w - 16, h - 22);
+      ctx.moveTo(20, h - 28);
+      ctx.lineTo(w - 20, h - 28);
       ctx.stroke();
 
       ctx.fillStyle = "#64748b";
-      ctx.font = "10px -apple-system, BlinkMacSystemFont, monospace";
-      ctx.fillText("PEER-REVIEWED ASTROPHYSICAL RESEARCH • SONTANKE ET AL. (2026)", 16, h - 8);
+      ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+      ctx.fillText("PEER-REVIEWED ASTROPHYSICAL RESEARCH • SONTANKE ET AL. (2026)", 20, h - 10);
 
       ctx.fillStyle = isPlaying ? "#34d399" : "#f59e0b";
-      ctx.fillText(isPlaying ? "SIMULATION ACTIVE • 60 FPS" : "SIMULATION PAUSED", w - 160, h - 8);
+      ctx.fillText(isPlaying ? "SIMULATION ACTIVE • 60 FPS" : "SIMULATION PAUSED", w - 190, h - 10);
 
       animRef.current = requestAnimationFrame(render);
     };
@@ -281,113 +285,157 @@ export default function PlanetRotationPlayer() {
     };
   }, [isPlaying, speed, cloudCover]);
 
+  const restartGif = () => {
+    setGifKey(Date.now());
+  };
+
   return (
-    <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-lg flex flex-col">
-      {/* Top Header Controls */}
-      <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          <span className="text-xs font-mono font-bold text-blue-400">
-            Exo-Earth Rotation & Cloud Advection Simulation
-          </span>
-        </div>
-
-        <div className="flex items-center gap-1.5">
+    <MediaZoomViewer
+      title="Exo-Earth Rotation & Cloud Advection Simulation"
+      badge="1080p Full HD"
+      desc="Continuous 24-hour diurnal rotation with dynamic eastward zonal jet streams (+21 m/s) and disk-averaged photometric light curve F(t)."
+      downloadName="planet_rotation_clouds_1080p.gif"
+      src={viewMode === "gif" ? `/videos/planet_rotation_clouds.gif?v=${gifKey}` : undefined}
+      headerControls={
+        <div className="inline-flex bg-slate-950 p-0.5 rounded-lg border border-slate-700 shadow-inner">
           <button
-            onClick={() => setViewMode(viewMode === "live" ? "gif" : "live")}
-            className="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded font-mono border border-slate-700 transition-colors"
+            type="button"
+            onClick={() => setViewMode("live")}
+            className={`px-2.5 py-1 rounded font-mono text-[10px] font-bold flex items-center gap-1.5 transition-all ${
+              viewMode === "live"
+                ? "bg-blue-600 text-white shadow-xs"
+                : "text-slate-400 hover:text-white"
+            }`}
           >
-            {viewMode === "live" ? "Switch to GIF" : "Switch to Live 60FPS"}
-          </button>
-
-          <a
-            href="/videos/planet_rotation_clouds.gif"
-            download="planet_rotation_clouds.gif"
-            className="text-[10px] bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded font-mono font-bold flex items-center gap-1 transition-colors"
-            title="Download Clean High-Res GIF"
-          >
-            <Download size={11} />
-            <span>Save GIF</span>
-          </a>
-        </div>
-      </div>
-
-      {/* Main View Area */}
-      <div className="relative w-full aspect-video bg-black flex items-center justify-center overflow-hidden">
-        {viewMode === "live" ? (
-          <canvas
-            ref={canvasRef}
-            width={960}
-            height={540}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          <img
-            src="/videos/planet_rotation_clouds.gif"
-            alt="Exo-Earth Rotation & Cloud Simulation (1080p Full HD)"
-            className="w-full h-full object-contain"
-          />
-        )}
-      </div>
-
-      {/* Interactive Control Toolbar */}
-      <div className="p-2.5 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between text-xs flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="btn btn-sm btn-outline text-white border-slate-700 hover:bg-slate-800 px-2 py-1 text-xs flex items-center gap-1"
-          >
-            {isPlaying ? <Pause size={12} /> : <Play size={12} />}
-            <span>{isPlaying ? "Pause" : "Play"}</span>
+            <Zap size={12} className={viewMode === "live" ? "text-amber-300" : "text-slate-500"} />
+            <span>Live 60FPS</span>
           </button>
 
           <button
-            onClick={() => {
-              angleRef.current = 0;
-              lightHistoryRef.current = [];
-            }}
-            className="btn btn-sm btn-outline text-slate-300 border-slate-700 hover:bg-slate-800 px-2 py-1 text-xs"
-            title="Reset Rotation Angle"
+            type="button"
+            onClick={() => setViewMode("gif")}
+            className={`px-2.5 py-1 rounded font-mono text-[10px] font-bold flex items-center gap-1.5 transition-all ${
+              viewMode === "gif"
+                ? "bg-blue-600 text-white shadow-xs"
+                : "text-slate-400 hover:text-white"
+            }`}
           >
-            <RotateCcw size={12} />
+            <Video size={12} className={viewMode === "gif" ? "text-sky-300" : "text-slate-500"} />
+            <span>1080p Master GIF</span>
           </button>
-
-          <div className="flex items-center gap-1 text-[11px] text-slate-400 pl-1">
-            <span>Speed:</span>
-            {[0.5, 1, 2].map((s) => (
-              <button
-                key={s}
-                onClick={() => setSpeed(s)}
-                className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
-                  speed === s ? "bg-blue-600 text-white font-bold" : "bg-slate-800 text-slate-400 hover:text-white"
-                }`}
-              >
-                {s}x
-              </button>
-            ))}
-          </div>
         </div>
+      }
+      footerControls={
+        <div className="p-2.5 sm:p-3 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between text-xs flex-wrap gap-2.5">
+          {viewMode === "live" ? (
+            <>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="btn btn-sm btn-outline text-white border-slate-700 hover:bg-slate-800 px-2.5 py-1 text-xs flex items-center gap-1.5 rounded-lg shadow-xs"
+                >
+                  {isPlaying ? <Pause size={12} /> : <Play size={12} />}
+                  <span>{isPlaying ? "Pause" : "Play"}</span>
+                </button>
 
-        {/* Cloud Cover Slider */}
-        <div className="flex items-center gap-2 text-[11px] text-slate-400">
-          <span>Clouds:</span>
-          <input
-            type="range"
-            min="0"
-            max="80"
-            step="5"
-            value={cloudCover}
-            onChange={(e) => setCloudCover(Number(e.target.value))}
-            className="w-20 sm:w-24 accent-blue-500 h-1"
-          />
-          <span className="font-mono text-white text-[10px] w-7">{cloudCover}%</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    angleRef.current = 0;
+                    lightHistoryRef.current = [];
+                  }}
+                  className="btn btn-sm btn-outline text-slate-300 border-slate-700 hover:bg-slate-800 px-2 py-1 text-xs rounded-lg"
+                  title="Reset Rotation Angle"
+                >
+                  <RotateCcw size={12} />
+                </button>
+
+                <div className="flex items-center gap-1 text-[11px] text-slate-400 pl-1">
+                  <span className="font-semibold text-slate-300">Speed:</span>
+                  {[0.5, 1, 2].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setSpeed(s)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                        speed === s 
+                          ? "bg-blue-600 text-white font-bold shadow-xs" 
+                          : "bg-slate-800 text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cloud Cover Slider */}
+              <div className="flex items-center gap-2 text-[11px] text-slate-300 bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-800">
+                <span className="font-semibold">Clouds:</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="80"
+                  step="5"
+                  value={cloudCover}
+                  onChange={(e) => setCloudCover(Number(e.target.value))}
+                  className="w-20 sm:w-28 range-slider range-slider-dark"
+                />
+                <span className="font-mono text-emerald-400 font-bold text-[11px] w-8">{cloudCover}%</span>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-between w-full gap-2 flex-wrap">
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                <span className="text-[11px] text-slate-300 font-medium">
+                  Showing 1080p Master Recording • 24.0s (240 Frames @ 100ms)
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={restartGif}
+                  className="btn btn-sm btn-outline text-slate-300 border-slate-700 hover:bg-slate-800 px-2.5 py-1 text-xs flex items-center gap-1.5 rounded-lg"
+                  title="Restart animation from frame 0"
+                >
+                  <RefreshCw size={11} />
+                  <span>Replay GIF</span>
+                </button>
+
+                <a
+                  href="/videos/planet_rotation_clouds.gif"
+                  download="planet_rotation_clouds_1080p.gif"
+                  className="btn btn-sm btn-primary text-xs flex items-center gap-1.5 px-3 py-1 rounded-lg shadow-xs"
+                >
+                  <Download size={11} />
+                  <span>Download 1080p GIF</span>
+                </a>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      }
+    >
+      {/* Live Canvas (Always mounted to preserve 60FPS animation context) */}
+      <canvas
+        ref={canvasRef}
+        width={960}
+        height={540}
+        className={`w-full h-full object-contain ${viewMode === "live" ? "block" : "hidden"}`}
+      />
 
-      {/* Caption Strip */}
-      <div className="px-3 py-2 bg-slate-950 text-slate-400 text-[10px] sm:text-[11px] border-t border-slate-900 leading-snug">
-        Continuous 24-hour diurnal rotation with dynamic eastward zonal jet streams (+21 m/s) and photometric light curve F(t).
-      </div>
-    </div>
+      {/* 1080p GIF Layer */}
+      {viewMode === "gif" && (
+        <img
+          key={gifKey}
+          src={`/videos/planet_rotation_clouds.gif?v=${gifKey}`}
+          alt="Exo-Earth Rotation & Cloud Simulation (1080p Full HD)"
+          className="w-full h-full object-contain"
+        />
+      )}
+    </MediaZoomViewer>
   );
 }

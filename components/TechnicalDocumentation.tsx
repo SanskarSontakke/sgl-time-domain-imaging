@@ -54,7 +54,7 @@ export default function TechnicalDocumentation() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       {/* Mobile Table of Contents Accordion (Visible on Mobile/Tablet) */}
       <div className="lg:hidden bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
         <button

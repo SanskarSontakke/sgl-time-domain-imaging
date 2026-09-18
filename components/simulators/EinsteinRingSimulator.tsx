@@ -172,9 +172,9 @@ export default function EinsteinRingSimulator() {
           <div className="lg:col-span-5 space-y-4 text-xs">
             {/* Off-axis slider */}
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-              <div className="flex justify-between font-semibold text-slate-700">
-                <span>Off-Axis Displacement (<LatexMath math="\rho" />):</span>
-                <span className="font-mono font-bold text-blue-600">{rhoMeters.toFixed(2)} meters</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-slate-700">Off-Axis Displacement (<LatexMath math="\rho" />):</span>
+                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{rhoMeters.toFixed(2)} meters</span>
               </div>
               <input
                 type="range"
@@ -185,18 +185,27 @@ export default function EinsteinRingSimulator() {
                 onChange={(e) => setRhoMeters(parseFloat(e.target.value))}
                 className="w-full range-slider"
               />
-              <div className="flex justify-between text-[10px] text-slate-400">
-                <span>0.0 m (Perfect Ring)</span>
-                <span>1.0 m</span>
-                <span>4.0 m (Faded Arcs)</span>
+              <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-500 pt-1 text-center">
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">0.0 m</span>
+                  <span className="text-[9px] text-slate-400">Perfect Ring</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">1.0 m</span>
+                  <span className="text-[9px] text-slate-400">Shear Arc</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">4.0 m</span>
+                  <span className="text-[9px] text-slate-400">Faded Arcs</span>
+                </div>
               </div>
             </div>
 
             {/* Wavelength selector */}
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-              <div className="flex justify-between font-semibold text-slate-700">
-                <span>Observation Wavelength (<LatexMath math="\lambda" />):</span>
-                <span className="font-mono font-bold text-slate-800">{wavelengthNm} nm</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-slate-700">Observation Wavelength (<LatexMath math="\lambda" />):</span>
+                <span className="font-mono font-bold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">{wavelengthNm} nm</span>
               </div>
               <div className="grid grid-cols-3 gap-1.5 pt-1">
                 {[
@@ -206,11 +215,12 @@ export default function EinsteinRingSimulator() {
                 ].map((w) => (
                   <button
                     key={w.val}
+                    type="button"
                     onClick={() => setWavelengthNm(w.val)}
-                    className={`py-1 px-1.5 rounded text-[10px] font-medium border ${
+                    className={`py-1.5 px-1 rounded-lg text-[10px] font-bold border transition-all ${
                       wavelengthNm === w.val
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                        ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900"
                     }`}
                   >
                     {w.label}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { ShieldCheck, ArrowDown, Cpu, Sparkles, Filter } from "lucide-react";
+import { ShieldCheck, ArrowDown, Cpu, Sparkles, Filter, Zap } from "lucide-react";
 import LatexMath from "../LatexMath";
 
 export default function CloudDeflationDemo() {
@@ -49,14 +49,31 @@ export default function CloudDeflationDemo() {
           </h3>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowDeflated(!showDeflated)}
-            className={`btn btn-sm ${
-              showDeflated ? "btn-primary" : "btn-outline"
-            }`}
-          >
-            {showDeflated ? "Showing: Deflated Signal (P⊥ y)" : "Showing: Raw Noisy Signal (y)"}
-          </button>
+          <div className="inline-flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+            <button
+              type="button"
+              onClick={() => setShowDeflated(false)}
+              className={`px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
+                !showDeflated 
+                  ? "bg-white text-rose-700 shadow-xs border border-slate-200" 
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span>Raw Corrupted (y)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowDeflated(true)}
+              className={`px-3 py-1.5 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
+                showDeflated 
+                  ? "bg-blue-600 text-white shadow-xs" 
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <Zap size={12} className={showDeflated ? "text-amber-300" : "text-slate-400"} />
+              <span>Deflated Clean (P⊥ y)</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -64,10 +81,10 @@ export default function CloudDeflationDemo() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Controls */}
           <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-slate-700">Concurrent Spacecraft Slots (<LatexMath math="N_c" />):</span>
-                <span className="font-mono font-bold text-blue-600">{numCrafts} crafts</span>
+                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{numCrafts} crafts</span>
               </div>
               <input
                 type="range"
@@ -78,17 +95,26 @@ export default function CloudDeflationDemo() {
                 onChange={(e) => setNumCrafts(parseInt(e.target.value))}
                 className="w-full range-slider"
               />
-              <div className="flex justify-between text-xs text-slate-400 mt-0.5">
-                <span>2 crafts (Minimal)</span>
-                <span>8 crafts</span>
-                <span>16 crafts (Full Mission)</span>
+              <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-500 pt-1 text-center">
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">2 crafts</span>
+                  <span className="text-[9px] text-slate-400">Minimal</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">8 crafts</span>
+                  <span className="text-[9px] text-slate-400">Nominal</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-emerald-700 block">16 crafts</span>
+                  <span className="text-[9px] text-emerald-600 font-bold">Full Fleet</span>
+                </div>
               </div>
             </div>
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-slate-700">Common Cloud Perturbation:</span>
-                <span className="font-mono font-bold text-slate-700">{(cloudNoiseAmp * 100).toFixed(0)}% albedo</span>
+                <span className="font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">{(cloudNoiseAmp * 100).toFixed(0)}% albedo</span>
               </div>
               <input
                 type="range"
@@ -101,10 +127,10 @@ export default function CloudDeflationDemo() {
               />
             </div>
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="font-semibold text-slate-700">Planetary Surface Contrast (Continent/Ocean):</span>
-                <span className="font-mono font-bold text-slate-700">{(surfaceSignalAmp * 100).toFixed(0)}%</span>
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-slate-700">Planetary Surface Contrast:</span>
+                <span className="font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">{(surfaceSignalAmp * 100).toFixed(0)}%</span>
               </div>
               <input
                 type="range"

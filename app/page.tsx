@@ -15,8 +15,8 @@ export default function HomePage() {
       <Header activeMode={activeMode} setActiveMode={setActiveMode} />
 
       {/* Hero Banner with Executive Highlights */}
-      <section className="bg-gradient-to-b from-blue-50/70 via-slate-50 to-slate-50 border-b border-slate-200 py-6 sm:py-8 px-3 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-4">
+      <section className="bg-gradient-to-b from-blue-50/70 via-slate-50 to-slate-50 border-b border-slate-200 py-5 sm:py-6 px-4 sm:px-6 lg:px-8">
+        <div className="w-full space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 flex-wrap">
@@ -30,30 +30,33 @@ export default function HomePage() {
               <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
                 Time-Domain Imaging of a Rotating, Cloudy Exo-Earth with the SGL
               </h1>
-              <p className="text-xs sm:text-sm md:text-base text-slate-600 max-w-3xl leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-slate-600 max-w-4xl leading-relaxed">
                 A definitive end-to-end framework solving the dynamic time-aliasing problem for the Solar Gravitational Lens, reconstructing planetary surface continents through moving cloud cover.
               </p>
             </div>
 
             {/* Mode Switcher Banner Pill */}
-            <div className="bg-white p-1.5 sm:p-2 rounded-xl border border-slate-200 shadow-xs flex items-center gap-1.5 self-start md:self-auto shrink-0">
-              <span className="text-[11px] font-bold text-slate-400 pl-1.5 hidden sm:inline">View Mode:</span>
+            <div className="bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner flex items-center gap-1 self-start md:self-auto shrink-0">
               <button
                 onClick={() => setActiveMode("presentation")}
-                className={`btn btn-sm ${
-                  activeMode === "presentation" ? "btn-primary" : "btn-outline"
-                } text-xs flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeMode === "presentation"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
               >
-                <Presentation size={13} />
+                <Presentation size={14} className={activeMode === "presentation" ? "text-blue-600" : "text-slate-400"} />
                 <span>Judge Board</span>
               </button>
               <button
                 onClick={() => setActiveMode("documentation")}
-                className={`btn btn-sm ${
-                  activeMode === "documentation" ? "btn-primary" : "btn-outline"
-                } text-xs flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  activeMode === "documentation"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
               >
-                <BookOpen size={13} />
+                <BookOpen size={14} className={activeMode === "documentation" ? "text-blue-600" : "text-slate-400"} />
                 <span>Technical Docs</span>
               </button>
             </div>
@@ -101,7 +104,7 @@ export default function HomePage() {
       </section>
 
       {/* Main Mode View */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         {activeMode === "presentation" ? (
           <div className="space-y-4 sm:space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-slate-200">
@@ -124,7 +127,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="space-y-1 text-center md:text-left">
             <div className="font-bold text-slate-700">
               Solar Gravitational Lens (SGL) Time-Domain Imaging Research

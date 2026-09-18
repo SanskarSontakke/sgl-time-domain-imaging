@@ -136,10 +136,88 @@ body {
   border-color: #fecaca;
 }
 
-/* Slider styling */
+/* Custom Themed Range Slider */
 .range-slider {
-  accent-color: #2563eb;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  outline: none;
+  transition: all 0.2s ease;
   cursor: pointer;
+}
+
+.range-slider:hover {
+  background: #cbd5e1;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid #2563eb;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.15);
+}
+
+.range-slider::-webkit-slider-thumb:active {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.25);
+  background: #2563eb;
+  border-color: #ffffff;
+}
+
+.range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid #2563eb;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
+}
+
+.range-slider::-moz-range-thumb:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.15);
+}
+
+.range-slider::-moz-range-thumb:active {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.25);
+  background: #2563eb;
+  border-color: #ffffff;
+}
+
+/* Dark variant slider */
+.range-slider-dark {
+  background: #1e293b !important;
+}
+
+.range-slider-dark:hover {
+  background: #334155 !important;
+}
+
+.range-slider-dark::-webkit-slider-thumb {
+  background: #38bdf8 !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+}
+
+.range-slider-dark::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 5px rgba(56, 189, 248, 0.3) !important;
 }
 
 /* Latex Math */

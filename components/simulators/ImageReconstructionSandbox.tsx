@@ -301,81 +301,87 @@ export default function ImageReconstructionSandbox() {
         </div>
 
         {/* Interactive Controls Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
           {/* Cloud Cover Slider */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-baseline">
-              <label className="font-semibold text-slate-700">Cloud Fraction (fc):</label>
-              <span className="font-mono font-bold text-blue-600">{(activeFc * 100).toFixed(0)}% cover</span>
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1">
+                <label className="font-semibold text-slate-700">Cloud Fraction (fc):</label>
+                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{(activeFc * 100).toFixed(0)}% cover</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="4"
+                step="1"
+                value={fcIndex}
+                onChange={(e) => setFcIndex(parseInt(e.target.value))}
+                className="w-full range-slider"
+              />
             </div>
-            <input
-              type="range"
-              min="0"
-              max="4"
-              step="1"
-              value={fcIndex}
-              onChange={(e) => setFcIndex(parseInt(e.target.value))}
-              className="w-full range-slider"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400">
-              <span>0% (Clear)</span>
-              <span>25%</span>
-              <span>40%</span>
-              <span className="font-bold text-slate-700">55% (Earth)</span>
-              <span>70%</span>
+            <div className="flex justify-between text-[10px] text-slate-500 pt-1 font-mono">
+              <span className={fcIndex === 0 ? "text-blue-600 font-bold" : ""}>0%</span>
+              <span className={fcIndex === 1 ? "text-blue-600 font-bold" : ""}>25%</span>
+              <span className={fcIndex === 2 ? "text-blue-600 font-bold" : ""}>40%</span>
+              <span className={fcIndex === 3 ? "text-emerald-700 font-bold underline" : ""}>55% (Earth)</span>
+              <span className={fcIndex === 4 ? "text-blue-600 font-bold" : ""}>70%</span>
             </div>
           </div>
 
           {/* Inversion Algorithm Selector */}
-          <div className="space-y-1.5">
-            <label className="font-semibold text-slate-700 block">Inversion Algorithm</label>
-            <select
-              value={method}
-              onChange={(e) => setMethod(e.target.value as InversionMethod)}
-              className="w-full p-2 rounded-lg border border-slate-200 bg-white text-slate-800 font-semibold text-xs leading-normal cursor-pointer"
-            >
-              <option value="gls">TDI (Deflated GLS) [Our Method]</option>
-              <option value="white">Naive White-Noise GLS</option>
-              <option value="b2">Phase-Binned Coaddition</option>
-            </select>
-            <div className="text-[10px] text-slate-500">
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 flex flex-col justify-between">
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Inversion Algorithm</label>
+              <select
+                value={method}
+                onChange={(e) => setMethod(e.target.value as InversionMethod)}
+                className="w-full p-2 rounded-lg border border-slate-300 bg-white text-slate-800 font-semibold text-xs leading-normal cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              >
+                <option value="gls">TDI (Deflated GLS) [Our Method]</option>
+                <option value="white">Naive White-Noise GLS</option>
+                <option value="b2">Phase-Binned Coaddition</option>
+              </select>
+            </div>
+            <div className="text-[10px] text-slate-500 leading-tight pt-1">
               {method === "gls" ? (
                 numCrafts >= 4 ? (
-                  <span className="flex items-center gap-1 flex-wrap">
+                  <span className="flex items-center gap-1 flex-wrap text-emerald-700 font-medium">
                     Full <LatexMath math="\mathbf{P}_\perp" /> common-mode deflation + covariance <LatexMath math="\mathbf{C}_y" />
                   </span>
                 ) : (
                   <span>Single craft: Deflation inactive (<LatexMath math="\mathbf{P}_\perp" /> requires &ge; 4 crafts)</span>
                 )
               ) : method === "white" ? (
-                <span className="flex items-center gap-1 flex-wrap">
+                <span className="flex items-center gap-1 flex-wrap text-slate-600">
                   Disregards cloud correlations (<LatexMath math="\mathbf{C}_y \to \sigma^2 \mathbf{I}" />)
                 </span>
               ) : (
-                <span>Averages observations, suffering rotational smearing</span>
+                <span className="text-rose-700">Averages observations, suffering rotational smearing</span>
               )}
             </div>
           </div>
 
           {/* Spacecraft Fleet Size */}
-          <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
-            <div className="flex justify-between items-baseline">
-              <label className="font-semibold text-slate-700">Spacecraft Fleet:</label>
-              <span className="font-mono font-bold text-emerald-700">{numCrafts} Spacecraft</span>
+          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 flex flex-col justify-between sm:col-span-2 lg:col-span-1">
+            <div>
+              <div className="flex justify-between items-center text-xs mb-1">
+                <label className="font-semibold text-slate-700">Spacecraft Fleet:</label>
+                <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">{numCrafts} Spacecraft</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="32"
+                step="1"
+                value={numCrafts}
+                onChange={(e) => setNumCrafts(parseInt(e.target.value))}
+                className="w-full range-slider"
+              />
             </div>
-            <input
-              type="range"
-              min="1"
-              max="32"
-              step="1"
-              value={numCrafts}
-              onChange={(e) => setNumCrafts(parseInt(e.target.value))}
-              className="w-full range-slider"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400">
-              <span>1 (Single)</span>
-              <span className="font-bold text-slate-700">16 (Nominal)</span>
-              <span>32 (Dense)</span>
+            <div className="grid grid-cols-3 gap-1 text-[10px] text-slate-500 pt-1 text-center font-mono">
+              <span className={numCrafts === 1 ? "text-blue-600 font-bold" : ""}>1 (Single)</span>
+              <span className={numCrafts === 16 ? "text-emerald-700 font-bold underline" : ""}>16 (Nominal)</span>
+              <span className={numCrafts === 32 ? "text-blue-600 font-bold" : ""}>32 (Dense)</span>
             </div>
           </div>
         </div>
