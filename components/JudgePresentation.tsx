@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  ChevronLeft, ChevronRight, Play, Maximize2, Sparkles, 
+  ChevronLeft, ChevronRight, Play, Maximize2, Minimize2, Sparkles, 
   HelpCircle, MessageSquare, CheckCircle2, ArrowRight, 
   Compass, ShieldCheck, Zap, Layers, BarChart2, Globe,
   Download, Video, Image as ImageIcon
@@ -320,6 +320,7 @@ export default function JudgePresentation() {
   const [showNotes, setShowNotes] = useState<boolean>(false);
   const [showFaq, setShowFaq] = useState<boolean>(false);
   const [mediaToggle, setMediaToggle] = useState<Record<number, "sim" | "media">>({});
+  const [isSimFullscreen, setIsSimFullscreen] = useState<boolean>(false);
 
   // Touch swipe support for mobile
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -327,10 +328,17 @@ export default function JudgePresentation() {
 
   const slide = SLIDES[currentSlideIdx];
 
-  // Keyboard navigation (Left/Right arrows)
+  // Reset simulator fullscreen on slide change
+  useEffect(() => {
+    setIsSimFullscreen(false);
+  }, [currentSlideIdx]);
+
+  // Keyboard navigation (Left/Right arrows and Escape for fullscreen)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" || e.key === "PageDown") {
+      if (e.key === "Escape" && isSimFullscreen) {
+        setIsSimFullscreen(false);
+      } else if (e.key === "ArrowRight" || e.key === "PageDown") {
         setCurrentSlideIdx((prev) => Math.min(SLIDES.length - 1, prev + 1));
       } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
         setCurrentSlideIdx((prev) => Math.max(0, prev - 1));
@@ -338,7 +346,7 @@ export default function JudgePresentation() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isSimFullscreen]);
 
   const goToPrev = () => setCurrentSlideIdx((prev) => Math.max(0, prev - 1));
   const goToNext = () => setCurrentSlideIdx((prev) => Math.min(SLIDES.length - 1, prev + 1));
@@ -469,32 +477,62 @@ export default function JudgePresentation() {
           <div className={slide.interactiveComponent ? "lg:col-span-8 xl:col-span-8" : "lg:col-span-4"}>
             {/* View Switcher Bar if slide has both simulator and media */}
             {slide.mediaSrc && slide.interactiveComponent !== "planet-video" && (
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Display Mode:</span>
-                <div className="inline-flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-                  <button
-                    onClick={() => setMediaToggle(prev => ({ ...prev, [slide.id]: "sim" }))}
-                    className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
-                      (mediaToggle[slide.id] || "sim") === "sim"
-                        ? "bg-white text-blue-700 shadow-xs"
-                        : "text-slate-500 hover:text-slate-800"
-                    }`}
-                  >
-                    <Zap size={12} className={(mediaToggle[slide.id] || "sim") === "sim" ? "text-amber-500" : "text-slate-400"} />
-                    <span>Interactive Sim</span>
-                  </button>
-                  <button
-                    onClick={() => setMediaToggle(prev => ({ ...prev, [slide.id]: "media" }))}
-                    className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
-                      mediaToggle[slide.id] === "media"
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : "text-slate-500 hover:text-slate-800"
-                    }`}
-                  >
-                    <Video size={12} className={mediaToggle[slide.id] === "media" ? "text-sky-200" : "text-slate-400"} />
-                    <span>{slide.mediaBadge || "1080p Master Video"}</span>
-                  </button>
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Display Mode:</span>
+                  <div className="inline-flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                    <button
+                      onClick={() => setMediaToggle(prev => ({ ...prev, [slide.id]: "sim" }))}
+                      className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
+                        (mediaToggle[slide.id] || "sim") === "sim"
+                          ? "bg-white text-blue-700 shadow-xs"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      <Zap size={12} className={(mediaToggle[slide.id] || "sim") === "sim" ? "text-amber-500" : "text-slate-400"} />
+                      <span>Interactive Sim</span>
+                    </button>
+                    <button
+                      onClick={() => setMediaToggle(prev => ({ ...prev, [slide.id]: "media" }))}
+                      className={`px-2.5 py-1 text-xs font-bold rounded-md flex items-center gap-1.5 transition-all ${
+                        mediaToggle[slide.id] === "media"
+                          ? "bg-blue-600 text-white shadow-xs"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      <Video size={12} className={mediaToggle[slide.id] === "media" ? "text-sky-200" : "text-slate-400"} />
+                      <span>{slide.mediaBadge || "1080p Master Video"}</span>
+                    </button>
+                  </div>
                 </div>
+
+                {/* Fullscreen Sim button for interactive mode */}
+                {(mediaToggle[slide.id] || "sim") === "sim" && (
+                  <button
+                    type="button"
+                    onClick={() => setIsSimFullscreen(true)}
+                    className="text-xs text-slate-600 hover:text-slate-900 font-semibold flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors shadow-2xs"
+                    title="View Simulation in Fullscreen"
+                  >
+                    <Maximize2 size={12} className="text-blue-600" />
+                    <span>Fullscreen Sim</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Fullscreen Sim button for slides without media toggle */}
+            {!slide.mediaSrc && slide.interactiveComponent && slide.interactiveComponent !== "planet-video" && (
+              <div className="flex items-center justify-end pb-2 mb-2 border-b border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsSimFullscreen(true)}
+                  className="text-xs text-slate-600 hover:text-slate-900 font-semibold flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors shadow-2xs"
+                  title="View Simulation in Fullscreen"
+                >
+                  <Maximize2 size={12} className="text-blue-600" />
+                  <span>Fullscreen Sim</span>
+                </button>
               </div>
             )}
 
@@ -514,17 +552,38 @@ export default function JudgePresentation() {
               />
             )}
 
-            {/* Display Interactive Simulator Mode */}
+            {/* Display Interactive Simulator Mode (Supports Fullscreen) */}
             {slide.interactiveComponent !== "planet-video" && (!slide.mediaSrc || mediaToggle[slide.id] !== "media") && (
-              <>
-                {slide.interactiveComponent === "cylinder" && <SglCylinderSimulator />}
-                {slide.interactiveComponent === "einstein" && <EinsteinRingSimulator />}
-                {slide.interactiveComponent === "sandbox" && <ImageReconstructionSandbox />}
-                {slide.interactiveComponent === "cadence" && <CadenceExplorer />}
-                {slide.interactiveComponent === "deflation" && <CloudDeflationDemo />}
-                {slide.interactiveComponent === "targets" && <TargetCatalogExplorer />}
-                {slide.interactiveComponent === "fleet" && <FleetFormationSimulator />}
-              </>
+              <div className={isSimFullscreen ? "fixed inset-0 z-[99999] w-screen h-screen bg-slate-900/98 backdrop-blur-2xl p-4 sm:p-6 overflow-y-auto flex flex-col animate-fadeIn" : "w-full"}>
+                {isSimFullscreen && (
+                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-700 shrink-0 max-w-7xl mx-auto w-full">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <h3 className="text-sm sm:text-base font-bold text-white font-mono">
+                        {slide.title} • Interactive Simulation Lab
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsSimFullscreen(false)}
+                      className="btn btn-sm bg-slate-800 hover:bg-red-900 text-white border border-slate-700 px-3 py-1.5 flex items-center gap-1.5 rounded-lg shadow-xs transition-colors"
+                      title="Exit Fullscreen (Esc)"
+                    >
+                      <Minimize2 size={13} />
+                      <span>Exit Fullscreen (Esc)</span>
+                    </button>
+                  </div>
+                )}
+                <div className={isSimFullscreen ? "w-full max-w-7xl mx-auto my-auto" : "w-full"}>
+                  {slide.interactiveComponent === "cylinder" && <SglCylinderSimulator />}
+                  {slide.interactiveComponent === "einstein" && <EinsteinRingSimulator />}
+                  {slide.interactiveComponent === "sandbox" && <ImageReconstructionSandbox />}
+                  {slide.interactiveComponent === "cadence" && <CadenceExplorer />}
+                  {slide.interactiveComponent === "deflation" && <CloudDeflationDemo />}
+                  {slide.interactiveComponent === "targets" && <TargetCatalogExplorer />}
+                  {slide.interactiveComponent === "fleet" && <FleetFormationSimulator />}
+                </div>
+              </div>
             )}
 
             {!slide.interactiveComponent && (
