@@ -14,24 +14,24 @@ core-hours across four parallel streams, not 40 core-minutes).
 
 ## Paper
 
-📄 [`paper/sgl_time_domain_imaging.pdf`](paper/sgl_time_domain_imaging.pdf) — 23 pages, 8 figures, 13 tables (revised version).
+📄 [`paper/sgl_time_domain_imaging.pdf`](paper/sgl_time_domain_imaging.pdf) — 24 pages, 8 figures, 13 tables (revised version).
 
 **Headline results (revised; every value below is in `results/audit.json`)**
 
 | Finding | Value |
 |---|---|
-| Rotating cloud-free planet, time-domain GLS | Pearson *r* = 0.9786 ± 0.0002, SSIM 0.8482 ± 0.0010 (10 paired seeds) |
+| Rotating cloud-free planet, time-domain GLS | Pearson *r* = 0.9786 ± 0.0002, SSIM 0.8482 ± 0.0011 (10 paired seeds) |
 | Cloud noise vs. coronal shot noise per sample | 12.8–21.0× in σ, 163–440× in variance (covers 24–71%) |
 | Fidelity at Earth-like (55% nominal) cloud cover | *r* = 0.3422 ± 0.0082; *r* = 0.2491 at 70% cover |
 | What a static coadd achieves on the same data | *r* = 0.1155 (phase-blind), 0.9361 (phase-binned) |
 | Observing-cadence law (fixed photons & duration) | 64 short revisits beat 4 long dwells: *r* 0.049 → 0.571 |
-| Causal controls on that law | cloud-free *r* 0.773 → 0.987; i.i.d. weather ≡ OU weather at every cadence (all *p* ≥ 0.14) |
+| Causal controls on that law | cloud-free *r* 0.773 → 0.987; i.i.d. weather ≡ OU weather at every cadence (all paired *t*-test *p* ≥ 0.14) |
 | Regularization sensitivity | six decades λ = 10⁻⁵ → 10: cloudy *r* rises monotonically 0.338 → 0.520 (+0.178 ± 0.007 paired, 10/10 seeds) while the objective stays flat to 0.1%; cloud-free peaks at λ = 0.3 and turns over. A harmonic-band control shows the cloudy gain is real ℓ ≤ 4 recovery, not blur (§5.13, Fig. 7) |
 | Coronal/instrumental tolerance | single-template loss < 1.1% of *r* at ε ≃ 10⁻⁶ of background; 21–23% at ε = 10⁻⁵ (32% if drift and streamer act together) |
 | Assumed cloud amplitude σ_cl | mean paired Δr ≤ 2.6·10⁻⁴ over 0.25×–16× (same to 10⁻⁴ for the free profiler and v2 deflation) while χ² spans 8·10⁴× — the requirement is on weather *structure*, not amplitude (§5.12, audits `sigma_sensitivity*`) |
 | Effective resolution under clouds | ℓ ≃ 7–9 (2200–2900 km), against an ℓ ≤ 20 grid ceiling |
 | Static ideal-data reference (frozen planet, same dose) | *r* = 0.4074 ± 0.0254 — **below** the rotating cloud-free planet (+0.5728 paired, 10/10 seeds); rotation is not the bottleneck (§5.1) |
-| Surface morphology at fixed land fraction | archipelago −0.0030 ± 0.0056 (free); supercontinent −0.0396 ± 0.0090 (12% of *r*) (§5.11, Table 10) |
+| Surface morphology at fixed land fraction | archipelago −0.0030 ± 0.0056 (4/10 sign split, not resolved); supercontinent −0.0396 ± 0.0090 (12% of *r*, *p*sign = 0.109) (§5.11, Table 10) |
 | Latitude / illumination bands | band *r* monotone in delivered column energy across the sampled globe; polar bands score higher in *r* as an ice-cap artefact, not imaging (§5.3, Table 5) |
 | Required a-priori spin knowledge | period to ~10⁻⁴, pole tilt and phase each well inside 5° (measured, Table 9) |
 | Refinable in flight? | **No** — the whitened χ² is phase-invariant to 10⁻¹¹; spin state is observable only through image quality |
@@ -51,21 +51,31 @@ paper/        main.tex (compiles with TeX Live: pdflatex, no exotic classes),
               v1_original/ (superseded v1/v2 sources, kept for the record only --
               the v2 AASTeX port contains claims this revision withdrew)
 src/          sglsim.py           physics + estimators library
+              expcommon.py        single source of conventions (seeds, arms, stats)
               run_experiments.py  checkpointed experiment driver (CLI)
-              targets.py          Table 2 + Fig. 7 (target selection)
-              make_figures.py     Figs. 1-6
-              cad_solve_one.py    per-method solver for large configs
+              targets.py          Table 2 + Fig. 8 (target selection)
+              make_figures.py     Figs. 1-7
               make_app_maps.py    demo map payload (data/reconstructionMaps.ts
                                   + public/data/reconstruction_maps.json)
               make_app_data.py    public/data/project_data.json blob
+              make_app_code.py    data/codeSnippets.json (source viewer)
+              make_app_figures.py mirrors paper/figures -> public/figures
+                                  (PDF copy + 200 dpi PNG rasterisation)
+              v2_superseded/      pre-revision scripts, kept for the record only
 results/      merged experiment archives (*.npz), targets.json,
-              parts/ per-configuration checkpoints
+              parts/ v3 checkpoints, parts/v2_superseded/ (pre-revision
+              checkpoints, moved out of the way so their bare names cannot be
+              mistaken for shipped values -- see the README there)
 app/ + components/ + data/
               interactive Next.js demo; every screen takes its numbers from
-              the shipped results/ archives (regenerate with the two
+              the shipped results/ archives (regenerate with the four
               make_app_* scripts above after `merge`)
-submission/   ApJ cover letter, arXiv metadata, checklist, paper v1 PDF
-reviews/      pre-submission proofread report + response_to_editor.md
+submission/   TOJA cover letter (cover_letter.tex/.pdf, rebuilt from
+              results/audit.json), arXiv metadata, and archive_v2/ holding the
+              superseded v1/v2 letters, metadata, paper PDFs and source zip
+reviews/      pre-submission proofread report, response_to_editor.md (the live
+              point-by-point letter) and v2_superseded/ (the pre-revision
+              LaTeX/PDF letter, whose numbers this revision withdrew)
 ```
 
 ## Quickstart
@@ -78,41 +88,73 @@ python3 run_experiments.py validation     # reproduces published benchmarks
 python3 make_figures.py                   # figures from shipped results/
 ```
 
-Full regeneration of all experiments:
+Full regeneration of all experiments (run from `src/`; every command loops its
+seeds internally, and every one writes a checkpoint under
+`results/parts/v3_*.npz`, so an interrupted suite resumes rather than restarts):
 
 ```bash
 cd src
-python3 run_experiments.py setup
-python3 run_experiments.py validation
-for i in 0 1 2 3 4; do for j in 0 1 2; do python3 run_experiments.py clouds $i $j; done; done
-for i in 0 1 2 3 4; do for j in 0 1; do
-  python3 run_experiments.py cadence $i $j ds
-  python3 run_experiments.py cadence $i $j solve
-done; done
-python3 run_experiments.py robust_tau
-python3 run_experiments.py robust_sig
-python3 run_experiments.py robust_prot 0
-python3 run_experiments.py robust_prot 1
-python3 run_experiments.py resolution
-python3 run_experiments.py nulls
-python3 run_experiments.py systematics
-for i in 0 3; do python3 run_experiments.py lam_sweep $i; python3 run_experiments.py lam_ext $i; python3 run_experiments.py lam_res $i; done
-python3 run_experiments.py robust_weather corr8   # also corr20 u3 u12 tau2 tau8
+python3 run_experiments.py setup          # cached operators + sigma_cl audit
+python3 run_experiments.py quadrature     # 3-node vs 16-node exposure check
+python3 run_experiments.py ledger         # both resource arms, analytic only
+python3 run_experiments.py validation     # reproduces published benchmarks
+
+# cloud-cover sweep: one command per nominal fraction (0..4 = fc 0, .25, .40, .55, .70)
+for i in 0 1 2 3 4; do python3 run_experiments.py clouds $i; done
+
+# cadence law: arm = photons (arm A) | wallclock (arm B), config 0..4 = Mp 4..64
+for arm in photons wallclock; do
+  for i in 0 1 2 3 4; do python3 run_experiments.py cadence $arm $i; done
+  # causal controls on the same campaigns
+  for i in 0 1 2 3 4; do
+    python3 run_experiments.py cadence_control $arm $i cf
+    python3 run_experiments.py cadence_control $arm $i iid
+  done
+done
+
+# estimator ablation + robustness suite (no arguments)
+python3 run_experiments.py components
+python3 run_experiments.py robust_debias  # debiasing mis-specification
+python3 run_experiments.py robust_clim    # structured climatology variants
+python3 run_experiments.py robust_geom    # pole tilt + assumed phase
+python3 run_experiments.py robust_prof    # profile-likelihood grid
+python3 run_experiments.py resolution     # real-harmonic r(l)
+python3 run_experiments.py nulls_cloud    # shared 40-member cloud-only null
+python3 run_experiments.py nulls          # d' vs both nulls
+python3 run_experiments.py systematics    # coronal drift / streamer injection
+python3 run_experiments.py static_ref     # frozen-planet ideal-data reference
+python3 run_experiments.py latband        # latitude bands + polar restricted r
+python3 run_experiments.py diagnostics    # deflation / information diagnostics
+python3 run_experiments.py precision      # numerical precision audit
+
+# regularization and assumed-amplitude sweeps
+for i in 0 3; do
+  python3 run_experiments.py lam_sweep $i
+  python3 run_experiments.py lam_ext $i
+  python3 run_experiments.py lam_res $i
+done
+python3 run_experiments.py robust_weather corr8    # also: corr20 u3 u12 tau2 tau8
 python3 run_experiments.py sigma_sens
 python3 run_experiments.py sigma_sens_est
-python3 run_experiments.py static_ref
 for i in 0 3; do python3 run_experiments.py robust_morph $i; done
-python3 run_experiments.py latband
+
+# assemble archives + audit.json, then the derived products
 python3 run_experiments.py merge
 python3 targets.py
 python3 make_figures.py
-# demo payloads (run from the repository root, after merge):
+
+cd ..    # the demo payloads below run from the repository root
 python3 src/make_app_maps.py
 python3 src/make_app_data.py
+python3 src/make_app_code.py
+python3 src/make_app_figures.py   # mirrors paper/figures -> public/figures
 ```
 
-Seeds: truth map 7 · campaign 2026 · realizations 11–20 (cadence arm:
-11–16) · held-out calibration 99/199 · cloud-climatology probes 999.
+Seeds: truth map 7 · campaign geometry 2026 · realizations 11–20 (cadence arm:
+11–16) · cloud-climatology probes 999. The regularization weight
+`LAM_GLS = 3e-3` is a hardcoded constant carried from v2, not a value tuned on a
+held-out seed in this revision (Section 5.14 sweeps it and shows the objective
+cannot select it without truth).
 
 ## Compiling the paper
 

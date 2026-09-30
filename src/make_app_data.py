@@ -10,6 +10,13 @@ recomputed from the archived per-seed matrices in clouds.npz; SSIM exists only
 there.)
 
 Run from the repository root:  python3 src/make_app_data.py
+
+The per-fc numbers below are recomputed from the archived per-seed matrices in
+clouds.npz, with the same ddof=1 convention the manuscript now uses: audit.json
+carries only a single pooled SD per method (``pearson_sd_pooled``), and SSIM
+exists only in the per-seed matrices.  clouds.npz additionally publishes the
+per-method detection d' (``dprime_mat``), which is exported here so the demo
+cannot quote a d' the archive does not hold.
 """
 
 import json
@@ -72,6 +79,9 @@ b2_r, b2_se = stats(CLOUDS["pearson_mat"], "b2")
 b1_r, _ = stats(CLOUDS["pearson_mat"], "b1")
 p_s, w_s, b2_s, b1_s = (stats(CLOUDS["ssim_mat"], m)[0]
                         for m in ("profiled", "white", "b2", "b1"))
+# Per-method detection d' against the land labels, published by the merge step.
+dprime_mean = {m: curve(CLOUDS["dprime_mat"][METHODS.index(m)]) for m in METHODS}
+dprime_se = {m: per_fc_se(CLOUDS["dprime_mat"][METHODS.index(m)]) for m in METHODS}
 
 cad = AUDIT["cadence_photons"]
 cadw = AUDIT["cadence_wallclock"]
@@ -108,6 +118,11 @@ payload = {
         "pearson_mean": {"profiled": p_r, "white": w_r, "b2": b2_r, "b1": b1_r},
         "pearson_se": {"profiled": p_se, "white": w_se, "b2": b2_se},
         "ssim_mean": {"profiled": p_s, "white": w_s, "b2": b2_s, "b1": b1_s},
+        "dprime_mean": {m: dprime_mean[m] for m in ("profiled", "white", "b2", "b1")},
+        "dprime_se": {m: dprime_se[m] for m in ("profiled", "white", "b2", "b1")},
+        "se_convention": "per-fc SD across the 10 seeds (ddof=1) / sqrt(10); "
+                         "identical to the values printed by the merge step and "
+                         "quoted in the manuscript tables",
     },
     "deflation_diag": finite(json.loads(
         (ROOT / "results" / "deflation_diag.json").read_text())),

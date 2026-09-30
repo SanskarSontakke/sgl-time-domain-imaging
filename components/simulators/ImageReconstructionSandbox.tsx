@@ -31,13 +31,15 @@ export default function ImageReconstructionSandbox() {
   const baseR = RECONSTRUCTION_DATA.pearson[methodRowIdx][fcIndex];
   const baseSSIM = RECONSTRUCTION_DATA.ssim[methodRowIdx][fcIndex];
 
-  // Fleet-size physics (Table 2 of the publication): fewer than 4 craft per
-  // slot leave the per-slot nuisance level unresolved, so the slot-profiling
-  // gain measured in the paired ablation (+0.054) is forfeited. No other
-  // fleet-size dependence is claimed anywhere in the paper.
-  const fleetDeltaR = method === "gls" && numCrafts < 4 ? -0.054 : 0;
-  const currentR = Math.max(0.01, Math.min(0.999, baseR + fleetDeltaR));
-  const currentSSIM = Math.max(0.01, Math.min(0.999, baseSSIM + (fleetDeltaR * 0.4)));
+  // Fleet size is an *illustrative* control only.  Every r and SSIM shown here
+  // is an archived v3 number computed at the nominal N_sc = 16 (Table 1); the
+  // paired ablation in the paper compares slot profiling against a fit that
+  // ignores the offsets at that same fleet size, so there is no archived
+  // N_sc-dependence of r to plot and inventing one would be worse than
+  // disclosing none.  The maps and metrics therefore do not move with the
+  // slider; the caption next to the slider says so.
+  const currentR = Math.max(0.01, Math.min(0.999, baseR));
+  const currentSSIM = Math.max(0.01, Math.min(0.999, baseSSIM));
 
   const runSimulation = () => {
     setIsSimulating(true);
@@ -274,7 +276,7 @@ export default function ImageReconstructionSandbox() {
                   <span>(c) Reconstructed Map</span>
                 </div>
                 <span className="text-[10px] text-blue-800 font-mono font-bold bg-blue-100 border border-blue-300/80 px-2 py-0.5 rounded-md">
-                  {method === "gls" ? (numCrafts >= 4 ? "TDI Deflated" : "TDI (No Defl)") : method === "white" ? "White Noise" : "Coaddition"}
+                  {method === "gls" ? "TDI Deflated" : method === "white" ? "White Noise" : "Coaddition"}
                 </span>
               </div>
               <div className="text-[10px] text-slate-400 pl-3.5">GLS Inverse Solution m̂</div>
@@ -345,13 +347,9 @@ export default function ImageReconstructionSandbox() {
             </div>
             <div className="text-[10px] text-slate-500 leading-tight pt-1">
               {method === "gls" ? (
-                numCrafts >= 4 ? (
-                  <span className="flex items-center gap-1 flex-wrap text-emerald-700 font-medium">
-                    Full <LatexMath math="\mathbf{P}_\perp" /> common-mode deflation + covariance <LatexMath math="\mathbf{C}_y" />
-                  </span>
-                ) : (
-                  <span>Single craft: Deflation inactive (<LatexMath math="\mathbf{P}_\perp" /> requires &ge; 4 crafts)</span>
-                )
+                <span className="flex items-center gap-1 flex-wrap text-emerald-700 font-medium">
+                  Anchored profiling of the simultaneous-sample slot offsets <LatexMath math="\boldsymbol{\alpha}" /> with covariance <LatexMath math="\mathbf{C}_y" />
+                </span>
               ) : method === "white" ? (
                 <span className="flex items-center gap-1 flex-wrap text-slate-600">
                   Disregards cloud correlations (<LatexMath math="\mathbf{C}_y \to \sigma^2 \mathbf{I}" />)
@@ -384,6 +382,12 @@ export default function ImageReconstructionSandbox() {
               <span className={numCrafts === 16 ? "text-emerald-700 font-bold underline" : ""}>16 (Nominal)</span>
               <span className={numCrafts === 32 ? "text-blue-600 font-bold" : ""}>32 (Dense)</span>
             </div>
+            <div className="text-[10px] text-amber-700 leading-tight pt-1">
+              Illustrative only. Every archived v3 number on this screen was
+              computed at the nominal N_sc = 16; the paper has no measured
+              fleet-size dependence of r, so the maps and metrics above do not
+              change with this slider.
+            </div>
           </div>
         </div>
 
@@ -406,10 +410,10 @@ export default function ImageReconstructionSandbox() {
           <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
             <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Slot-Profiling Benefit</div>
             <div className="text-xl font-extrabold font-mono text-emerald-600 mt-0.5">
-              {method === "gls" && numCrafts >= 4 ? "+0.054 Δr" : "0.000"}
+              {method === "gls" ? "+0.054 Δr" : "0.000"}
             </div>
             <div className="text-[10px] text-slate-500">
-              {method === "gls" && numCrafts >= 4 ? "Slot-profiling: ±0.006" : "Inactive (requires swarm)"}
+              {method === "gls" ? "Paired ablation F−A: ±0.006 (10/10 seeds)" : "Inactive for this estimator"}
             </div>
           </div>
 

@@ -106,8 +106,8 @@ Two conclusions, pulling in opposite directions, and we report both. The cloud-f
 flat assertion that the trend is "not conditioning" was overstated. But it is front-loaded
 (0.16 of that 0.214 comes in the first doubling, where a raster position receives only four
 dwells) and saturates: from $M_p=16$ to 64 the cloud-free curve gains 0.008 while the cloudy
-curve gains 0.225. Meanwhile the independent-weather control is **statistically
-indistinguishable from OU at every cadence** in both arms (paired differences
+curve gains 0.225. Meanwhile the independent-weather control is **within the paired standard
+errors of OU at every cadence** in both arms (paired differences
 $+0.002,-0.008,-0.004,-0.003,+0.012$; all $p_t\ge0.14$; the exact sign-flip floor with six pairs
 is 0.031, so nothing is remotely close). The cadence law therefore requires independent
 *weather states*, not OU structure: the covariance model determines how many of the $M_p$ looks
@@ -204,7 +204,7 @@ The full six-variant table is Section 5.12 / Table 11. Four of the six variants 
 *spatial or temporal structure* of the weather, and $r$ moves over all four within a narrow band
 (0.313–0.327 against the fiducial 0.3422) with paired differences of recalibrated − misspecified
 at the $10^{-6}$–$10^{-7}$ level. Only the decorrelation-time variants move anything: $\tau=2$ d
-gives $+0.0017\pm0.0008$ and $\tau=8$ d gives $-0.0072\pm0.0016$ (exact sign-flip $p=0.020$), so a
+gives $+0.0017\pm0.0008$ and $\tau=8$ d gives $-0.0072\pm0.0016$ (exact sign-flip $p=0.021$), so a
 weather field that decorrelates *slower* than assumed is the one structural mis-specification with
 a measurable cost.
 
@@ -353,6 +353,19 @@ paired $t$ $p$-value and the **exact** sign-flip $p$-value, and the paper states
 0.031, and with a 40-member null $1/41=0.024$. v2's several "$p<10^{-3}$" and "$p<0.02$"
 assertions are replaced with the measured values.
 
+During the final audit we corrected the sign-test convention itself. `src/expcommon.py` computed
+the two-sided sign-flip $p$ as $2\binom{n}{k}/2^n$ (twice the point probability of the observed
+split), which is anti-conservative relative to the standard central definition — twice the smaller
+binomial tail, $\min\{1,\,2\sum_{i\le k}\binom{n}{i}/2^n\}$. The fixed convention is now in the
+code and the archive has been regenerated with it. Nothing that was called significant changes
+status, but three numbers move and one sentence was tightened: the supercontinent penalty is
+$p_{\rm sign}=0.109$ rather than $0.088$ (still 8/10 seeds, still the same conclusion), the
+$\tau=8$ d weather cost is $0.021$ rather than $0.020$, and the two ten-seed comparisons that were
+reported at $0.410$ (the D$-$C component control, and the archipelago-vs-fiducial morphology
+control) are now $0.754$. We also state explicitly in Section 4 that the floor binds the *sign
+test* only: paired $t$-tests, which use magnitudes as well as signs, do reach $p_t\ll10^{-3}$ for
+the largest effects, and those are labelled $p_t$ everywhere.
+
 *(b) Scale-dependent recovery.* Section 5.3 computes $r(\ell)$ by real spherical-harmonic
 projection on the actual reconstruction grid (v2's 2D-FFT $r(\ell)$ is not a spherical harmonic
 decomposition on an equirectangular grid; we checked and the orthonormality error at $\ell=20$ is
@@ -364,7 +377,7 @@ $\ell=17$), which we report as the honest shape rather than fitting a cutoff; qu
 compromise, and the crossing is *not* a resolution in the usual sense. The v2
 "$\ell_{\rm eff}=4$–5" is superseded.
 
-*(c) Detection metric and nulls.* Land–ocean $d'=0.672$–$0.909$ over the 10 seeds (mean 0.732),
+*(c) Detection metric and nulls.* Land–ocean $d'=0.662$–$0.909$ over the 10 seeds (mean 0.732),
 against two nulls of different kind: a 40-member cloud-only physical null (uniform-albedo scenes
 through the identical pipeline; mean $d'=0.0013$, SD 0.0900, 95th percentile 0.114) and a 2000-
 permutation label null on the maps themselves. Both nulls are significant ($p=0.024$ at the
@@ -530,11 +543,14 @@ a symmetric bang-bang profile at 0.041 m/s²) and no longer presented as literat
    stays flat — and the paper says so, and states the missing truth-blind selection criterion as a
    limitation rather than adopting the better-looking weight.
 4. **Spatial arrangement of the 16 simultaneous samples.** Section 3.3: the $64\times64$ image
-   plane is scanned in boustrophedon order, 16 consecutive pixels are assigned to 16 spacecraft,
-   so each dwell slot samples 16 adjacent pixels along one scan row, 20.9 m apart. That is exactly
-   why the common-mode interpretation of deflation holds (one disk-integrated cloud state per
-   slot, shared by the 16 samples) and why the removed subspace is 288-dimensional and not 1
-   (comment 5).
+   plane is scanned in boustrophedon order at $\Delta_{\rm img}=20.9$ m pitch, divided into 256
+   dwell slots, and each dwell's 16 pixels are sampled simultaneously by spacecraft distributed
+   across *adjacent raster tracks* with transverse separations of $\sim$80–300 m — i.e. a compact
+   but not contiguous group of samples, deliberately not a kilometre-scale formation. That is
+   exactly why the common-mode interpretation holds (one disk-integrated cloud state per slot,
+   shared by the 16 samples) and why the removed subspace is 288-dimensional and not 1
+   (comment 5). The v2 text implied a 1.3 km formation; the 1.338 km figure is the *diameter of
+   the image cylinder*, not the craft separation.
 5. **Rank/condition before and after deflation; which modes are lost.** Section 4.4 (`results/
    deflation_diag.json`). v2's "only a global mode is removed" and "6.25% rank loss / 93.75%
    information retained" are both replaced. The slot-mean operator removes 4,096 directions in
@@ -582,7 +598,7 @@ a symmetric bang-bang profile at 0.041 m/s²) and no longer presented as literat
 ## Change log for the editor
 
 **Structure.** v2: 5 sections, 5 equations, 2 tables, 7 figures. v3: 8 sections, 17 numbered
-equations, 13 tables, 8 figures, 23 pages. New in v3: §3.4 resource ledgers, §4.2 exact nuisance
+equations, 13 tables, 8 figures, 24 pages. New in v3: §3.4 resource ledgers, §4.2 exact nuisance
 profiling, §4.3 exposure quadrature, §4.4 information audit, §4.5 precision, §5.3 resolution
 (now including the latitude/illumination table added this round), §5.4 ablation, §5.5–5.6 cadence
 law and controls, §5.8–5.9 geometry and profile likelihood, and the four new robustness
@@ -599,8 +615,8 @@ parameters, 12 systematics, 13 targets. Figures: 1 model, 2 validation, 3 galler
 SSIM-vs-cover, 5 cadence, 6 robustness, 7 regularization and $\sigma_{\rm cl}$ sensitivity,
 8 targets. v2 equations (1)–(5) map to v3 (1)–(5) unchanged; v3 (6)–(17) are new
 (cloud covariance, nuisance model, profiling system $\mathsf H$, the two profile equations,
-anchor and anchored deflation, aliasing, kernel $c_k$, de-inclination, SNR rule,
-$\Delta v$ rule).
+anchor and the anchored-deflation definitions, aliasing, Chen & Kipping mass–radius relation,
+de-inclination, SNR rule, $\Delta v$ rule).
 
 **New archives this round** (all read by `src/run_experiments.py merge` into
 `results/audit.json`, and every one of them is what the corresponding text quotes):

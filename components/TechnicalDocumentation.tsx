@@ -42,7 +42,7 @@ export default function TechnicalDocumentation() {
     { id: "overview", label: "1. Executive Overview & Abstract" },
     { id: "optics", label: "2. SGL Optical Physics & Benchmarks" },
     { id: "forward_model", label: "3. Time-Domain Forward Model" },
-    { id: "inversion", label: "4. GLS Inversion & Slot Deflation" },
+    { id: "inversion", label: "4. GLS Inversion & Slot Profiling" },
     { id: "cadence", label: "5. Factorial Cadence Ablations" },
     { id: "robustness", label: "6. Spin Ephemeris & Robustness" },
     { id: "targets", label: "7. Exoplanet Target Catalog" },
@@ -161,7 +161,7 @@ export default function TechnicalDocumentation() {
                 Official Paper Abstract
               </h3>
               <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
-                "The solar gravitational lens (SGL) can, in principle, deliver multipixel images of terrestrial exoplanets from heliocentric distances z ~ 650–900 AU. In practice the planet rotates and its cloud cover evolves while a spacecraft raster-scans the kilometer-scale image cylinder one “pixel” at a time, so the measurements are temporally aliased; recent studies identify this dynamic inversion problem as a leading unsolved challenge for the concept. We present an open, end-to-end simulation framework that reproduces published SGL photometric benchmarks (the aperture-averaged d/4ρ kernel; per-sample SNR_C = 43.16 for 1800 s dwells on an exo-Earth at 30 pc from 650 AU; the 0.891 D/(d√N) deconvolution penalty) and then treats rotation, orbital illumination, and stochastic, advecting clouds explicitly. We formulate image recovery as a regularized generalized least-squares inversion of the time-tagged sample stream (time-domain inversion, TDI), incorporating a spatio-temporal cloud covariance model and a multi-spacecraft common-mode cloud deflation operator."
+                "The solar gravitational lens (SGL) can, in principle, deliver multipixel images of terrestrial exoplanets from heliocentric distances z ≃ 650–900 AU. In practice the planet rotates and its cloud cover evolves while a spacecraft raster-scans the kilometer-scale image cylinder one “pixel” at a time, so the measurements are temporally aliased; recent studies identify this dynamic inversion problem as a leading unsolved challenge for the concept. We present an open, end-to-end simulation framework that reproduces the published SGL photometric benchmarks (the aperture-averaged d/4ρ kernel; per-sample SNR_C = 43.16 for 1800 s dwells on an exo-Earth at 30 pc from 650 AU; the 0.891 D/(d√N) deconvolution penalty) and then treats rotation, orbital illumination, and stochastic, advecting clouds explicitly. We formulate image recovery as a regularized generalized least-squares inversion of the time-tagged sample stream (time-domain inversion, TDI, distinguished here from detector-level time-delay integration), in which rotation and illumination are modeled directly by the forward operator and cloud variability enters statistically. For a rotating, cloud-free planet observed under known spin geometry, TDI recovers the surface albedo map with Pearson r = 0.9786 ± 0.0002 (SSIM = 0.848 ± 0.001) over 10 paired seeds; clouds, not coronal photon noise, dominate the error budget, collapsing fidelity to r = 0.249 ± 0.010 at 71% realized cover. Replacing 4 long dwells with 64 short revisits improves r from 0.049 to 0.571 at fixed photons, and exact anchored profiling of the per-dwell-slot cloud nuisance lifts r by +0.054 ± 0.006 over a fit that ignores it. The spin-ephemeris requirement is measured rather than asserted, and the whitened χ² is exactly invariant to assumed initial phase — so the spin state is observable through image quality but not recoverable from photometric residuals."
               </p>
             </div>
 
@@ -172,7 +172,7 @@ export default function TechnicalDocumentation() {
                 <span>Plain English Summary for Non-Astrophysics Judges</span>
               </h3>
               <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
-                If you try to take a photo of a moving car through heavy rain by exposing a single camera sensor pixel by pixel over 2 weeks, you get an unrecognizable blurry smear. That is exactly what happens if a space telescope tries to photograph an exoplanet: the planet spins once every 24 hours while clouds roll across continents. Our research invents a mathematical framework called <strong>Time-Domain Inversion (TDI)</strong> that tags every photon with its timestamp, subtracts global cloud weather using a 16-satellite fleet, and reconstructs crisp continental coastlines with high mathematical fidelity!
+                If you try to photograph a moving car in heavy rain using a single camera sensor, exposing it one pixel at a time over two weeks, you get an unrecognizable smear. That is what happens when a telescope maps an exoplanet through the Solar Gravitational Lens: the planet spins every 24 hours, clouds roll across it on day-long timescales, and a spacecraft can only sample one image-plane position at a time. Our framework, <strong>Time-Domain Inversion (TDI)</strong>, keeps every measurement's timestamp instead of averaging them, models rotation and illumination inside the forward operator, and treats weather as a correlated noise term rather than a corruption. It works — but at continental scale: at realistic cloud cover the recovered map has correlation r ≈ 0.34 with the truth and usable detail down to roughly 2200 km resolution elements, not coastlines you could trace.
               </p>
             </div>
 
@@ -198,17 +198,17 @@ export default function TechnicalDocumentation() {
                   </tr>
                   <tr className="hover:bg-slate-50">
                     <td className="p-2.5 sm:p-3 font-semibold text-slate-800">Phase-Binned Coaddition</td>
-                    <td className="p-2.5 sm:p-3 text-slate-600">Rotates (binned)</td>
-                    <td className="p-2.5 sm:p-3 text-amber-600">Averaged as white noise</td>
+                    <td className="p-2.5 sm:p-3 text-slate-600">Rotates (16 phase bins)</td>
+                    <td className="p-2.5 sm:p-3 text-amber-600">Averaged within each bin</td>
                     <td className="p-2.5 sm:p-3 font-mono text-slate-600">r = 0.318 ± 0.016</td>
-                    <td className="p-2.5 sm:p-3"><span className="badge badge-accent text-[9px]">Competitive at Low Cover</span></td>
+                    <td className="p-2.5 sm:p-3"><span className="badge badge-accent text-[9px]">Best SSIM at this cover</span></td>
                   </tr>
                   <tr className="hover:bg-slate-50 bg-blue-50/50">
                     <td className="p-2.5 sm:p-3 font-semibold text-blue-900">Our Time-Domain Inversion (TDI)</td>
-                    <td className="p-2.5 sm:p-3 text-blue-900">Full diurnal spin + tilt</td>
-                    <td className="p-2.5 sm:p-3 text-emerald-700 font-medium">Spatio-temporal OU + 16-Craft Deflation</td>
+                    <td className="p-2.5 sm:p-3 text-blue-900">Rotation + orbital illumination (zero obliquity)</td>
+                    <td className="p-2.5 sm:p-3 text-emerald-700 font-medium">OU covariance + anchored slot profiling</td>
                     <td className="p-2.5 sm:p-3 font-mono font-bold text-emerald-700">r = 0.342 ± 0.008</td>
-                    <td className="p-2.5 sm:p-3"><span className="badge badge-success text-[9px]">Continent Recovery</span></td>
+                    <td className="p-2.5 sm:p-3"><span className="badge badge-success text-[9px]">Best r above ~40% cover</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -223,7 +223,7 @@ export default function TechnicalDocumentation() {
                 SGL Optical Physics & Benchmark Validations
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                Einstein ring formation, wave-optics point spread function, and exact numerical reproduction of published literature.
+                Einstein ring formation, the aperture-averaged kernel, and how closely our discrete operator matches the published estimates.
               </p>
             </div>
 
@@ -239,7 +239,7 @@ export default function TechnicalDocumentation() {
                   Rays passing at the solar radius <LatexMath math="b = R_\odot" /> intersect the optical axis at the focal line beginning at:
                 </p>
                 <div className="p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-lg font-mono text-xs overflow-x-auto">
-                  <LatexMath math="z_{\rm min} = \frac{R_\odot^2}{2 r_g} \approx 547.5 \text{ AU}" block />
+                  <LatexMath math="z_0 = \frac{b^2}{2 r_g} \simeq 547.8 \text{ AU} \quad (b \simeq R_\odot,\; r_g \simeq 2.95 \text{ km})" block />
                 </div>
                 <p>
                   At a mission distance of <LatexMath math="z = 650\text{ AU}" />, an Earth-sized exoplanet (<LatexMath math="R_p = 6,371\text{ km}" />) at distance <LatexMath math="d_L = 30\text{ pc}" /> projects a focal image cylinder of diameter:
@@ -254,32 +254,40 @@ export default function TechnicalDocumentation() {
                 <div className="flex items-center gap-2">
                   <CheckCircle2 size={16} className="text-emerald-600" />
                   <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">
-                    Turyshev & Toth (2020) Reproduction
+                    What Matches, and What Only Approximates
                   </h4>
                 </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  We verified our code against the exact published benchmarks of Turyshev & Toth (2020) and NASA NIAC Phase II:
+                  The paper adopts the published SGL photometric quantities and checks its discrete operator against them. Agreement is close in two cases and approximate in the third:
                 </p>
                 <div className="space-y-2 text-xs">
                   <div className="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center">
-                    <span className="text-slate-600">Aperture-Averaged Kernel:</span>
+                    <span className="text-slate-600">Aperture-averaged kernel tail (adopted):</span>
                     <span className="font-mono font-bold text-slate-900">
-                      <LatexMath math="K(\rho) \approx d / (4\rho)" />
+                      <LatexMath math="K(\rho) \simeq d / (4\rho)" />
                     </span>
                   </div>
                   <div className="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center">
-                    <span className="text-slate-600">Per-Sample Photometric SNR:</span>
+                    <span className="text-slate-600">Fiducial rates of Turyshev &amp; Toth (2022a), adopted as the normalization — not recomputed here:</span>
                     <span className="font-mono font-bold text-emerald-600">
-                      <LatexMath math="\mathrm{SNR_C} = 43.16" /> (Exact match)
+                      <LatexMath math="\mathrm{SNR_C} = 43.16" /> / 1800 s
                     </span>
                   </div>
                   <div className="bg-white p-2.5 rounded border border-slate-200 flex justify-between items-center">
-                    <span className="text-slate-600">Deconvolution Noise Penalty:</span>
                     <span className="font-mono font-bold text-slate-900">
-                      <LatexMath math="0.891 \frac{D_{\rm img}}{d \sqrt{N}}" />
+                      <LatexMath math="0.891 \frac{D}{d \sqrt{N}}" />
+                    </span>
+                    <span className="text-slate-600 text-left">
+                      Measured vs. analytic: 0.324 / 0.291 at n = 64; 0.106 / 0.073 at n = 128
                     </span>
                   </div>
                 </div>
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  That third row is the paper's only operator validation, and it is a partial one:
+                  the discrete operator follows the analytic scaling but deviates by ~11% at n = 64
+                  and ~45% at n = 128, which Section 2.3 attributes to pixel-binning of the central
+                  1/ρ singularity and finite-domain boundary effects.
+                </p>
               </div>
             </div>
 
@@ -327,7 +335,7 @@ export default function TechnicalDocumentation() {
                 <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
                   <div className="font-bold text-slate-800 text-xs">Advecting Weather</div>
                   <p className="text-xs text-slate-500 leading-snug">
-                    Spatio-temporal Ornstein-Uhlenbeck process with correlation length <LatexMath math="L_c \sim 15^\circ" /> and decorrelation time <LatexMath math="\tau \sim 3.5\text{ days}" />.
+                    Spatio-temporal Ornstein-Uhlenbeck process with correlation length <LatexMath math="\ell_c = 12^\circ" />, advection <LatexMath math="6^\circ\text{/day}" /> and decorrelation time <LatexMath math="\tau_c = 4\text{ d}" />; all three are swept in the robustness suite.
                   </p>
                 </div>
               </div>
@@ -339,38 +347,38 @@ export default function TechnicalDocumentation() {
             <div className="border-b border-slate-100 pb-3 sm:pb-4">
               <span className="badge badge-primary text-xs mb-1.5">Section 4</span>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-                Regularized GLS Inversion & Multi-Craft Slot Deflation
+                Regularized GLS Inversion &amp; Slot-Offset Profiling
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                Closed-form generalized least-squares estimator with common-mode weather rejection.
+                Closed-form generalized least-squares estimator with exact profiling of the per-dwell-slot nuisance offsets.
               </p>
             </div>
 
             <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
               <p>
-                We invert the full observation stream directly to solve for the static planetary albedo map <LatexMath math="\hat{\mathbf{m}}" /> using regularized Generalized Least Squares (GLS):
+                We invert the full observation stream directly for the stationary surface albedo map <LatexMath math="\hat{\mathbf{s}}" /> as one regularized Generalized Least Squares solve:
               </p>
               <div className="p-3 sm:p-4 bg-slate-50 border border-slate-200 rounded-lg font-mono text-xs overflow-x-auto text-center">
-                <LatexMath math="\hat{\mathbf{m}} = \left( \mathbf{F}^T \mathbf{C}_y^{-1} \mathbf{F} + \mathbf{\Lambda} \right)^{-1} \mathbf{F}^T \mathbf{C}_y^{-1} \mathbf{y}" block />
+                <LatexMath math="\hat{\mathbf{s}} = \arg\min_{\mathbf{s}} \left\| \mathsf{C}^{-1/2}(\mathbf{y} - \mathsf{F}\mathbf{s}) \right\|^2 + \lambda_{\rm eff}\|\mathsf{L}\mathbf{s}\|^2" block />
               </div>
 
               <p>
-                Where <LatexMath math="\mathbf{C}_y = \mathbf{F} \mathbf{C}_{\rm cloud} \mathbf{F}^T + \sigma_n^2 \mathbf{I}" /> is the total measurement covariance matrix, and <LatexMath math="\mathbf{\Lambda} = \alpha_0 \mathbf{I} + \alpha_1 \mathbf{L}^T \mathbf{L}" /> enforces spatial smoothness via a spherical Beltrami-Laplace prior.
+                <LatexMath math="\mathsf{C}" /> is block-diagonal over image-plane pixels, with the <LatexMath math="M_p" /> revisits of a pixel coupled by the OU cloud covariance, <LatexMath math="(\mathsf{C}_p)_{ij} = \sigma_{\rm cl}^2 e^{-|t_i - t_j|/\tau_c} + \delta_{ij}\sigma_i^2" />; <LatexMath math="\mathsf{L}" /> is the spherical-grid Laplacian and <LatexMath math="\lambda = 3\times10^{-3}" /> is a fixed pipeline constant (not a fitted or claimed-optimal value).
               </p>
 
               <div className="p-3 sm:p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2">
                 <div className="font-bold text-emerald-900 flex items-center gap-1.5 text-xs uppercase tracking-wider">
                   <ShieldCheck size={16} className="text-emerald-600" />
-                  <span>The Common-Mode Slot Deflation Operator</span>
+                  <span>Exact Profiling of the Simultaneous-Sample Offsets</span>
                 </div>
                 <p className="text-xs text-emerald-800 leading-relaxed">
-                  When <LatexMath math="N_c = 16" /> spacecraft observe 16 spatial slots concurrently, disk-averaged cloud fluctuations affect all 16 channels identically. We construct the orthogonal projection operator:
+                  Because <LatexMath math="K(\rho) \propto 1/\rho" />, a disk-integrated cloud fluctuation perturbs all <LatexMath math="N_{\rm sc} = 16" /> simultaneous samples coherently, so we model it as per-slot nuisance offsets: <LatexMath math="\mathbf{y} = \mathsf{F}\mathbf{s} + \mathsf{B}\boldsymbol\alpha + \boldsymbol\varepsilon" />. Profiling them out is <em>not</em> a per-slot mean subtraction: <LatexMath math="\mathsf{H} = \mathsf{B}^{\sf T}\mathsf{C}^{-1}\mathsf{B}" /> is block-diagonal with 256 blocks of size <LatexMath math="M_p \times M_p" />, and under the anchor <LatexMath math="\sum_b \alpha_b = 0" /> the profile reduces to a rank-one correction:
                 </p>
                 <div className="p-2 bg-white rounded border border-emerald-200 font-mono text-xs text-center overflow-x-auto">
-                  <LatexMath math="\mathbf{P}_\perp = \mathbf{I}_{N_c} - \frac{1}{N_c} \mathbf{1}_{N_c} \mathbf{1}_{N_c}^T" block />
+                  <LatexMath math="\mathsf{A} = \mathsf{A}_{\rm free} + \mathbf{q}\mathbf{q}^{\sf T}/S, \qquad \mathbf{b} = \mathbf{b}_{\rm free} + \mathbf{q}\,m/S" block />
                 </div>
                 <p className="text-xs text-emerald-800 leading-relaxed">
-                  Pre-multiplying the measurement vector by <LatexMath math="\mathbf{P}_\perp" /> eliminates common-mode cloud variance, yielding a paired slot-profiling gain of <LatexMath math="\Delta r = +0.054 \pm 0.006" /> in surface reconstruction!
+                  Against a fit that ignores the offsets this is a paired gain of <LatexMath math="\Delta r = +0.054 \pm 0.006" /> (10/10 seeds, at 55% cover). The information audit adds two caveats worth stating: profiling removes no rank at all (nullity 288 before and after), and without the anchor the disk-integrated albedo is attenuated by a factor of 49.
                 </p>
               </div>
 
@@ -499,10 +507,10 @@ export default function TechnicalDocumentation() {
             <div className="border-b border-slate-100 pb-3 sm:pb-4">
               <span className="badge badge-primary text-xs mb-1.5">Section 7</span>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-                Candidate Exo-Earth Targets & Orbital Propulsion Budgets
+                Candidate Exo-Earth Targets &amp; Focal-Line Tracking Budgets
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                Astrophysical characterization, focal line coordinates, and 90-day trajectory tracking budgets for 6 systems.
+                Astrophysical characterization, focal-line coordinates, and along-window tracking <LatexMath math="\Delta v" /> for five confirmed systems plus one refuted signal kept as an illustrative row. Propulsion hardware is out of the paper's scope.
               </p>
             </div>
             <TargetCatalogExplorer />
@@ -547,7 +555,7 @@ export default function TechnicalDocumentation() {
                 { id: "fleet", label: "Swarm Fleet Dynamics", icon: Radio },
                 { id: "cylinder", label: "SGL Cylinder & Rotation", icon: Zap },
                 { id: "cadence", label: "Cadence Law Explorer", icon: Sliders },
-                { id: "deflation", label: "P⊥ Cloud Deflation Demo", icon: ShieldCheck },
+                { id: "deflation", label: "Slot-Offset Profiling Demo", icon: ShieldCheck },
                 { id: "spin", label: "Spin Likelihood χ² Map", icon: Compass },
               ].map((tab) => {
                 const IconComponent = tab.icon;

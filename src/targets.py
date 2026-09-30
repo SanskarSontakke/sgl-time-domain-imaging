@@ -209,7 +209,7 @@ TARGETS = [
  ("GJ 1061 d","GJ 1061","M5.5V",3.67,3+36.0/60,-(44+31/60.),1.64,13.03,0.054,0.69,"temperate; compact multi-planet",0.06),
  ("Teegarden c","Teegarden's Star","M7V",3.831,2+53.0/60,16+53/60.,1.11,11.41,0.0443,0.37,"conservative HZ; low-flare host",0.04),
  ("GJ 273 b (Luyten b)","GJ 273","M3.5V",3.80,7+27.4/60,5+14/60.,2.89,18.65,0.0911,1.06,"near inner CHZ edge",0.10),
- ("tau Cet e (alt.)","tau Ceti","G8.5V",3.603,1+44.1/60,-(15+56/60.),3.93,162.9,0.538,1.71,"RV candidate; solar-type host",0.18),
+ ("tau Cet e (alt.)","tau Ceti","G8.5V",3.603,1+44.1/60,-(15+56/60.),3.93,162.9,0.538,1.71,"RV signal refuted (Figueira+ 25); illustrative dynamics row only",0.18),
 ]
 
 DEI = deinclination_factors()
@@ -361,7 +361,7 @@ xt, yt = towrap(rc["ra_h"]), np.deg2rad(rc["dec_d"])
 xf, yf = towrap(rc["foc_ra_h"]), np.deg2rad(rc["foc_dec_d"])
 ax.plot(xt, yt, "s", color="#029e73", ms=4, mfc="none")
 ax.plot(xf, yf, "^", color="#cc79a7", ms=7, mfc="none")
-ax.annotate("tau Cet e (cand.)", (xt, yt), textcoords="offset points", xytext=(4, 4),
+ax.annotate("tau Cet e (refuted)", (xt, yt), textcoords="offset points", xytext=(4, 4),
             fontsize=6.5, color="#029e73")
 
 lam = np.linspace(0, 2 * np.pi, 361)
@@ -389,8 +389,9 @@ lines = [
     "% Terran/Neptunian transition and use a rocky extrapolation.",
     r"\begin{table*}[t]",
     r"\centering",
-    r"\caption{\rev{Nearest confirmed temperate planets (and one solar-type RV",
-    r"candidate) as SGL imaging targets -- explicitly a \emph{nominal-proxy} ",
+    r"\caption{\rev{Nearest confirmed temperate planets (plus one solar-type RV",
+    r"signal whose planet interpretation has since been refuted) as SGL imaging",
+    r"targets -- explicitly a \emph{nominal-proxy} ",
     r"table, not a propagated uncertainty budget.  Radii use the Chen \&",
     r"Kipping (2017) Terran branch $R = 1.01\,(M\sin i/M_\oplus)^{0.279}",
     r"\,R_\oplus$ evaluated at $M\sin i$ (no de-inclination correction is",
@@ -420,6 +421,10 @@ for r in rows:
     nm = r["name"].replace(" (Luyten b)", "").replace(" (alt.)", "")
     nm = nm.replace("tau Cet", r"$\tau$ Cet")
     flag = "\\textsuperscript{a}" if r["above_ck_transition"] else ""
+    if r["name"].startswith("tau Cet"):
+        # the 162.9 d signal is a refuted detection (Figueira+ 25), so the row
+        # is an illustrative dynamics case, not a candidate target
+        flag += "\\textsuperscript{e}"
     lo, hi = r["dv90_face_on_range_kms"]
     rah = int(r["foc_ra_h"]); ram = int(round(60.0 * (r["foc_ra_h"] - rah)))
     dec = r["foc_dec_d"]
@@ -457,6 +462,12 @@ lines += [r"\bottomrule", r"\end{tabular}", r"}", r"}", "", r"\vspace{1mm}",
           r"\textbf{$^{d}$}Radii, stellar parameters and orbital elements are from the "
           r"references in Section~\ref{sec:targets}; none of these planets "
           r"transits, so $M\sin i$ (not $M$) is the observed quantity.",
+          r"\textbf{$^{e}$}\,$\tau$~Cet~e is listed for dynamics illustration only. "
+          r"The NASA Exoplanet Archive carries its 162.9-day signal as a "
+          r"\emph{false positive} after \citet{figueira25}, who attribute the "
+          r"$\tau$~Ceti RV signals to stellar activity; it is therefore not a "
+          r"confirmed target and its radius, $S$, SNR and $\Delta v$ inherit the "
+          r"assumed $M\sin i = 3.93\,M_\oplus$ of a refuted ephemeris.",
           r"}", r"\end{table*}", ""]
 (OUT / "paper" / "targets_table.tex").write_text("\n".join(lines))
 print("wrote results/targets.json, paper/figures/fig_targets.pdf, paper/targets_table.tex")

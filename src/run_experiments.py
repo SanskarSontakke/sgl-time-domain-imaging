@@ -1141,6 +1141,9 @@ def cmd_latband():
                          else np.nan)
     rows = []
     tsd = np.array(band_tsd)
+    # cells the operator actually illuminates (the same 1e-3 x wmax rule that
+    # sets band_dead_frac below), used for the restricted-band r in Section 5.9
+    alive = (wcol >= 1e-3 * wmax)
     for j, seed in enumerate(E.SEEDS):
         rec = dict(seed=int(seed))
         ok = False
@@ -1158,6 +1161,16 @@ def cmd_latband():
                 a = m[s]; b = truth_c[s]
                 rec[f"{pre}_r{bi}"] = float(np.corrcoef(a.ravel(),
                                                         b.ravel())[0, 1])
+                # restricted to illuminated cells only: rows of the band that the
+                # circular raster actually samples, broadcast across longitude
+                sel = np.zeros((E.NLAT, E.NLON), dtype=bool)
+                sel[s, :] = True
+                keep = sel & alive
+                if keep.sum() > 2:
+                    rec[f"{pre}_ralive{bi}"] = float(
+                        np.corrcoef(m[keep], truth_c[keep])[0, 1])
+                else:
+                    rec[f"{pre}_ralive{bi}"] = float("nan")
                 rec[f"{pre}_nrmse{bi}"] = float(np.sqrt(np.mean((a - b) ** 2))
                                                 / rng)
                 # band amplitude and band offset -- the two things Pearson r is
@@ -1434,6 +1447,11 @@ def cmd_merge():
     shape = (len(methods), len(E.FCS), len(E.SEEDS))
     keys = ("pearson", "ssim", "nrmse", "bias", "contrast")
     stack = {k: np.full(shape, np.nan) for k in keys}
+    # Land-ocean separation d' is scored from the per-seed reconstruction maps,
+    # which the cloud parts store for every seed; archiving it here makes the
+    # numbers quoted in Section 5.2 reproducible without re-running the solvers.
+    dstack = np.full(shape, np.nan)
+    truth_c_for_dp = E.truth()[1]
     covers = np.full((len(E.FCS), len(E.SEEDS)), np.nan)
     sigma_cl_by_fc = np.full(len(E.FCS), np.nan)
     maps = {}
@@ -1449,6 +1467,9 @@ def cmd_merge():
                     continue
                 for k in keys:
                     stack[k][mi, i, j] = d.get(f"{m}_{k}", np.nan)
+                if f"map_{m}" in d:
+                    dstack[mi, i, j] = S.detection_dprime(
+                        d[f"map_{m}"].reshape(E.NLAT, E.NLON), truth_c_for_dp)
             if j == 0:
                 for k in d.files:
                     if k.startswith("map_"):
@@ -1457,12 +1478,13 @@ def cmd_merge():
     np.savez(E.DATA / "clouds.npz", fcs=np.array(E.FCS), seeds=np.array(E.SEEDS),
              covers=covers, sigma_cl=sigma_cl_by_fc, n_seeds_actual=ns_actual,
              methods=np.array(methods), truth_c=E.truth()[1],
-             **{f"{k}_mat": v for k, v in stack.items()}, **maps)
+             **{f"{k}_mat": v for k, v in stack.items()}, dprime_mat=dstack, **maps)
     fcbest = int(np.nanargmax(np.nanmean(stack["pearson"][0], axis=1)))
     audit["clouds"] = dict(
         methods=list(methods), n_seeds_claimed=len(E.SEEDS), n_seeds_actual=ns_actual,
         pearson_mean={m: _ms(stack["pearson"][mi]) for mi, m in enumerate(methods)},
-        pearson_se={m: _sd(stack["pearson"][mi]) for mi, m in enumerate(methods)},
+        pearson_sd_pooled={m: _sd(stack["pearson"][mi])
+                           for mi, m in enumerate(methods)},
         fiducial=dict(fc=E.FCS[fcbest], r_profiled=_ms(stack["pearson"][0, fcbest]),
                       r_v2=_ms(stack["pearson"][1, fcbest]),
                       r_white=_ms(stack["pearson"][2, fcbest]),
@@ -1474,6 +1496,10 @@ def cmd_merge():
                       r_b2coarse=_ms(stack["pearson"][5, fcbest]),
                       nbins_b2=E.NBINS_B2, nbins_b2_coarse=E.NBINS_B2_COARSE),
         sigma_cl=sigma_cl_by_fc.tolist(),
+        dprime_cloudfree={m: _ms(dstack[mi, 0]) for mi, m in enumerate(methods)},
+        dprime_fiducial={m: _ms(dstack[mi, E.FCS.index(E.FC)])
+                         for mi, m in enumerate(methods)},
+        dprime_truth=float(S.detection_dprime(truth_c_for_dp, truth_c_for_dp)),
         variance_ratio_by_fc=[float((sigma_cl_by_fc[i] / S.noise_sigma(1.0, 1800.0)) ** 2)
                               for i in range(len(E.FCS))],
         sigma_ratio_by_fc=[float(sigma_cl_by_fc[i] / S.noise_sigma(1.0, 1800.0))
@@ -1938,10 +1964,16 @@ def cmd_merge():
                  seeds=np.array([d["seed"] for d in sgrows]))
         i1 = int(np.argmin(np.abs(fac - 1.0)))
         rel = C / C[:, i1][:, None]
+        # Section 5.14 quotes the per-seed max-minus-min over the factors at or
+        # above 0.25x (the full-range spread is inflated by the sigma_cl = 0
+        # corner, where the whitening is degenerate), so archive both.
+        keep = fac >= 0.25
+        spread_hi = R[:, keep].max(1) - R[:, keep].min(1)
         audit["sigma_sensitivity"] = dict(
             factors=fac.tolist(), r=[_ms(R[:, k]) for k in range(len(fac))],
             r_sd=[_sd(R[:, k]) for k in range(len(fac))],
             r_spread=[_ms([d["r_spread"] for d in sgrows])],
+            r_spread_ge_0p25=_ms(spread_hi),
             chi2_ratio_vs_fiducial=[_ms(rel[:, k]) for k in range(len(fac))],
             sigma_cl=float(sgrows[0]["sigma_cl"]), n_seeds=len(sgrows),
             note=("sigma_cl is the ASSUMED cloud amplitude; r is scored against "
@@ -1964,7 +1996,9 @@ def cmd_merge():
                 factors=fac.tolist(), n_seeds=len(rws),
                 r=[_ms(R[:, k]) for k in range(len(fac))],
                 r_sd=[_sd(R[:, k]) for k in range(len(fac))],
-                r_spread=[_ms([d["r_spread"] for d in rws])])
+                r_spread=[_ms([d["r_spread"] for d in rws])],
+                r_spread_ge_0p25=_ms(R[:, fac >= 0.25].max(1)
+                                      - R[:, fac >= 0.25].min(1)))
             np.savez(E.DATA / f"sigma_sensitivity_{est}.npz", factors=fac, r=R,
                      ssim=np.array([d["ssim"] for d in rws]),
                      sigma_cl=float(rws[0]["sigma_cl"]),
@@ -2052,6 +2086,11 @@ def cmd_merge():
                             nrmse=[_ms(N[:, bi]) for bi in range(nb)],
                             gain=[_ms(G[:, bi]) for bi in range(nb)],
                             band_bias=[_ms(O[:, bi]) for bi in range(nb)])
+            ka = f"{pre}_ralive"
+            if f"{ka}0" in d:
+                A = np.column_stack([d[f"{ka}{bi}"] for bi in range(nb)])
+                per[pre]["r_illum_restricted"] = [_ms(A[:, bi])
+                                                  for bi in range(nb)]
         audit["latband"] = dict(
             bands=[str(x) for x in d["bands"]],
             dayside=[float(x) for x in d["band_dayside"]],

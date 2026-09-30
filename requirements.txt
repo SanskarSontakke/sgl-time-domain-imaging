@@ -1,4 +1,7 @@
-numpy>=1.24
-scipy>=1.10
-matplotlib>=3.7
-scikit-image>=0.21
+# Pinned to the exact versions used to regenerate every archive in results/
+# (Python 3.12.13). Reproducing the shipped numbers requires these versions;
+# newer minor releases are expected to work but were not the ones audited.
+numpy==2.5.3
+scipy==1.18.1
+matplotlib==3.11.2
+scikit-image==0.26.0

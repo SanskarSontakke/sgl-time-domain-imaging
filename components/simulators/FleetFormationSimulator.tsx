@@ -1,32 +1,53 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Play, Pause, Compass, Rocket, Radio, ShieldCheck, Zap, Sliders, CheckCircle2 } from "lucide-react";
+import { Play, Pause, Radio, AlertTriangle } from "lucide-react";
 import LatexMath from "../LatexMath";
+// Δv and image-plane velocities come from the archived table (src/targets.py),
+// so this simulator cannot drift away from the manuscript's numbers.
+import TARGET_ARCHIVE from "../../results/targets.json";
 
 type FormationMode = "grid" | "hex" | "lissajous";
 
+interface Row {
+  name: string;
+  Dimg_km: number;
+  v_img_ms: number;
+  dv90_face_on_kms: number;
+  dv90_edge_on_kms: number;
+  note: string;
+}
+
+const ROWS: Row[] = TARGET_ARCHIVE.targets as unknown as Row[];
+
+// Fiducial geometry (Section 3.3 of the manuscript): N_sc = 16 craft sample 16
+// raster positions at once on ADJACENT boustrophedon tracks, with transverse
+// separations of ~80--300 m. The craft therefore occupy a small cluster inside
+// the 1.338 km image cylinder -- they are not spread across it, and the
+// formation is never a "1.3 km formation".
+const CYL_DIAM_KM = 1.338;
+const SPAN_M_MAX = 300;
+
+// Illustrative only: a bare Tsiolkovsky budget at an assumed 18 kg dry mass.
+// The manuscript computes the Δv *requirement* and explicitly does not size a
+// propulsion system, so everything derived below Δv is labelled as outside the
+// paper's scope.
+const DRY_MASS_KG = 18.0;
+const ISP_MAP = { ion: 3000, electrospray: 2000, coldgas: 70 } as const;
+const G0 = 9.80665;
+
 export default function FleetFormationSimulator() {
   const [formation, setFormation] = useState<FormationMode>("grid");
-  const [driftSpeed, setDriftSpeed] = useState<number>(51.0); // m/s (Ross 128 b nominal)
-  const [thrusterType, setThrusterType] = useState<"electrospray" | "ion" | "coldgas">("ion");
+  const [targetName, setTargetName] = useState<string>("Ross 128 b");
+  const [thrusterType, setThrusterType] = useState<keyof typeof ISP_MAP>("ion");
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Propulsion physics
-  // Tsiolkovsky rocket equation: m_prop = m_dry * (exp(dv / (g0 * Isp)) - 1)
-  const ispMap = {
-    electrospray: 2000, // seconds
-    ion: 3000,         // seconds
-    coldgas: 70,       // seconds
-  };
-  const isp = ispMap[thrusterType];
-  const g0 = 9.80665;
-  const dvKms = (driftSpeed * 0.057).toFixed(2); // Approximate 90-day dv based on drift velocity
-  const dryMassKg = 18.0; // 18 kg microsat
-  const dvMs = parseFloat(dvKms) * 1000;
-  const propMassKg = (dryMassKg * (Math.exp(dvMs / (g0 * isp)) - 1)).toFixed(2);
+  const row = ROWS.find((t) => t.name === targetName) || ROWS[0];
+  const isp = ISP_MAP[thrusterType];
+  const dvMs = row.dv90_face_on_kms * 1000;
+  const propMassKg = (DRY_MASS_KG * (Math.exp(dvMs / (G0 * isp)) - 1)).toFixed(2);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,6 +68,8 @@ export default function FleetFormationSimulator() {
       const cx = w / 2;
       const cy = h / 2;
       const radius = Math.min(w, h) * 0.40;
+      // Fleet footprint drawn to scale: SPAN_M_MAX of the 1338 m cylinder.
+      const span = radius * (SPAN_M_MAX / 1000 / CYL_DIAM_KM) * 2;
 
       // Deep space background
       ctx.fillStyle = "#090d16";
@@ -55,12 +78,12 @@ export default function FleetFormationSimulator() {
       // Stars in background
       ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
       for (let i = 0; i < 30; i++) {
-        const sx = ((i * 73 + 12) % w);
-        const sy = ((i * 127 + 45) % h);
+        const sx = (i * 73 + 12) % w;
+        const sy = (i * 127 + 45) % h;
         ctx.fillRect(sx, sy, 1.2, 1.2);
       }
 
-      // 1.3 km Image Cylinder Boundary
+      // Image cylinder boundary (D_img for an Earth-radius planet at 650 AU)
       ctx.strokeStyle = "rgba(56, 189, 248, 0.25)";
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
@@ -69,7 +92,6 @@ export default function FleetFormationSimulator() {
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Cylinder fill glow
       const cylGrad = ctx.createRadialGradient(cx, cy, radius * 0.7, cx, cy, radius);
       cylGrad.addColorStop(0, "rgba(2, 132, 199, 0.02)");
       cylGrad.addColorStop(1, "rgba(2, 132, 199, 0.08)");
@@ -78,7 +100,7 @@ export default function FleetFormationSimulator() {
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fill();
 
-      // Center exoplanet focal line axis
+      // Focal-line axis
       ctx.strokeStyle = "#ef4444";
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -88,7 +110,7 @@ export default function FleetFormationSimulator() {
       ctx.lineTo(cx, cy + 10);
       ctx.stroke();
 
-      // 16 Spacecraft Positions
+      // 16 spacecraft, clustered inside the cylinder at the true scale
       const nCrafts = 16;
       const craftCoords: { x: number; y: number }[] = [];
 
@@ -97,37 +119,34 @@ export default function FleetFormationSimulator() {
         let y = cy;
 
         if (formation === "grid") {
-          // 4x4 Grid with slight patrol drift
-          const row = Math.floor(i / 4);
+          const rowIdx = Math.floor(i / 4);
           const col = i % 4;
-          const spacing = (radius * 1.5) / 3;
-          x = cx + (col - 1.5) * spacing + Math.sin(time + i) * 6;
-          y = cy + (row - 1.5) * spacing + Math.cos(time + i) * 6;
+          const spacing = span / 3;
+          x = cx + (col - 1.5) * spacing + Math.sin(time + i) * 2;
+          y = cy + (rowIdx - 1.5) * spacing + Math.cos(time + i) * 2;
         } else if (formation === "hex") {
-          // Hexagonal rings
           if (i === 0) {
             x = cx;
             y = cy;
           } else if (i <= 6) {
             const angle = (i / 6) * Math.PI * 2 + time * 0.2;
-            x = cx + Math.cos(angle) * (radius * 0.45);
-            y = cy + Math.sin(angle) * (radius * 0.45);
+            x = cx + Math.cos(angle) * (span * 0.45);
+            y = cy + Math.sin(angle) * (span * 0.45);
           } else {
             const angle = ((i - 6) / 9) * Math.PI * 2 - time * 0.15;
-            x = cx + Math.cos(angle) * (radius * 0.82);
-            y = cy + Math.sin(angle) * (radius * 0.82);
+            x = cx + Math.cos(angle) * (span * 0.82);
+            y = cy + Math.sin(angle) * (span * 0.82);
           }
-        } else if (formation === "lissajous") {
-          // Orthogonal sinusoidal Lissajous orbits
+        } else {
           const phase = (i / nCrafts) * Math.PI * 2;
-          x = cx + Math.sin(time * 0.6 + phase) * (radius * 0.85);
-          y = cy + Math.cos(time * 0.9 + phase * 2) * (radius * 0.85);
+          x = cx + Math.sin(time * 0.6 + phase) * (span * 0.85);
+          y = cy + Math.cos(time * 0.9 + phase * 2) * (span * 0.85);
         }
 
         craftCoords.push({ x, y });
       }
 
-      // Inter-satellite Laser Cross-Links
+      // Inter-craft metrology links (5 s budget per dwell, Section 3.3)
       ctx.strokeStyle = "rgba(16, 185, 129, 0.35)";
       ctx.lineWidth = 1;
       for (let i = 0; i < nCrafts; i++) {
@@ -136,8 +155,6 @@ export default function FleetFormationSimulator() {
         ctx.moveTo(craftCoords[i].x, craftCoords[i].y);
         ctx.lineTo(craftCoords[next].x, craftCoords[next].y);
         ctx.stroke();
-
-        // Cross connection to center
         if (i % 2 === 0) {
           ctx.beginPath();
           ctx.moveTo(craftCoords[i].x, craftCoords[i].y);
@@ -146,43 +163,57 @@ export default function FleetFormationSimulator() {
         }
       }
 
-      // Draw Individual Spacecraft
       craftCoords.forEach((c, idx) => {
-        // Thruster plume (if moving)
         ctx.fillStyle = "rgba(56, 189, 248, 0.6)";
         ctx.beginPath();
-        ctx.arc(c.x - Math.sin(time * 2 + idx) * 4, c.y + 7, 2.5, 0, Math.PI * 2);
+        ctx.arc(c.x - Math.sin(time * 2 + idx) * 3, c.y + 6, 2, 0, Math.PI * 2);
         ctx.fill();
 
-        // Spacecraft body (1m aperture)
         ctx.fillStyle = "#38bdf8";
         ctx.beginPath();
-        ctx.arc(c.x, c.y, 4, 0, Math.PI * 2);
+        ctx.arc(c.x, c.y, 3.5, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 1.2;
         ctx.stroke();
 
-        // Craft label
         ctx.fillStyle = "#94a3b8";
         ctx.font = "8px monospace";
-        ctx.fillText(`SC${idx + 1}`, c.x + 6, c.y + 3);
+        ctx.fillText(`SC${idx + 1}`, c.x + 5, c.y + 3);
       });
 
-      // Formation Header annotation
+      // Scale bracket for the fleet footprint
+      ctx.strokeStyle = "#fbbf24";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx - span / 2, cy + radius * 0.62);
+      ctx.lineTo(cx + span / 2, cy + radius * 0.62);
+      ctx.stroke();
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "9px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("~300 m fleet footprint", cx, cy + radius * 0.62 - 6);
+      ctx.fillStyle = "#64748b";
+      ctx.fillText(
+        `image cylinder ${CYL_DIAM_KM.toFixed(2)} km (Earth radius, 650 AU)`,
+        cx,
+        cy + radius + 16,
+      );
+      ctx.textAlign = "left";
+
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 10px monospace";
-      ctx.fillText("16-CRAFT COOPERATIVE SWARM FORMATION", 16, 22);
+      ctx.fillText(`16 SLOTS SAMPLED PER DWELL — ${row.name}`, 16, 22);
       ctx.fillStyle = "#64748b";
       ctx.font = "9px sans-serif";
-      ctx.fillText("Laser sync latency < 5 μs | P⊥ Deflation active", 16, 36);
+      ctx.fillText("Per-dwell overhead 45 s: 30 s slew + 10 s settle + 5 s metrology", 16, 36);
 
       animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [formation, driftSpeed, isPlaying]);
+  }, [formation, isPlaying, row]);
 
   return (
     <div className="card">
@@ -190,10 +221,10 @@ export default function FleetFormationSimulator() {
         <div className="flex items-center gap-2">
           <div className="badge badge-primary flex items-center gap-1">
             <Radio size={14} />
-            <span>Swarm Dynamics Simulator</span>
+            <span>Raster Sampling Simulator</span>
           </div>
           <h3 className="text-lg font-bold text-slate-800">
-            16-Spacecraft Deep Space Formation & Propulsion Flight
+            16-Craft Concurrent Raster &amp; Tracking Budget
           </h3>
         </div>
         <div className="flex items-center gap-2">
@@ -202,7 +233,7 @@ export default function FleetFormationSimulator() {
             className="btn btn-sm btn-outline flex items-center gap-1 text-xs"
           >
             {isPlaying ? <Pause size={13} /> : <Play size={13} />}
-            <span>{isPlaying ? "Pause Flight" : "Resume"}</span>
+            <span>{isPlaying ? "Pause" : "Resume"}</span>
           </button>
         </div>
       </div>
@@ -215,25 +246,70 @@ export default function FleetFormationSimulator() {
               <canvas ref={canvasRef} width={380} height={380} className="w-full h-full block" />
             </div>
             <div className="text-[11px] text-slate-500 mt-2 text-center">
-              Formation scanning within the 1.3 km focal cylinder at 650 AU
+              Sixteen craft sample 16 raster positions concurrently inside the {CYL_DIAM_KM} km
+              image cylinder at 650 AU. The formation footprint (~300 m across) is to scale; the
+              craft themselves are not.
             </div>
           </div>
 
-          {/* Controls & Mission Budgets */}
+          {/* Controls & Budgets */}
           <div className="lg:col-span-5 space-y-4 text-xs">
+            {/* Target selector */}
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
+              <label className="font-semibold text-slate-700 block">
+                Target (values from results/targets.json)
+              </label>
+              <select
+                value={targetName}
+                onChange={(e) => setTargetName(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800"
+              >
+                {ROWS.map((t) => (
+                  <option key={t.name} value={t.name}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <div className="grid grid-cols-3 gap-1.5 pt-1 text-center">
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">
+                    {row.v_img_ms.toFixed(1)} m/s
+                  </span>
+                  <span className="text-[9px] text-slate-400">image-plane speed</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">
+                    {row.dv90_face_on_kms.toFixed(2)} km/s
+                  </span>
+                  <span className="text-[9px] text-slate-400">Δv 90 d, face-on</span>
+                </div>
+                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
+                  <span className="font-bold text-slate-700 block">
+                    {row.dv90_edge_on_kms.toFixed(2)} km/s
+                  </span>
+                  <span className="text-[9px] text-slate-400">edge-on (2/π)</span>
+                </div>
+              </div>
+              {/refuted/i.test(row.note) && (
+                <p className="text-[10px] text-rose-700 leading-snug">{row.note}</p>
+              )}
+            </div>
+
             {/* Formation Selector */}
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-              <label className="font-semibold text-slate-700 block">Swarm Geometry Configuration</label>
+              <label className="font-semibold text-slate-700 block">
+                Formation Pattern (schematic)
+              </label>
               <div className="grid grid-cols-3 gap-1.5 pt-1">
-                {[
-                  { id: "grid", label: "4×4 Raster Grid" },
+                {([
+                  { id: "grid", label: "4×4 Track Block" },
                   { id: "hex", label: "Hexagonal Rings" },
                   { id: "lissajous", label: "Lissajous Sweep" },
-                ].map((f) => (
+                ] as { id: FormationMode; label: string }[]).map((f) => (
                   <button
                     key={f.id}
                     type="button"
-                    onClick={() => setFormation(f.id as FormationMode)}
+                    onClick={() => setFormation(f.id)}
                     className={`py-1.5 px-2 rounded-lg text-[11px] font-bold border transition-all ${
                       formation === f.id
                         ? "bg-blue-600 text-white border-blue-600 shadow-xs"
@@ -244,52 +320,27 @@ export default function FleetFormationSimulator() {
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Target Image Plane Drift Speed */}
-            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-slate-700">Exoplanet Focal Drift Velocity:</span>
-                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{driftSpeed.toFixed(1)} m/s</span>
-              </div>
-              <input
-                type="range"
-                min="20"
-                max="120"
-                step="5"
-                value={driftSpeed}
-                onChange={(e) => setDriftSpeed(parseFloat(e.target.value))}
-                className="w-full range-slider"
-              />
-              <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-500 pt-1 text-center">
-                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
-                  <span className="font-bold text-slate-700 block">31 m/s</span>
-                  <span className="text-[9px] text-slate-400">τ Ceti e</span>
-                </div>
-                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
-                  <span className="font-bold text-slate-700 block">51 m/s</span>
-                  <span className="text-[9px] text-slate-400">Ross 128 b</span>
-                </div>
-                <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
-                  <span className="font-bold text-slate-700 block">114 m/s</span>
-                  <span className="text-[9px] text-slate-400">Prox Cen b</span>
-                </div>
-              </div>
+              <p className="text-[10px] text-slate-500 leading-snug">
+                The archived campaign uses boustrophedon tracks with 16 craft on adjacent rows; the
+                other patterns are visual alternatives, not simulated configurations.
+              </p>
             </div>
 
             {/* Thruster Engine Technology */}
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
-              <label className="font-semibold text-slate-700 block">Propulsion Technology</label>
+              <label className="font-semibold text-slate-700 block">
+                Illustrative Propulsion Assumption
+              </label>
               <div className="grid grid-cols-3 gap-1.5 pt-1">
-                {[
-                  { id: "ion", label: "Gridded Ion (Isp 3000s)" },
-                  { id: "electrospray", label: "Electrospray (2000s)" },
-                  { id: "coldgas", label: "Cold Gas (70s)" },
-                ].map((t) => (
+                {([
+                  { id: "ion", label: "Gridded Ion (Isp 3000 s)" },
+                  { id: "electrospray", label: "Electrospray (2000 s)" },
+                  { id: "coldgas", label: "Cold Gas (70 s)" },
+                ] as { id: keyof typeof ISP_MAP; label: string }[]).map((t) => (
                   <button
                     key={t.id}
                     type="button"
-                    onClick={() => setThrusterType(t.id as any)}
+                    onClick={() => setThrusterType(t.id)}
                     className={`py-1.5 px-1 rounded-lg text-[10px] font-bold border text-center transition-all ${
                       thrusterType === t.id
                         ? "bg-blue-600 text-white border-blue-600 shadow-xs"
@@ -302,25 +353,41 @@ export default function FleetFormationSimulator() {
               </div>
             </div>
 
-            {/* Mission Propulsion Readouts */}
+            {/* Readouts */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                <div className="text-[10px] text-slate-400 font-bold uppercase">Required 90-Day Δv</div>
-                <div className="text-base font-extrabold font-mono text-amber-600 mt-0.5">
-                  {dvKms} km/s
+                <div className="text-[10px] text-slate-400 font-bold uppercase">
+                  Tracking Δv (archived)
                 </div>
-                <div className="text-[9px] text-slate-400">Trajectory station-keeping</div>
+                <div className="text-base font-extrabold font-mono text-amber-600 mt-0.5">
+                  {row.dv90_face_on_kms.toFixed(2)} km/s
+                </div>
+                <div className="text-[9px] text-slate-400">
+                  <LatexMath math="\oint |a_\perp(t)|\,dt" /> over 90 d
+                </div>
               </div>
 
               <div className="bg-white p-2.5 rounded-lg border border-slate-200">
-                <div className="text-[10px] text-slate-400 font-bold uppercase">Propellant Mass / Craft</div>
-                <div className={`text-base font-extrabold font-mono mt-0.5 ${parseFloat(propMassKg) < 5 ? "text-emerald-700" : "text-rose-600"}`}>
+                <div className="text-[10px] text-slate-400 font-bold uppercase">
+                  Propellant / Craft (illustrative)
+                </div>
+                <div className="text-base font-extrabold font-mono mt-0.5 text-slate-800">
                   {propMassKg} kg
                 </div>
                 <div className="text-[9px] text-slate-400">
-                  {parseFloat(propMassKg) < 5 ? "Highly feasible (<5 kg)" : "Heavy propellant load"}
+                  Tsiolkovsky at {DRY_MASS_KG} kg dry, Isp {isp} s
                 </div>
               </div>
+            </div>
+
+            <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[10px] text-amber-900 leading-snug">
+              <AlertTriangle size={12} className="mt-0.5 shrink-0 text-amber-600" />
+              <span>
+                Only the Δv figure is a paper result. The propellant number is a generic rocket
+                equation applied here for intuition; the manuscript deliberately does not size a
+                propulsion system, and its mission section covers cruise (deep-perihelion sail) and
+                power (APPLE tiles) only.
+              </span>
             </div>
           </div>
         </div>

@@ -25,17 +25,17 @@ export default function CodeViewer({ initialFile = "sglsim.py" }: CodeViewerProp
   const fileDescriptions: Record<string, React.ReactNode> = {
     "sglsim.py": (
       <span>
-        Monolithic core engine: SGL optical kernel (<LatexMath math="d / (4\rho)" />), forward time-dependent matrix <LatexMath math="\mathbf{F}(t)" />, advecting cloud spatio-temporal OU generator, slot deflation operator <LatexMath math="\mathbf{P}_\perp" />, and regularized GLS solver.
+        Core library: SGL optical kernel (<LatexMath math="d / (4\rho)" />), time-dependent forward matrix <LatexMath math="\mathbf{F}(t)" /> with Gauss–Legendre exposure integration, advecting OU cloud generator and extended climatology variants, explicit campaign time ledger, slot-mean profiling, and the regularized GLS/TDI solver.
       </span>
     ),
-    "run_experiments.py": "Scientific experimentation pipeline: executes benchmark validation, cadence trade study, 4-way component ablation with paired bootstrap CIs, and spin ephemeris sweeps.",
+    "expcommon.py": "Single source of conventions: seeds, quadrature order, cloud fractions, the two cadence arms, cached operators, and the paired statistics (t-test, exact sign test, bootstrap CI) every table quotes.",
+    "run_experiments.py": "Checkpointed experiment driver: one subcommand per study, seeds looped inside a single process so the forward operator is built once, then `merge` assembles results/*.npz and writes audit.json with the seed count behind every headline number.",
     "targets.py": (
       <span>
-        Astrophysical target catalog: computes image cylinder dimensions, photon arrival rates, optical depths, and 90-day focal tracking <LatexMath math="\Delta v" /> budgets for 6 exo-Earths.
+        Target table + map: image cylinder dimensions, photon rates, focal-line antipodes, ecliptic latitudes and 90-day tracking <LatexMath math="\Delta v" /> for five confirmed temperate planets plus one refuted signal kept as an illustrative row.
       </span>
     ),
-    "make_figures.py": "Publication figure renderer: loads results and formats publication-ready EPS/PDF/PNG figures with font sizing and styling conforming to AAS/ApJ guidelines.",
-    "cad_solve_one.py": "Standalone MPI/subprocess worker for high-throughput parallel execution of individual cadence parameter configurations.",
+    "make_figures.py": "Figure renderer: every panel in the manuscript is drawn from results/*.npz, so a figure cannot disagree with a table.",
   };
 
   return (
@@ -103,9 +103,9 @@ export default function CodeViewer({ initialFile = "sglsim.py" }: CodeViewerProp
 
         {/* Run instructions */}
         <div className="mt-3 pt-2 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 flex-wrap gap-2">
-          <span>Run locally with reproducible uv environment:</span>
+          <span>Regenerate one study and the archive from the repository root:</span>
           <code className="bg-slate-100 text-slate-800 px-2 py-1 rounded font-mono text-[11px]">
-            uv run --with numpy,scipy,matplotlib,scikit-image python src/run_experiments.py
+            python3 src/run_experiments.py clouds 3 &amp;&amp; python3 src/run_experiments.py merge
           </code>
         </div>
       </div>

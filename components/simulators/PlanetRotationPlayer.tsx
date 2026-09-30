@@ -248,8 +248,8 @@ export default function PlanetRotationPlayer() {
       const telemetry = [
         ["DIURNAL PERIOD", "P = 24.0 hours"],
         ["CLOUD FRACTION", `fc = ${cloudCover}% (fiducial)`],
-        ["ZONAL JET STREAM", "v_zonal = +21 m/s (eastward)"],
-        ["AXIAL OBLIQUITY", "23.4° tilt"],
+        ["CLOUD ADVECTION", "6°/day (≈7.7 m/s), OU field"],
+        ["AXIAL OBLIQUITY", "0° (not modeled)"],
         ["NOISE COVARIANCE", "Clouds:Photons = 12.8-21.0x (sigma)"],
       ];
 
@@ -271,7 +271,7 @@ export default function PlanetRotationPlayer() {
 
       ctx.fillStyle = "#64748b";
       ctx.font = "11px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
-      ctx.fillText("PEER-REVIEWED ASTROPHYSICAL RESEARCH • SONTANKE ET AL. (2026)", 20, h - 10);
+      ctx.fillText("PEER-REVIEWED ASTROPHYSICAL RESEARCH • SONTAKKE (2026) — SINGLE-AUTHOR STUDY", 20, h - 10);
 
       ctx.fillStyle = isPlaying ? "#34d399" : "#f59e0b";
       ctx.fillText(isPlaying ? "SIMULATION ACTIVE • 60 FPS" : "SIMULATION PAUSED", w - 190, h - 10);
@@ -293,7 +293,7 @@ export default function PlanetRotationPlayer() {
     <MediaZoomViewer
       title="Exo-Earth Rotation & Cloud Advection Simulation"
       badge="1080p Full HD"
-      desc="Continuous 24-hour diurnal rotation with dynamic eastward zonal jet streams (+21 m/s) and disk-averaged photometric light curve F(t)."
+      desc="Illustrative 24-hour rotation with an advecting OU cloud field (6°/day, 4-day decorrelation). The model has zero obliquity and no jet stream; disk-averaged light curve F(t) shown below."
       downloadName="planet_rotation_clouds_1080p.gif"
       src={viewMode === "gif" ? `/videos/planet_rotation_clouds.gif?v=${gifKey}` : undefined}
       headerControls={

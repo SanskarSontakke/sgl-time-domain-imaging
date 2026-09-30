@@ -61,7 +61,7 @@ def show_disk(ax, img, title=None, cmap="magma", vmax=None):
     geo = S.disk_geometry(n)
     a = np.array(img, dtype=float)
     a[~geo["mask"]] = np.nan
-    cm = plt.get_cmap(cmap).copy(); cm.set_bad("0.12")
+    cm = matplotlib.colormaps[cmap].copy(); cm.set_bad("0.12")
     im = ax.imshow(a, origin="lower", cmap=cm, vmax=vmax,
                    extent=(-S.DIMG / 2, S.DIMG / 2, -S.DIMG / 2, S.DIMG / 2))
     ax.set_xticks([]); ax.set_yticks([])

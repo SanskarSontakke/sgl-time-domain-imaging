@@ -38,35 +38,35 @@ const SLIDES: Slide[] = [
   {
     id: 1,
     badge: "Problem Statement",
-    title: "Direct Imaging of an Exo-Earth Across 100 Trillion Kilometers",
-    subtitle: "Why conventional space telescopes can never photograph continents on worlds around other stars.",
+    title: "Direct Imaging of an Exo-Earth Across 900 Trillion Kilometers",
+    subtitle: "Why conventional space telescopes can never resolve continents on worlds around other stars.",
     interactiveComponent: "planet-video",
     mediaSrc: "/videos/planet_rotation_clouds.gif",
     mediaTitle: "Exo-Earth Rotation & Cloud Advection Simulation",
-    mediaDesc: "Continuous 24-hour diurnal rotation with dynamic eastward zonal jet streams (+21 m/s) and photometric light curve.",
+    mediaDesc: "Illustrative render. The simulated planet has zero obliquity and no jet: clouds advect at 6°/day (≈7.7 m/s) with a 4-day decorrelation time.",
     mediaBadge: "Simulation Video",
     takeaways: [
-      "The Holy Grail of astronomy is to photograph surface continents, oceans, and vegetation on habitable exoplanets.",
-      "At 30 light-years distance, an Earth-sized planet subtends less than 1 nano-arcsecond on the sky.",
-      "Resolving just 30×30 pixels with conventional optics would require a glass primary mirror 100 kilometers wide — physically impossible to build and launch.",
-      "We need a radically new physical paradigm to magnify distant worlds.",
+      "The goal of this paper is albedo mapping: recovering persistent surface contrast (continents vs. oceans) on a habitable-zone world, not photographing terrain or vegetation.",
+      "At 30 pc — the paper's nominal proxy — an Earth-sized planet subtends only ~2.8 microarcseconds across, so a 64×64 map needs ~0.04 μas per resolution element.",
+      "The paper's own scaling: a 10×10 surface map at 10 pc needs ~0.85 μas elements, i.e. a ~10² km filled aperture, and conventional concepts still integrate for 10⁴–10⁵ yr once realistic backgrounds are included (Turyshev 2026a).",
+      "We need a radically different optical element to magnify distant worlds: the Sun itself.",
     ],
-    speakerNotes: "Imagine trying to read the date on a coin 100 trillion kilometers away. That is the challenge of imaging an Earth-like exoplanet. Even with the James Webb Space Telescope or a theoretical 100-kilometer mirror, an exoplanet is only a single blurry pixel. Conventional astronomy cannot see continents. To reveal the surface of an alien world, we must turn to an extraordinary prediction of Einstein's General Relativity: the Solar Gravitational Lens.",
+    speakerNotes: "Imagine trying to read the date on a coin a quadrillion kilometers away. That is the challenge of imaging an Earth-like exoplanet. An Earth twin at 30 pc is 2.8 microarcseconds across, so every filled-aperture and interferometric concept sees a single unresolved pixel — and the deconvolution and integration-time costs scale with aperture diameter, not with patience. To map the surface of an alien world we must turn to a prediction of General Relativity: the Solar Gravitational Lens.",
     judgeFaq: [
       {
         q: "Why can't the James Webb Space Telescope (JWST) resolve continents?",
-        a: "JWST has a 6.5-meter mirror. At 30 light-years, optical diffraction limits JWST's resolution to ~10,000 times larger than the entire planet. It sees only a single unresolved pixel."
+        a: "JWST's 6.5-m diffraction limit is ~77 microarcseconds at 2 μm (~23 μas at 0.6 μm), while an Earth twin at 30 pc is ~2.8 μas across. The resolution element is 8–27 times larger than the entire planet, so it is one unresolved pixel no matter how long JWST stares."
       },
       {
         q: "What is an 'exo-Earth'?",
-        a: "An Earth-sized, rocky exoplanet orbiting within the habitable ('Goldilocks') zone of its star where liquid water can exist on the surface."
+        a: "An Earth-sized, rocky exoplanet orbiting within the habitable ('Goldilocks') zone of its star where liquid water can exist on the surface. The simulations here use a generic Earth-radius proxy at 30 pc, not a named planet's climate."
       }
     ],
     stats: [
-      { label: "Target Distance", value: "30 pc", desc: "~100 trillion km" },
-      { label: "Angular Size", value: "<1 nas", desc: "Subtended on sky" },
-      { label: "Required Mirror", value: "100 km", desc: "For conventional optics" },
-      { label: "Our Resolution", value: "64×64", desc: "Recovered surface pixels" },
+      { label: "Target Distance", value: "30 pc", desc: "~9×10¹⁴ km (nominal proxy)" },
+      { label: "Angular Size", value: "~2.8 μas", desc: "Earth diameter at 30 pc" },
+      { label: "Conventional Aperture", value: "~10² km", desc: "For a 10×10 map at 10 pc" },
+      { label: "This Paper Delivers", value: "36×72 grid", desc: "ℓ ≲ 9 usable under clouds" },
     ],
   },
   {
@@ -75,16 +75,16 @@ const SLIDES: Slide[] = [
     title: "The Solar Gravitational Lens: Einstein's Cosmic Magnifier",
     subtitle: "Harnessing the Sun's spacetime curvature as a natural 100-billion-times optical amplifier.",
     takeaways: [
-      <span>Einstein's General Relativity predicts that the Sun's mass bends light rays, forming a gravitational lens with focal line starting at <LatexMath math="z \ge 547.5\text{ AU}" />.</span>,
-      <span>The Solar Gravitational Lens (SGL) provides light amplification of <LatexMath math="\sim 10^{11}" /> and micro-arcsecond angular resolution.</span>,
-      <span>At 650 AU, the light of an exo-Earth is concentrated into an image cylinder only <LatexMath math="D_{\rm img} \approx 1.34\text{ km}" /> wide.</span>,
-      <span>A modest 1-meter telescope stationed in this focal cylinder achieves the imaging power of a 100-kilometer megatelescope!</span>,
+      <span>Einstein's General Relativity predicts that the Sun's mass bends light rays, forming a gravitational lens whose strong-interference region starts at <LatexMath math="z_0 \simeq b^2/2r_g \simeq 547.8\text{ AU}" /> for rays grazing the solar limb.</span>,
+      <span>The Solar Gravitational Lens (SGL) provides on-axis amplification of <LatexMath math="\mu_0 = 4\pi^2 r_g/\lambda \simeq 1.2\times10^{11}" /> at <LatexMath math="\lambda = 1\,\mu\text{m}" /> and angular resolution of order <LatexMath math="10^{-10}" /> arcsec.</span>,
+      <span>At 650 AU, the light of an Earth-radius planet at 30 pc is compressed into an image cylinder only <LatexMath math="D_{\rm img} \approx 1.34\text{ km}" /> wide.</span>,
+      <span>A 1-meter telescope in that cylinder acts as a single-pixel detector that must physically traverse the image plane: it replaces the ~10² km conventional aperture, but it buys photons and magnification, not surface detail, which the inversion has to reconstruct.</span>,
     ],
-    speakerNotes: "Instead of building a 100-kilometer mirror on Earth, we let the Sun do the work. The Sun's gravitational field acts as a natural lens, focusing light from a distant exoplanet into a narrow 1.3-kilometer tube in deep space at 650 Astronomical Units. By sending a small 1-meter telescope into this focal tube, we get 100 billion times light amplification for free.",
+    speakerNotes: "Instead of building a 100-kilometer-class mirror, we let the Sun do the work. The Sun's gravitational field focuses light from a distant exoplanet into a narrow 1.34-kilometer image cylinder near 650 AU. A meter-class telescope inside that cylinder collects the planetary Einstein ring with ~10¹¹ amplification for free. The catch: it is a single pixel, so the map has to be assembled by scanning and by inverting the scan — which is what this paper is about.",
     judgeFaq: [
       {
         q: "Where is 650 AU, and how far is that?",
-        a: "1 AU is the Earth-Sun distance (150 million km). 650 AU is about 15 times farther than Pluto. Voyagers 1 & 2 are currently at ~160 AU. Modern solar sail or nuclear electric propulsion missions can reach 650 AU in 20-25 years."
+        a: "1 AU is the Earth-Sun distance (150 million km). 650 AU is about 15 times farther than Pluto, while the Voyagers are near 140–170 AU. Reaching it in 20 years needs v∞ ≈ 154 km/s (32.5 AU/yr); the paper's only concept in that range is a deep-perihelion solar sail (105–155 km/s at areal densities of 2.3–4.9 g/m²), not chemical propulsion (3–4 AU/yr)."
       },
       {
         q: "What does the telescope actually see?",
@@ -94,13 +94,13 @@ const SLIDES: Slide[] = [
     interactiveComponent: "cylinder",
     mediaSrc: "/images/sgl_focal_cylinder_diagram.jpg",
     mediaTitle: "3D SGL Optical Architecture & Focal Tube",
-    mediaDesc: "Light from exo-Earth focused by Sun's gravity into 1.34 km focal tube at 650 AU, sampled by 16 nano-spacecraft.",
+    mediaDesc: "Light from an exo-Earth proxy focused by the Sun's gravity into a 1.34 km image cylinder at 650 AU, sampled by a 16-craft raster.",
     mediaBadge: "3D Mission Diagram",
     stats: [
-      { label: "Focal Line Distance", value: "z ≥ 547.5 AU", desc: "Beyond heliopause" },
-      { label: "Optical Gain", value: "μ ~ 10¹¹", desc: "Natural gravitational boost" },
-      { label: "Focal Cylinder Size", value: "~1.3 km", desc: "Diameter at 650 AU" },
-      { label: "Telescope Aperture", value: "d = 1 m", desc: "Compact spacecraft" },
+      { label: "Focal Onset", value: "z₀ ≈ 547.8 AU", desc: "b = R☉, r_g ≈ 2.95 km" },
+      { label: "Optical Gain", value: "μ₀ ≈ 1.2×10¹¹", desc: "On-axis, at λ = 1 μm" },
+      { label: "Focal Cylinder Size", value: "~1.3 km", desc: "Earth radius at 30 pc, 650 AU" },
+      { label: "Telescope Aperture", value: "d = 1 m", desc: "Single-pixel scanner" },
     ],
   },
   {
@@ -111,18 +111,18 @@ const SLIDES: Slide[] = [
     takeaways: [
       <span>When the telescope is on-axis (<LatexMath math="\rho = 0" />), exoplanet light forms a continuous, circular Einstein Ring around the Sun.</span>,
       <span>As the spacecraft steps off-axis, the ring splits into opposing gravitational arcs with intensity <LatexMath math="K(\rho) \approx \frac{d}{4\rho}" />.</span>,
-      <span>The solar corona is <LatexMath math="10^6\times" /> brighter than the planet; an occulting coronagraph mask blocks the direct solar disk.</span>,
-      <span>We verified this wave-optics convolution matches published NASA benchmarks (<LatexMath math="\mathrm{SNR_C} = 43.16" />) to machine precision!</span>,
+      <span>Even after the occulter, the residual solar corona outshines the planet by <LatexMath math="Q_{\rm cor}/Q_{\rm exo} = 6.20\times10^{9}/8.01\times10^{4} \simeq 7.74\times10^{4}" /> photons/s, giving <LatexMath math="\mathrm{SNR_C} = 43.16" /> per 1800~s dwell.</span>,
+      <span>We checked the discrete aperture-averaged operator against the published deconvolution-noise scaling <LatexMath math="0.891\,D/(d\sqrt{N})" />: agreement is at the <em>percent-to-tens-of-percent</em> level (0.324 vs 0.291 at n = 64; the ~45% gap at n = 128 is stated and attributed in the paper), i.e. partial validation, not machine precision.</span>,
     ],
-    speakerNotes: "Here is what the telescope camera actually sees at 650 AU. When looking at the Sun, light from the exoplanet wraps around the solar limb in an Einstein Ring. By activating a coronagraph occulter, we block the blinding light of the solar disk, allowing our 1-meter mirror to detect the exoplanet ring with an SNR of 43 per sample!",
+    speakerNotes: "Here is what the telescope camera actually sees at 650 AU. Light from the exoplanet wraps around the solar limb into an Einstein ring, and a coronagraph occulter blocks the blinding solar disk. Even after that the corona still delivers ~7.7×10⁴ times the planet's photon rate, which is why the noise model is built around coronal shot noise and why the per-dwell SNR is 43 rather than 4300. Our own check of the forward operator reproduces the published deconvolution penalty to within tens of percent — we call that partial validation, and the paper says so.",
     judgeFaq: [
       {
         q: "What is a coronagraph?",
-        a: "An optical device that blocks direct sunlight like an artificial solar eclipse, allowing faint light from the exoplanet right next to the Sun to be photographed."
+        a: "An optical device that blocks direct sunlight like an artificial solar eclipse, allowing faint light from the exoplanet right next to the Sun to be photographed. It suppresses the bright solar disk; it does not remove the corona, which remains ~7.7×10⁴ times brighter than the planet in photon rate."
       },
       {
-        q: "How thin is the Einstein Ring?",
-        a: "It has a diffraction-limited angular thickness of only ~1 micro-arcsecond on the sky, representing an extreme magnification factor."
+        q: "How big is the Einstein ring on the sky?",
+        a: "Its radius is D_img/2 ≈ 669 m at 650 AU, i.e. ~1.4 microarcseconds, while the solar disk there is ~2.95 arcsec across. The Sun's angular radius (≈1.48×10⁶ μas) is about a million times the ring radius — that contrast, plus the corona that survives the occulter, is the real difficulty of the observation."
       }
     ],
     interactiveComponent: "einstein",
@@ -132,9 +132,9 @@ const SLIDES: Slide[] = [
     mediaBadge: "Optical Ray-Trace Video",
     stats: [
       { label: "Kernel Formula", value: <LatexMath math="d / (4\rho)" />, desc: "Aperture-averaged kernel" },
-      { label: "Coronagraph Mask", value: "Active", desc: "Blocks 10⁶× solar glare" },
-      { label: "Sample SNR_C", value: "43.16", desc: "Turyshev benchmark" },
-      { label: "Wavelength", value: "Visible / NIR", desc: "400 - 850 nm" },
+      { label: "Coronagraph Mask", value: "Active", desc: "Occulter; corona still 7.7×10⁴× planet" },
+      { label: "Sample SNR_C", value: "43.16", desc: "per 1800 s dwell, d = 1 m" },
+      { label: "Wavelength", value: "λ = 1 μm", desc: "single-band model" },
     ],
   },
   {
@@ -143,174 +143,175 @@ const SLIDES: Slide[] = [
     title: "Time-Domain Inversion (TDI): Reconstructing Moving Weather",
     subtitle: "We formulate image recovery as a Generalized Least Squares time-series problem.",
     takeaways: [
-      <span>Instead of averaging or ignoring time, we tag every single photon measurement with its exact observation timestamp <LatexMath math="t" />.</span>,
-      <span>Our forward model <LatexMath math="\mathbf{F}(t)" /> mathematically couples the SGL optical kernel, planetary orbital geometry, diurnal rotation, and illumination phase.</span>,
-      <span>We treat dynamic clouds not as catastrophic corruptions, but as a structured spatio-temporal covariance matrix <LatexMath math="\mathbf{C}_y" />.</span>,
+      <span>Instead of averaging or ignoring time, we time-tag every photocurrent sample and index it by its exact observation timestamp <LatexMath math="t" />.</span>,
+      <span>The forward model <LatexMath math="\mathsf{F}(t)" /> couples the aperture-averaged SGL kernel <LatexMath math="d/4\rho" />, the 16-node Gauss–Legendre exposure smear, rotation, and orbital illumination.</span>,
+      <span>Dynamic clouds enter as a structured covariance, block-diagonal over image-plane pixels: <LatexMath math="(\mathsf{C}_p)_{ij} = \sigma_{\rm cl}^2 e^{-|t_i - t_j|/\tau_c} + \delta_{ij}\sigma_i^2" /> with <LatexMath math="\tau_c = 4" /> d.</span>,
       <div className="flex flex-col gap-1 w-full">
-        <span>The static surface continents are reconstructed via closed-form generalized inversion:</span>
+        <span>The albedo map is then a single closed-form regularized GLS solve — no iteration, no truth information:</span>
         <div className="py-1.5 px-3 bg-blue-50/70 rounded-lg border border-blue-200/80 overflow-x-auto my-1 shadow-2xs">
-          <LatexMath math="\hat{\mathbf{m}} = \left( \mathbf{F}^T \mathbf{C}_y^{-1} \mathbf{F} + \mathbf{\Lambda} \right)^{-1} \mathbf{F}^T \mathbf{C}_y^{-1} \mathbf{y}" block />
+          <LatexMath math="\hat{\mathbf{s}} = \arg\min_{\mathbf{s}} \left\| \mathsf{C}^{-1/2}(\mathbf{y} - \mathsf{F}\mathbf{s}) \right\|^2 + \lambda_{\rm eff}\|\mathsf{L}\mathbf{s}\|^2" block />
         </div>
+        <span className="text-[11px] text-slate-500">with <LatexMath math="\mathsf{L}" /> the spherical-grid Laplacian and <LatexMath math="\lambda = 3\times10^{-3}" />, a hardcoded constant of the released pipeline that the paper sweeps over six decades rather than claims to be optimal.</span>
       </div>,
     ],
-    speakerNotes: "Our key breakthrough is Time-Domain Inversion (TDI). Rather than trying to unblur a static snapshot, we formulate the entire observation stream as a rigorous time-series inverse problem. We know the laws of planetary rotation and orbital lighting, so we build them directly into our forward operator matrix F(t). We then express cloud weather as a spatio-temporal covariance matrix Cy, allowing our generalized least squares estimator to extract the permanent continents right out of the moving noise.",
+    speakerNotes: "Our contribution is Time-Domain Inversion (TDI). Rather than trying to unblur a static snapshot, we write the whole observation stream as one regularized generalized least-squares problem. Rotation, exposure smear, and orbital illumination go into the forward operator F; the cloud field goes into the covariance C as an Ornstein–Uhlenbeck correlation between revisits of the same raster position. One linear solve gives the albedo map. Note what this is not: it is not a photo of continents — it recovers the persistent surface albedo structure, and we score it against a seeded truth we generated.",
     judgeFaq: [
       {
         q: "What is Generalized Least Squares (GLS)?",
-        a: "Standard least squares assumes all noise is independent and identical. GLS weights measurements by their true noise covariance, effectively discounting noisy correlated directions and amplifying clean signals."
+        a: "Standard least squares assumes all noise is independent and identical. GLS weights measurements by their true noise covariance, discounting correlated directions instead of pretending they are clean. Using white-noise GLS on cloudy data is exactly the mistake the paper measures: it drops r from 0.342 to 0.289 at 55% cover."
       },
       {
         q: "Does this require prior knowledge of the continent shapes?",
-        a: "No! The inversion is completely blind to continent shapes. It only assumes continents are stationary on the spinning planet while clouds change over time."
+        a: "No. The inversion is blind to continent shapes; it assumes only that the surface albedo is stationary on the spinning planet while the cloud field decorrelates over ~4 days, plus a smoothness penalty on the spherical grid. The truth maps are seeded synthetic fields, and the reported r is a correlation against that known truth."
       }
     ],
     interactiveComponent: "sandbox",
     mediaSrc: "/videos/tdi_deconvolution_timelapse.gif",
-    mediaTitle: "TDI Inversion Timelapse Simulation Video",
-    mediaDesc: "Progressive deconvolution: raw striped barcode → common-mode deflation → Tikhonov regularization → high cadence.",
-    mediaBadge: "Deconvolution Timelapse",
+    mediaTitle: "TDI Reconstruction Timelapse Simulation Video",
+    mediaDesc: "Illustrative sequence: raw striped raster → exact slot-offset profiling → regularized GLS solve → fidelity vs revisit count. Each frame is one linear solve, not an iterative deconvolution.",
+    mediaBadge: "Reconstruction Timelapse",
     stats: [
-      { label: "Forward Matrix F(t)", value: "Time-Tagged", desc: "Couples rotation & SGL PSF" },
-      { label: "Noise Covariance", value: "Spatio-Temporal", desc: "Ornstein-Uhlenbeck weather" },
-      { label: "Regularization", value: "Beltrami/Laplace", desc: "Edge-preserving prior" },
-      { label: "Algorithm Type", value: "Closed-Form", desc: "Direct linear GLS inversion" },
+      { label: "Forward Matrix F(t)", value: "Time-Tagged", desc: "Rotation, smear & SGL kernel" },
+      { label: "Noise Covariance", value: "Block-OU", desc: "τ_c = 4 d per pixel" },
+      { label: "Regularization", value: "Laplacian", desc: "λ_eff from λ = 3×10⁻³" },
+      { label: "Algorithm Type", value: "Closed-Form", desc: "One linear GLS solve" },
     ],
   },
   {
     id: 5,
     badge: "Fleet Architecture",
-    title: "16-Craft Swarm & Common-Mode Cloud Deflation",
-    subtitle: "Why a distributed fleet of 16 small spacecraft cancels global weather noise with mathematical certainty.",
+    title: "16-Craft Raster & Exact Profiling of the Slot Offsets",
+    subtitle: "Concurrent sampling turns a disk-integrated weather flicker into a nuisance parameter that can be profiled out.",
     takeaways: [
-      <span>Instead of 1 large spacecraft, we deploy a fleet of 16 coordinated 1-meter microsatellites.</span>,
-      <span>Because clouds cover the entire planet simultaneously, global cloud shifts produce an identical offset across all 16 concurrent slots.</span>,
+      <span>The reference campaign is <LatexMath math="N_{\rm sc} = 16" /> spacecraft on a <LatexMath math="64\times64" /> raster with <LatexMath math="20.9" /> m pitch: each dwell samples 16 pixels at once, on adjacent boustrophedon tracks, with transverse separations of ~80–300 m — <em>not</em> a 1.3 km formation.</span>,
+      <span>An instantaneous disk-integrated cloud fluctuation perturbs all 16 simultaneous samples coherently, because <LatexMath math="K(\rho) \propto 1/\rho" /> mixes the whole planet into every sample. We therefore model it as per-slot nuisance offsets <LatexMath math="\boldsymbol\alpha" />: <LatexMath math="\mathbf{y} = \mathsf{F}\mathbf{s} + \mathsf{B}\boldsymbol\alpha + \boldsymbol\varepsilon" />.</span>,
       <div className="flex flex-col gap-1 w-full">
-        <span>We introduce an orthogonal deflation projector that mathematically subtracts the common-mode cloud perturbation:</span>
+        <span>They are removed by exact profile likelihood, not by subtracting a per-slot mean. Since <LatexMath math="\mathsf{C}" /> is block-diagonal over pixels while <LatexMath math="\mathsf{B}" /> couples slots within a pixel, <LatexMath math="\mathsf{H} = \mathsf{B}^{\sf T}\mathsf{C}^{-1}\mathsf{B}" /> is 256 blocks of size <LatexMath math="M_p \times M_p" />, and with the anchor <LatexMath math="\sum_b \alpha_b = 0" /> the profile is a rank-one correction:</span>
         <div className="py-1.5 px-3 bg-blue-50/70 rounded-lg border border-blue-200/80 overflow-x-auto my-1 shadow-2xs">
-          <LatexMath math="\mathbf{P}_\perp = \mathbf{I}_{N_c} - \frac{1}{N_c} \mathbf{1}_{N_c} \mathbf{1}_{N_c}^T" block />
+          <LatexMath math="\mathsf{A} = \mathsf{A}_{\rm free} + \mathbf{q}\mathbf{q}^{\sf T}/S, \qquad \mathbf{b} = \mathbf{b}_{\rm free} + \mathbf{q}\,m/S" block />
         </div>
       </div>,
-      <span>Slot-profiling provides a statistically verified <LatexMath math="\Delta r = +0.054" /> boost in Pearson correlation (±0.006) across all weather regimes!</span>,
+      <span>Measured gain of profiling against a fit that ignores the offsets: <LatexMath math="\Delta r = +0.054 \pm 0.006" /> (paired, 10/10 seeds) — at the fiducial 55% cover. The four-step ablation isolates it as the <em>profiling</em> term: the OU covariance alone adds nothing on top.</span>,
     ],
-    speakerNotes: "Here is our biggest engineering advantage: rather than 1 monolithic spacecraft, we use a fleet of 16 coordinated microsatellites. When 16 craft measure 16 slots at the same second, they all experience the same global cloud brightness change. By applying a simple orthogonal projection operator P-perp, we wipe out the common-mode cloud fluctuation completely, leaving pure differential continent contrast. It's like active noise-cancelling headphones for planetary weather!",
+    speakerNotes: "The engineering story here is not 'more telescopes = more resolution'. Sixteen craft let sixteen raster positions be sampled simultaneously, and the physics that matters is that a whole-planet cloud brightening shows up in all of them together. An early version of this work treated that as an orthogonal projection that simply subtracted the per-slot mean and kept 93.75% of the information. That was wrong in both mechanism and arithmetic. What the revised paper does is exact profile likelihood over the 256 slot offsets with a sum-to-zero anchor. The audit is blunt: profiling removes no rank at all — the null space is set by the grid and the raster. What it changes is the response along the mean-albedo direction, and the anchor is what preserves it: the unanchored profile attenuates the disk-integrated albedo by a factor of 49.",
     judgeFaq: [
       {
-        q: "Is it expensive to send 16 spacecraft instead of 1?",
-        a: "No, small satellite swarms (microsats < 20 kg) are far cheaper and more resilient than 1 massive flagship. If 1 craft fails, 15 others continue scanning with zero mission interruption."
+        q: "Why anchor the offsets with Σα = 0?",
+        a: "Because without it the disk-integrated albedo is thrown away. The information audit measures the constant-mode gain as 913.7 un-profiled, 18.79 for the free profile (2.06% retained), and 774.1 for the anchored profile (84.72% retained). Anchoring is what 'full TDI' means in this paper."
       },
       {
-        q: "How do the 16 craft coordinate their clocks?",
-        a: "Inter-spacecraft optical laser cross-links synchronize clocks to sub-millisecond precision, requiring only 5 seconds of sync overhead per slot."
+        q: "How do the 16 craft coordinate?",
+        a: "The campaign ledger charges 45 s per dwell — 30 s translation slew, 10 s pointing settling and 5 s inter-spacecraft metrology — and nothing else. The simulation does not model clock jitter or formation keeping, so no claim is made about sub-millisecond timing; that is mission-systems work outside this paper."
       }
     ],
     interactiveComponent: "deflation",
     mediaSrc: "/images/tdi_reconstruction_pipeline.jpg",
     mediaTitle: "TDI Mathematical Pipeline & Operator Architecture",
-    mediaDesc: "End-to-end flowchart from observation phase and common-mode cloud deflation to reconstructed planetary surface map.",
+    mediaDesc: "End-to-end flowchart: time-tagged raster → slot-offset profiling (anchored) → regularized GLS solve → scored surface map.",
     mediaBadge: "Algorithm Pipeline Flowchart",
     stats: [
-      { label: "Fleet Size", value: "16 Crafts", desc: "Concurrent slot observers" },
-      { label: "Deflation Operator", value: <LatexMath math="\mathbf{P}_\perp = \mathbf{I} - \frac{\mathbf{1}\mathbf{1}^T}{16}" />, desc: "Cancels common-mode" },
-      { label: "Slot-Profiling Benefit", value: "+0.054 Δr", desc: "±0.006 (paired ablation)" },
-      { label: "Redundancy", value: "100%", desc: "No single point of failure" },
+      { label: "Fleet Size", value: "16 Crafts", desc: "16 pixels per dwell, 80–300 m apart" },
+      { label: "Nuisance Treatment", value: <LatexMath math="\mathsf{A} = \mathsf{A}_{\rm free} + \mathbf{q}\mathbf{q}^{\sf T}/S" />, desc: "Anchored profile, 256 blocks" },
+      { label: "Slot-Profiling Benefit", value: "+0.054 Δr", desc: "±0.006, 10/10 seeds, f_c ≈ 0.56" },
+      { label: "Rank Removed", value: "0", desc: "Nullity 288 before and after" },
     ],
   },
   {
     id: 6,
     badge: "Empirical Discovery",
-    title: "Cadence Law: Why Frequent Quick Revisit Snapshots Beat Long Exposures",
-    subtitle: "Our factorial experiments prove that sampling multiple independent weather epochs averages out clouds.",
+    title: "Cadence Law: Why Frequent Quick Revisits Beat Long Dwells",
+    subtitle: "Two factorial arms that hold either the photons per raster position or the wall clock fixed, and agree to within the error bars.",
     takeaways: [
-      "Classic astronomy intuition suggests: 'Stare as long as possible at each pixel to collect photons.'",
-      "We performed a rigorous factorial ablation holding the total photon count strictly constant at 7,200 seconds.",
-      "Result: M_p=4 (7200s dwells) yields r = 0.049 ± 0.005. M_p=32 (900s) reaches r = 0.497 ± 0.014. M_p=64 (450s) achieves r = 0.571 ± 0.010. The rise is monotone and unanimous across 6 paired seeds.",
-      "The Mechanism: Each quick pass catches an independent realization of the weather. Uncorrelated cloud noise averages to zero, while the phase-locked continents reinforce.",
+      "Classic intuition says: stare as long as possible at each pixel to collect photons.",
+      "We ran two mutually exclusive ledgers. Arm A holds the integration per raster position constant at M_p·t_s = 28,800 s (8 h) and lets the wall clock grow; arm B holds the wall clock at 89.87 d and lets t_s fall. Total photons per position, not stare time, is what arm A fixes.",
+      "Arm A: M_p = 4 (7200 s dwells) gives r = 0.049 ± 0.005; M_p = 32 (900 s) gives 0.497 ± 0.014; M_p = 64 (450 s) gives 0.571 ± 0.010. Every step is unanimous across the six paired seeds, and arm B reproduces the same curve (0.049 → 0.576) under the other ledger.",
+      "The mechanism is weather sampling, not conditioning: each quick pass catches a fresh realization of the cloud field, so uncorrelated cloud noise averages down while the stationary surface reinforces. The step gains shrink (+0.124, +0.173, +0.151, +0.075) and N_eff saturates near 12 at M_p = 64.",
     ],
-    speakerNotes: "This was our biggest discovery. Traditional astronomers think: 'Stare at one spot as long as possible.' But in our factorial ablation, we held the photons per raster position strictly constant and varied the cadence. Four long 2-hour dwells gave a dismal correlation of 0.049. But spending the exact same photons on 32 quick 15-minute snapshots pushed correlation to 0.497, and 64 dwells of 450 s reached 0.571. The reason is statistical: each snapshot captures a brand new weather pattern. Random clouds average away to zero, while the continents stay in the same spot and pop out with high contrast.",
+    speakerNotes: "This is the paper's central empirical result. We held the photons per raster position strictly constant and varied the cadence. Four two-hour dwells gave r = 0.049. Spending the same photons on 32 quick 900-second snapshots gave 0.497, and 64 dwells of 450 s gave 0.571. Two things keep us honest about it. First, the arms are separate ledgers — arm A buys its extra revisits with wall-clock time and lands at 93.73 days, outside a 90-day window; arm B stays at 89.87 days by shortening dwells, and reaches the same answer, which is why we believe the trend rather than the bookkeeping. Second, the curve saturates: the increments fall, and the effective number of independent looks is only ~12 at M_p = 64 because the cloud field has a 4-day memory. If the real decorrelation time is longer, M_p > 32 buys almost nothing.",
     judgeFaq: [
       {
         q: "Is there a limit to how fast the spacecraft can revisit?",
-        a: "Yes! Slew and settling overhead (45 seconds) becomes significant below 100-second dwells. We found 8 to 16 revisits of 450-900 seconds is the optimal sweet spot."
+        a: "Yes, and it is measured rather than assumed. The 45 s/dwell overhead drives the duty cycle from 0.994 at M_p = 4 to 0.909 at M_p = 64, and arm A's wall clock reaches 93.73 d — beyond the nominal campaign window. On top of that, with τ_cloud = 4 d the effective look count saturates near 12, so extra revisits buy diminishing returns. The tested range stops at 450 s; nothing below it was simulated."
       },
       {
         q: "Does this work when the planet has 75% cloud cover?",
-        a: "Yes! Even under 75% cloud cover (Venus-like cloud decks), the frequent revisit strategy recovers major landmasses."
+        a: "It degrades, and we report the degradation. In the ten-seed cloud study the profiled estimator gives r = 0.342 at 55% realized cover and r = 0.249 at 71%, with SSIM falling from 0.106 to 0.061 and land–ocean d′ from 0.73 to 0.53. That is a coarse continental-scale detection, not a map of landmasses — the ℓ ≳ 9 band is gone by then."
       }
     ],
     interactiveComponent: "cadence",
     stats: [
-      { label: "M_p=4 (7200s)", value: "r = 0.049", desc: "Single long dwell" },
-      { label: "M_p=32 (900s)", value: "r = 0.497", desc: "32 revisits" },
-      { label: "M_p=64 (450s)", value: "r = 0.571", desc: "Fastest tested" },
-      { label: "Duty Cycle η", value: "90.9%", desc: "45s slew & settle loss" },
+      { label: "M_p=4 (7200s)", value: "r = 0.049", desc: "4 dwells × 2 h, 85.73 d wall" },
+      { label: "M_p=32 (900s)", value: "r = 0.497", desc: "32 revisits, η = 0.952" },
+      { label: "M_p=64 (450s)", value: "r = 0.571", desc: "93.73 d wall (> 90 d)" },
+      { label: "Duty Cycle η", value: "90.9%", desc: "45 s overhead at M_p = 64" },
     ],
   },
   {
     id: 7,
     badge: "Flight Mechanics",
-    title: "Target Exoplanets: Proxima b, Ross 128 b & Solar Analogs",
-    subtitle: "Flight trajectories, orbital dynamics, and propulsion budgets for real habitable exoplanets.",
+    title: "Target Exoplanets: Proxima b, Ross 128 b & Nominal Proxies",
+    subtitle: "Focal-line dynamics, image-cylinder sizes and tracking Δv budgets for nearby temperate planets.",
     takeaways: [
-      "We characterized the focal line dynamics for 6 candidate habitable exoplanets within 13 light-years.",
-      "Proxima Centauri b gives the largest image cylinder (31.5 km across) and high SNR, but requires 5.8 km/s tracking propulsion.",
-      "Ross 128 b and GJ 273 b provide the optimal astrobiological balance, requiring < 3 km/s Δv over 90 days.",
-      "τ Ceti e (around a Sun-like star) requires virtually zero propulsion (only 0.11 km/s) due to its wide 163-day orbit!",
+      "We evaluated six rows: five confirmed temperate planets around M dwarfs within ~13 light-years, plus τ Ceti e. τ Cet e's planet interpretation has been refuted (Figueira et al. 2025, A&A 700 A174), so it is kept only as an illustrative dynamics row, not as a target.",
+      "Proxima Centauri b has the largest image cylinder (D_img = 31.8 km at 650 AU) and a nominal SNR_C = 665.8, but its 11.2-day orbit costs 5.81 km/s of tracking Δv over 90 days.",
+      "Ross 128 b (quiet host, β_ecl ≈ 0.5°, D_img = 13.1 km) needs 2.94 km/s; GJ 273 b needs only 1.34 km/s, but its M·sin i = 2.89 M⊕ lies above the Chen & Kipping Terran/Neptunian transition, so the rocky radius used for it is an extrapolation rather than a measurement.",
+      "The Δv spread is a factor of 53 across the six rows (0.11–5.81 km/s; 1.34–5.81 km/s among the confirmed five), computed as the time integral of the projected Keplerian transverse acceleration, not the circular estimate.",
     ],
-    speakerNotes: "Could we actually fly this mission to a real target? Yes! We analyzed 6 nearby habitable zone exoplanets. As the planet orbits its star, its focal tube sweeps through deep space, so our spacecraft must fire small thrusters to keep up. For Ross 128 b, the required propulsion over 90 days is under 3 km/s — easily handled by modern miniature ion thrusters. And for τ Ceti e, tracking requires only 110 meters per second!",
+    speakerNotes: "Could we actually fly this? The paper maps the requirements rather than the hardware. As a planet orbits its star, its focal cylinder sweeps across space, so the fleet has to steer to keep up. We integrate |a_perp| over the 90-day window: that is the honest number, and it varies by a factor of 53 across the rows, which is why the v2 presentation of ~10% uncertainties was replaced. I want to be careful about τ Ceti e: it appears here because the v2 target list used it, and the RV signal has since been attributed to stellar activity and classified as a false positive. We keep the row for its dynamics — its 163-day orbit makes the tracking cost trivially small at 0.11 km/s — and we label it as illustrative.",
     judgeFaq: [
       {
         q: "What kind of thrusters can provide 3 km/s Δv?",
-        a: "Miniaturized electrospray or gridded ion thrusters (like Busek or Enpulsion) operate at specific impulses of 2000-3000 seconds, requiring less than 2 kg of propellant per craft."
+        a: "This paper does not size a propulsion system; it produces the Δv requirement. The mission-design discussion covers cruise (deep-perihelion sail, 105–155 km/s) and power (APPLE planar RTG tiles), and explicitly leaves formation keeping and thruster trade studies outside its scope."
       },
       {
-        q: "Which planet should humanity target first?",
-        a: "Ross 128 b or GJ 273 b are premier candidates because their host stars are calm (no devastating superflares), and their propulsion tracking demands are modest."
+        q: "Which planet should be targeted first?",
+        a: "The paper explicitly declines to do site selection; it maps requirements. Reading those numbers together: Ross 128 b combines an in-ecliptic focal line (β_ecl ≈ 0.5°, so no plane change) with a quiet host, SNR_C = 581 and 2.94 km/s of tracking. GJ 273 b is cheapest to track at 1.34 km/s, but its M·sin i sits above the Chen & Kipping mass regime transition so its rocky radius is extrapolated. Teegarden c is also in-plane at 1.72 km/s but has the lowest photon rate, SNR_C = 130."
       }
     ],
     interactiveComponent: "targets",
     mediaSrc: "/images/sgl_target_exoplanets.jpg",
-    mediaTitle: "Prime Habitable Zone Exoplanet Target Infographic",
-    mediaDesc: "Comparative telemetry cards: Proxima b, TRAPPIST-1e, Kepler-186f, LHS 1140 b, Ross 128 b, and Wolf 1061 c.",
+    mediaTitle: "Temperate Exoplanet Target Infographic",
+    mediaDesc: "Comparative telemetry cards for the five confirmed rows (Proxima Cen b, Ross 128 b, GJ 1061 d, Teegarden c, GJ 273 b) plus the refuted τ Cet e illustrative row. Values from results/targets.json.",
     mediaBadge: "Target Infographic",
     stats: [
-      { label: "Nearest Target", value: "Proxima b (4.2 ly)", desc: "D_img = 31.5 km" },
-      { label: "Lowest Prop. Target", value: "τ Cet e", desc: "Δv90 = 0.11 km/s" },
-      { label: "Balanced Sweet Spot", value: "Ross 128 b", desc: "Quiet star, Δv = 2.9 km/s" },
-      { label: "Photometric SNR_C", value: "128 - 901", desc: "1800s dwell, 1m mirror" },
+      { label: "Nearest Target", value: "Proxima b (4.2 ly)", desc: "D_img = 31.8 km" },
+      { label: "Illustrative Row", value: "τ Cet e", desc: "Δv90 = 0.11 km/s; planet refuted" },
+      { label: "Lowest-Cost Confirmed", value: "Ross 128 b", desc: "β_ecl ≈ 0.5°, Δv = 2.94 km/s" },
+      { label: "Photometric SNR_C", value: "130 – 909", desc: "nominal, 1800 s, 1 m" },
     ],
   },
   {
     id: 8,
     badge: "Mission Roadmap",
-    title: "Deep Space Swarm Dynamics & Flight Feasibility",
-    subtitle: "Cooperative 16-spacecraft formation flying with ephemeris from external precursor observations.",
+    title: "What the Mission Needs, and What This Paper Does Not Establish",
+    subtitle: "Characterized ephemerides are a hard requirement; formation keeping and propulsion are outside this study's scope.",
     takeaways: [
-      "Autonomous formation flying: The 16 microsatellites maintain 1.3-km coordinated formation via laser cross-links.",
-      "With high-efficiency ion propulsion (Isp ~ 3000s), each spacecraft requires less than 2.5 kg of propellant for the entire survey.",
-      "Ephemeris required: The whitened chi^2 is phase-invariant to <=1e-11, so spin/phase cannot be solved in-flight; the ephemeris must come from external precursor observations. Reconstruction quality r peaks at the truth.",
-      "The result: In our lifetimes, a 16-microsatellite SGL mission can deliver a 64×64 surface map of continents, oceans, and life on an exo-Earth.",
+      "The fleet is not a 1.3 km formation: 16 craft sample 16 raster positions at once on adjacent tracks, with transverse separations of ~80–300 m inside the 1.34 km image cylinder.",
+      "Spin state is not solvable in flight from these data. The whitened χ² is flat in assumed initial phase (relative variation ≤ 10⁻¹¹) and monotone in assumed period, so the rotation period and phase must come from precursor photometry — the paper's own requirement is characterization to ~10⁻⁴.",
+      "What this paper delivers is a bounded, reproducible result: at 55% realized cloud cover, r = 0.342 ± 0.008 with SSIM = 0.106 on a 36×72 unknown vector, and a usable harmonic band of ℓ ≲ 9 (~2200 km resolution elements for an Earth-radius planet).",
+      "Propellant budgets, thruster selection, coronagraph engineering and formation keeping are not computed here; the mission section covers cruise (sail), power (APPLE tiles) and data volume, and flags the rest as open.",
     ],
-    speakerNotes: "In conclusion: the Solar Gravitational Lens is the only technology known to physics that can resolve continents on an exo-Earth. Prior to our work, dynamic weather and planetary rotation were seen as an insurmountable roadblock. Our Time-Domain Inversion framework with 16-craft slot deflation solves this problem rigorously. The code is open-source, benchmarked to NASA NIAC standards, and proves that we can photograph continents on another world in our lifetimes.",
+    speakerNotes: "To close honestly: the Solar Gravitational Lens is, as far as the published literature shows, the only concept that reaches the photon budget and angular scale needed for multipixel exo-Earth surface mapping. Before this work, rotation and weather were treated as a corruption to be averaged away; we made them part of the model and measured what that buys. What I want to leave you with is the boundary of the claim. We did not solve the spin-state problem — we proved the photometric residuals cannot solve it, so an external ephemeris is mandatory. We did not size a propulsion system or a coronagraph. What we did is build an open pipeline in which every number on these slides traces to an archived, seeded experiment, and report where it stops: continental-scale albedo structure at ℓ ≲ 9, not a photograph of a world.",
     judgeFaq: [
       {
         q: "What are the next steps for this research?",
-        a: "Hardware-in-the-loop optical testbeds, coronagraph design for blocking the bright solar corona, and mission concept studies with space agencies."
+        a: "The paper names them: a real regularizer-selection criterion (L-curve, discrepancy principle, GCV, or a validated prior over surface models) instead of the hardcoded λ = 3×10⁻³; a wavelength-integrated rather than bolometric signal model; and a full spin-resolved dynamic retrieval, which it explicitly defers. Optical testbeds and coronagraph design belong to the mission-study community, not to this manuscript."
       },
       {
         q: "Can the public and judges inspect the code and paper?",
-        a: "Yes! The entire pipeline is open-source, all simulations run with reproducible random seeds, and the full revised manuscript PDF is downloadable directly from this website."
+        a: "Yes. The pipeline is open-source, every figure is regenerated from archived npz results by scripts in src/, seeds are fixed and published, and the revised manuscript PDF is downloadable from this site. Numbers shown in this presentation are read from the same archive rather than retyped."
       }
     ],
     interactiveComponent: "fleet",
     mediaSrc: "/videos/fleet_raster_scan.gif",
-    mediaTitle: "16-Spacecraft Swarm Spatial Scanning Video",
-    mediaDesc: "Concurrent raster scanning of 1.34 km focal tube with active laser links, completing full map in 90 days.",
+    mediaTitle: "16-Spacecraft Raster Scan Simulation Video",
+    mediaDesc: "Illustrative concurrent raster scanning of the 1.34 km image cylinder. The archived fiducial campaign is 256 slots × 1845 s per pass over 16 passes: 85.33 d exposure plus 2.00 d in-window overhead = 87.33 d wall clock.",
     mediaBadge: "Fleet Formation Video",
     stats: [
-      { label: "Core Problem", value: "SOLVED", desc: "Dynamic time-aliasing" },
-      { label: "Propellant Mass", value: "< 2.5 kg", desc: "Per craft (Isp 3000s)" },
-      { label: "Publication", value: "Revised ApJ", desc: "Under peer review" },
-      { label: "Code Status", value: "Open Source", desc: "Fully reproducible" },
+      { label: "Deliverable", value: "r = 0.342", desc: "± 0.008, 55% cover, 10 seeds" },
+      { label: "Usable Band", value: "ℓ ≲ 9", desc: "≈ 2200 km elements" },
+      { label: "Status", value: "Revise & Resubmit", desc: "TOJA, under review" },
+      { label: "Code Status", value: "Open Source", desc: "Seeds fixed, figures reproducible" },
     ],
   },
 ];

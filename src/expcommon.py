@@ -276,7 +276,13 @@ def paired_stats(x, y, nboot=20000, seed=42):
     from math import comb
     npos = int(np.sum(d > 0))
     nneg = int(np.sum(d < 0))
-    p_sign = min(1.0, 2.0 * comb(n, min(npos, nneg)) / 2.0 ** n)
+    # Exact two-sided sign test under the usual central convention: twice the
+    # smaller binomial tail, capped at 1.  (The alternative "twice the point
+    # probability at the observed split" is cheaper but anti-conservative: for
+    # n = 10, k = 8 it gives 0.088 where the central tail gives 0.109.)
+    k = min(npos, nneg)
+    tail = sum(comb(n, i) for i in range(k + 1)) / 2.0 ** n
+    p_sign = min(1.0, 2.0 * tail)
     rng = np.random.default_rng(seed)
     idx = rng.integers(0, n, size=(nboot, n))
     boots = d[idx].mean(axis=1)

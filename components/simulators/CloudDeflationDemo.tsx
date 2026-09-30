@@ -42,10 +42,10 @@ export default function CloudDeflationDemo() {
         <div className="flex items-center gap-2">
           <div className="badge badge-success flex items-center gap-1">
             <Cpu size={14} />
-            <span>Mathematical Innovation</span>
+            <span>Illustrative Toy Panel</span>
           </div>
           <h3 className="text-lg font-bold text-slate-800">
-            Common-Mode Cloud Slot Deflation (<LatexMath math="P_\perp" />)
+            Common-Mode Slot Offsets (<LatexMath math="\boldsymbol{\alpha}" />)
           </h3>
         </div>
         <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export default function CloudDeflationDemo() {
               }`}
             >
               <Zap size={12} className={showDeflated ? "text-amber-300" : "text-slate-400"} />
-              <span>Deflated Clean (P⊥ y)</span>
+              <span>Offset-Removed (illustrative)</span>
             </button>
           </div>
         </div>
@@ -145,12 +145,12 @@ export default function CloudDeflationDemo() {
 
             {/* Derivation Box */}
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
-              <div className="font-bold text-slate-700">Orthogonal Projection Operator:</div>
+              <div className="font-bold text-slate-700">What This Toy Panel Shows (and What the Paper Actually Does):</div>
               <div className="font-mono text-slate-600 bg-white p-2 rounded border border-slate-200 my-1 overflow-x-auto">
-                <LatexMath math="P_\perp = \mathbf{I}_{N_c} - \frac{1}{N_c}\mathbf{1}\mathbf{1}^T" block />
+                <LatexMath math="\hat{\boldsymbol{\alpha}}_{\rm toy} = \bar{y}\,\mathbf{1}, \qquad \text{paper:} \quad \mathsf{A} = \mathsf{A}_{\rm free} + \mathbf{q}\mathbf{q}^{\sf T}/S" block />
               </div>
               <p className="text-slate-500 leading-snug">
-                Because clouds blanket the entire disk simultaneously, disk-averaged cloud fluctuations are identical across all <LatexMath math="N_c" /> spacecraft slots. Multiplying by <LatexMath math="P_\perp" /> removes this dominant common-mode noise without touching differential continent contrast!
+                Here each of the <LatexMath math="N_c" /> simultaneous slots is drawn from the same disk-integrated cloud field, so the offset is a single common-mode number and subtracting the slot mean removes it. The paper's estimator is not mean subtraction: it profiles a per-slot offset vector <LatexMath math="\boldsymbol{\alpha}" /> against the full block-OU covariance <LatexMath math="\mathbf{C}_y" />, anchored so that the offsets cannot silently absorb the planet's disk-integrated flux. That anchored profiling is a rank-one correction to the normal equations, not an orthogonal projector — and the information audit (Section 4.2) shows it leaves the nullity at 288 while attenuating the constant-mode gain by roughly a factor of 49.
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function CloudDeflationDemo() {
             <div>
               <div className="flex justify-between items-center mb-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600">
-                  {showDeflated ? "Post-Deflation Differential Signals (Cleaned)" : "Raw Channel Measurements (Corrupted by Clouds)"}
+                  {showDeflated ? "Offset-Removed Differential Signals (toy)" : "Raw Slot Channels (common offset present)"}
                 </h4>
                 <span className="text-xs text-slate-400 font-mono">
                   Common Mode: +{(commonMode * 100).toFixed(1)}%
@@ -205,12 +205,12 @@ export default function CloudDeflationDemo() {
                 <span className={`w-3 h-3 rounded-full ${showDeflated ? "bg-emerald-500" : "bg-rose-400"}`} />
                 <span className="font-semibold text-slate-700">
                   {showDeflated
-                    ? "Deflated: Surface albedo signal recovered (Pearson r boosted by +0.054)"
-                    : "Raw: Surface obscured by global cloud shifts"}
+                    ? "Illustration only: this toy mean-subtraction is not the paper's estimator"
+                    : "Raw: every slot shifted by the same disk-integrated offset"}
                 </span>
               </div>
-              <span className="font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">
-                Slot-Profiling Benefit: Δr = +0.054 ± 0.006
+              <span className="font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold" title="Measured in the paper's seeded 64×64 experiment at 55% cloud cover (F − A), not in this toy panel">
+                Paper result: Δr = +0.054 ± 0.006
               </span>
             </div>
           </div>

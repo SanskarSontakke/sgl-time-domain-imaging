@@ -33,18 +33,18 @@ const MEDIA_ITEMS: MediaItem[] = [
     src: "/videos/planet_rotation_clouds.gif",
     thumbnail: "/images/exoearth_cloud_dynamics.jpg",
     badge: "Time-Series Simulation",
-    description: "Demonstrates the forward physical model of an Earth-like planet with 23.4° axial tilt rotating with a 24.0-hour diurnal period. Dynamic weather systems advect eastward at +21 m/s across the continental landmasses. The right panel tracks the integrated disk-averaged diurnal light curve F(t), revealing photometric variability driven by cloud masking of dark oceans and bright continents.",
+    description: "Visualization of the forward physical model this paper inverts: an Earth-analog with a 24.0-hour diurnal period, illuminated by a Lambertian terminator whose sub-stellar longitude drifts 86.1 deg over the 87.33-day fiducial campaign (P_orb = 1 yr). Clouds are an advecting Ornstein-Uhlenbeck field with zonal drift 6 deg/day (~7.7 m/s at the equator) and decorrelation time 4 d. The disk-integrated brightness that each dwell actually records is shown alongside.",
     formula: "F(t) = \\int_{\\text{disk}} A(\\mathbf{r}, t) \\, (\\mathbf{n} \\cdot \\mathbf{s}) \\, d\\Omega",
     stats: [
       { label: "Diurnal Period", value: "P = 24.0 h", desc: "Planet spin rate" },
       { label: "Cloud Cover", value: "f_c = 55%", desc: "Earth-analog fiducial" },
-      { label: "Zonal Wind", value: "+21 m/s", desc: "Eastward jet advection" },
-      { label: "Axial Obliquity", value: "23.4°", desc: "Seasonal tilt" }
+      { label: "Zonal Advection", value: "6°/day", desc: "≈7.7 m/s at equator" },
+      { label: "Decorrelation", value: "τ_c = 4 d", desc: "OU cloud memory" }
     ],
     keyPoints: [
-      "Simulates dynamic cloud evolution with synoptic wave speeds faster than planetary rotation.",
+      "The sub-stellar latitude is held fixed at the equator: obliquity is deliberately not modeled, and the seasonal intertropical migration that a tilted planet would show is outside the tested regime.",
       "Demonstrates why single-epoch static snapshots fail: clouds mask continents non-uniformly over time.",
-      "Integrates diurnal light curve with Lambertian host star scattering."
+      "Disk-integrated cloud fluctuations are coherent across all 16 simultaneous samples, which is exactly the nuisance the slot profiling removes."
     ],
     simulatorTab: "sandbox"
   },
@@ -57,18 +57,18 @@ const MEDIA_ITEMS: MediaItem[] = [
     src: "/videos/einstein_ring_convolution.gif",
     thumbnail: "/images/einstein_ring_view.jpg",
     badge: "SGL Optical Ray-Trace",
-    description: "Visualizes the field of view through an internal coronagraph aboard an SGL telescope stationed at 650 AU. The Sun's brilliant disk is occulted by the central coronagraph mask, unveiling the luminous, razor-thin Einstein ring. As the exoplanet rotates, continents and clouds modulate the azimuthal intensity profile I(θ) according to the SGL gravitational kernel.",
-    formula: "K(\\rho) = \\frac{d}{4 \\cdot r\\rho}, \\quad \\mu \\sim 10^{11}",
+    description: "Visualizes the field of view through an internal coronagraph aboard an SGL telescope stationed at 650 AU. The Sun's brilliant disk is occulted by the central coronagraph mask, unveiling the luminous, razor-thin Einstein ring. As the exoplanet rotates, continents and clouds modulate the azimuthal intensity profile I(θ) according to the SGL gravitational kernel — the paper inverts the aperture-averaged form, K(0) = 1 with a d/(4ρ) tail, not the singular point PSF.",
+    formula: "K(0)=1, \\quad K(\\rho>0) \\simeq \\frac{d}{4\\rho}, \\quad \\mu_0 \\simeq 1.2\\times10^{11}",
     stats: [
-      { label: "Optical Gain", value: "μ ~ 10¹¹", desc: "Natural gravitational boost" },
-      { label: "Kernel Scale", value: "K(ρ) ∝ 1/ρ", desc: "Hyperbolic PSF" },
+      { label: "Optical Gain", value: "μ₀ ≈ 1.2×10¹¹", desc: "on-axis, λ = 1 μm" },
+      { label: "Kernel Scale", value: "K(ρ) ∝ 1/ρ", desc: "aperture-averaged" },
       { label: "Telescope Dist", value: "z = 650 AU", desc: "Focal line station" },
-      { label: "Photon SNR", value: "SNR_C = 43.16", desc: "Cloud-free benchmark" }
+      { label: "Photon SNR", value: "SNR_C = 43.16", desc: "per 1800 s dwell" }
     ],
     keyPoints: [
       "Gravity bends planetary light around the entire solar perimeter into a 360° ring.",
       "Azimuthal angles on the Einstein ring map directly to position angles on the exoplanet.",
-      "The razor-sharp 1/ρ radial decay provides micro-arcsecond spatial resolution."
+      "The 10⁻¹⁰ arcsec figure is the wave-optical kernel scale quoted from the literature. The resolution this paper can actually claim is set by image-plane sampling — one 20.9 m element ≈ 4×10⁻⁸ arcsec — and clouds cut the recovered band at ℓ ≈ 9."
     ],
     simulatorTab: "einstein"
   },
@@ -81,18 +81,18 @@ const MEDIA_ITEMS: MediaItem[] = [
     src: "/videos/fleet_raster_scan.gif",
     thumbnail: "/images/sgl_focal_cylinder_diagram.jpg",
     badge: "Fleet Constellation",
-    description: "Demonstrates the concurrent spatial scanning strategy within the 1.34-kilometer focal tube. A constellation of 16 nano-spacecraft flies in synchronized formation, each sweeping an assigned transverse strip at 15 m/s with active laser cross-links. The right telemetry monitors cylinder coverage, accumulating full 64×64 pixel maps in 90 days.",
-    formula: "\\Delta t_{\\rm frame} = \\frac{D_{\\rm img}}{N_{\\rm craft} \\cdot v_{\\rm slew}} \\approx 5.6\\text{ hours}",
+    description: "Demonstrates the sampling geometry the paper actually inverts: a 64×64 raster with 20.9 m image-plane pitch inside the 1.34 km focal tube, grouped into 256 dwell slots of 16 simultaneous pixels each, visited M_p = 16 times at t_s = 1800 s. A full pass takes 256 × (1800 + 45) s ≈ 5.5 days, so the fiducial campaign spans 87.33 days of wall clock — 85.33 d of exposure plus 2.00 d of in-window slew, settle and metrology overhead.",
+    formula: "\\Delta t_{\\rm pass} = N_{\\rm slot}\\,(t_s + T_{\\rm oh}) = 256 \\times 1845\\,{\\rm s} \\approx 5.5\\text{ days}",
     stats: [
-      { label: "Fleet Constellation", value: "16 Crafts", desc: "Coordinated nano-probes" },
+      { label: "Fleet Constellation", value: "16 craft", desc: "One per simultaneous slot pixel" },
       { label: "Cylinder Diameter", value: "1.34 km", desc: "Exo-Earth image size" },
-      { label: "Slew Velocity", value: "15.2 m/s", desc: "Transverse scan speed" },
-      { label: "Cadence Law", value: "K^0.26", desc: "Resolution scaling" }
+      { label: "Raster Pitch", value: "20.9 m", desc: "≈199 km on the planet" },
+      { label: "Cadence Law", value: "saturating in M_p", desc: "N_eff < M_p for OU weather" }
     ],
     keyPoints: [
-      "Divides the 1.34 km image plane into 16 parallel tracks, slashing campaign duration by 93%.",
-      "Inter-satellite laser telemetry maintains sub-millimeter relative astrometric positioning.",
-      "Prevents temporal aliasing by completing each full spatial scan in under 6 hours."
+      "The 16 simultaneous samples of a slot share one common-mode cloud fluctuation; that degeneracy is a rank-1 nuisance per slot, not an extra measurement of the surface.",
+      "Wall clock is 87.33 d at M_p = 16, not 90.0 d; the 45 s/dwell overhead ledger is explicit and auditable (30 s slew + 10 s settle + 5 s metrology).",
+      "More revisits do not keep paying: at τ_cloud = 4 d the 64 passes deliver only ≈12 effective independent looks."
     ],
     simulatorTab: "fleet"
   },
@@ -105,18 +105,18 @@ const MEDIA_ITEMS: MediaItem[] = [
     src: "/videos/tdi_deconvolution_timelapse.gif",
     thumbnail: "/images/tdi_reconstruction_pipeline.jpg",
     badge: "Algorithmic Convergence",
-    description: "Follows the four-stage TDI mathematical inversion: Stage 1 reveals the raw SGL observation degraded by horizontal diurnal spin stripes and 12.8-21.0x (sigma) cloud noise; Stage 2 eliminates the per-slot nuisance level (the common-mode cloud brightness) by profile likelihood projection; Stage 3 applies Tikhonov regularization in the spectral domain; Stage 4 demonstrates fidelity growth as the revisit count rises to M_p=64.",
+    description: "Follows the four-stage inversion as the paper defines it: Stage 1 is the raw SGL raster, where a dwell is 7.5° of rotational smear and the cloud term is ~19× the photon noise in σ at the fiducial cover (variance ratio ≈362). Stage 2 removes the per-slot nuisance level by exact profile likelihood over the 256 slot offsets, not by an approximate common-mode subtraction. Stage 3 solves the regularized GLS normal equations with the OU covariance and Tikhonov weight λ = 3×10⁻³. Stage 4 shows fidelity growth as the revisit count rises to M_p = 64, where r saturates rather than continuing to climb.",
     formula: "\\hat{\\mathbf{m}} = (\\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{F} + \\mathbf{\\Lambda})^{-1} \\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{y}",
     stats: [
-      { label: "Long-Dwell Baseline", value: "r = 0.049", desc: "M_p = 4, 7200 s dwells" },
-      { label: "Slot-Profiling Gain", value: "Δr = +0.054", desc: "Per-slot nuisance handling" },
-      { label: "Fiducial Recon", value: "r = 0.342", desc: "At fc = 0.55, M_p = 16" },
-      { label: "High Cadence", value: "r = 0.571", desc: "Cadence Law at M_p = 64" }
+      { label: "Long-Dwell Baseline", value: "r = 0.049", desc: "M_p = 4, 7200 s dwells (arm A)" },
+      { label: "Slot-Profiling Gain", value: "Δr = +0.054", desc: "F−A paired, ±0.006, 10/10 seeds" },
+      { label: "Fiducial Recon", value: "r = 0.342", desc: "Realized cover 0.56, M_p = 16" },
+      { label: "High Cadence", value: "r = 0.571", desc: "Arm A at M_p = 64 (93.7 d wall)" }
     ],
     keyPoints: [
-      "Directly validates how the projection operator eliminates cloud-induced horizontal barcodes.",
-      "Recovers continental boundaries with slot-profiling gain Δr = +0.054 ± 0.006.",
-      "Demonstrates convergence from noise floor to continental-scale geography."
+      "The reconstruction is a regularized GLS solve, not an iterative deconvolution; the figure shows a single linear inverse per dataset.",
+      "Slot profiling gains +0.054 in r over a fit that ignores the offsets, but the OU covariance itself adds nothing measurable on top (F−D = −0.003, 6/10 in sign).",
+      "Even the best case is continental-scale only: r = 0.342 with SSIM = 0.106 at nominal weather."
     ],
     simulatorTab: "sandbox"
   },
@@ -124,15 +124,15 @@ const MEDIA_ITEMS: MediaItem[] = [
     id: "img-sgl-architecture",
     type: "image",
     title: "Solar Gravitational Lens Optical Architecture",
-    subtitle: "Comprehensive 3D diagram of the Sun as a gravitational lens, the 547.5+ AU focal line, and the 1.34 km focal tube.",
+    subtitle: "Comprehensive 3D diagram of the Sun as a gravitational lens, the 547.8 AU focal-line onset, and the 1.34 km focal tube.",
     category: "Mission Architecture",
     src: "/images/sgl_focal_cylinder_diagram.jpg",
     thumbnail: "/images/sgl_focal_cylinder_diagram.jpg",
     badge: "Mission Diagram",
-    description: "Detailed scientific illustration showing an exo-Earth on the left emitting rays toward the Sun. Spacetime curvature focuses these rays along a focal line starting at 547.5 AU and extending beyond 650 AU, creating an image cylinder 1.34 km wide. A 16-spacecraft fleet equipped with solar sails and optical coronagraphs performs raster scanning across the cylinder.",
-    formula: "z_0 = \\frac{R_\\odot^2}{2 r_g} \\approx 547.5\\text{ AU}, \\quad r_g = \\frac{2GM_\\odot}{c^2}",
+    description: "Detailed scientific illustration showing an exo-Earth on the left emitting rays toward the Sun. Spacetime curvature focuses these rays along a focal line starting at 547.8 AU and extending beyond 650 AU, creating an image cylinder 1.34 km wide. A 16-spacecraft fleet equipped with solar sails and optical coronagraphs performs raster scanning across the cylinder.",
+    formula: "z_0 = \\frac{b^2}{2 r_g} \\approx 547.8\\text{ AU}\\ (b \\simeq R_\\odot), \\qquad r_g = \\frac{2GM_\\odot}{c^2} \\simeq 2.95\\text{ km}",
     stats: [
-      { label: "Focal Onset", value: "547.5 AU", desc: "Minimum focal distance" },
+      { label: "Focal Onset", value: "547.8 AU", desc: "Minimum focal distance" },
       { label: "Operating Station", value: "650 AU", desc: "Operational distance" },
       { label: "Image Cylinder", value: "1.34 km", desc: "Exo-Earth focal diameter" },
       { label: "Light Gain", value: "~10¹¹", desc: "Natural magnification" }
@@ -153,18 +153,18 @@ const MEDIA_ITEMS: MediaItem[] = [
     src: "/images/exoearth_cloud_dynamics.jpg",
     thumbnail: "/images/exoearth_cloud_dynamics.jpg",
     badge: "Exoplanet Render",
-    description: "Photorealistic visualization of a habitable exo-Earth exhibiting realistic atmospheric circulation. Zonal jet streams drive dynamic cloud bands eastward, masking continental landmasses and deep ocean basins. Inset shows the Bond albedo time-series curve and rotation axis tilt (23.4°).",
-    formula: "\\frac{\\partial c}{\\partial t} + v_{\\rm zonal} \\frac{\\partial c}{\\partial \\phi} = \\mathcal{S}(\\mathbf{r}, t)",
+    description: "Illustrative render, not a figure from the paper. The surface the simulation actually uses is a seeded synthetic albedo map on a 144×72 grid: ocean 0.06, continents 0.32 ± 0.10, polar caps up to 0.60, 30% land fraction. Its disk-mean value is normalized to 1, which is why no absolute Bond albedo is reported or needed.",
+    formula: "\\frac{\\partial c}{\\partial t} + v_{\\rm adv} \\frac{\\partial c}{\\partial \\phi} = -\\frac{c}{\\tau_c} + \\eta(\\mathbf{r}, t)",
     stats: [
-      { label: "Target Planet", value: "Kepler-186f", desc: "Habitable-zone analog" },
-      { label: "Axial Tilt", value: "23.4°", desc: "Rotation axis obliquity" },
-      { label: "Bond Albedo", value: "0.28 - 0.35", desc: "Dynamic variability" },
-      { label: "Zonal Drift", value: "+21 m/s", desc: "Atmospheric circulation" }
+      { label: "Scene Type", value: "synthetic GRF", desc: "seeded albedo map, not Kepler-186f" },
+      { label: "Sub-stellar Latitude", value: "0°", desc: "obliquity not modeled" },
+      { label: "Surface Albedo", value: "0.06–0.60", desc: "ocean → polar cap" },
+      { label: "Zonal Advection", value: "6°/day", desc: "OU cloud drift (fiducial)" }
     ],
     keyPoints: [
-      "Visualizes the physical origin of the cloud-to-photon noise ratio (12.8-21.0x in sigma).",
-      "Depicts day/night terminator with realistic Rayleigh atmospheric scattering.",
-      "Demonstrates why time-domain modeling is essential for moving atmospheres."
+      "The paper models a generic Earth-analog at 30 pc; it does not claim a specific planet's climate, so this render is decoration, not a result.",
+      "The OU field is parameterized by correlation length 12°, advection 6°/day and decorrelation 4 d — all three are swept in Table 8 of the manuscript.",
+      "Time-domain modeling matters because the cloud term is ~19× the photon noise in σ at nominal cover."
     ],
     simulatorTab: "sandbox"
   },
@@ -177,18 +177,18 @@ const MEDIA_ITEMS: MediaItem[] = [
     src: "/images/einstein_ring_view.jpg",
     thumbnail: "/images/einstein_ring_view.jpg",
     badge: "Coronagraph Telemetry",
-    description: "Astrophysical instrument simulation from 650 AU in deep space. An internal coronagraph occulter disk blocks the direct blinding sunlight, exposing the delicate solar corona and the luminous blue Einstein ring of the exoplanet. Includes polar coordinate degree markings (0°–360°) and the SGL point spread function kernel formula.",
-    formula: "K(\\rho) = \\frac{d}{4 \\cdot r\\rho}",
+    description: "Instrument concept for the observation, drawn from the paper's forward model rather than an image of real data. At 650 AU the Sun subtends ~1.5 arcsec; the planet's Einstein ring is focused into the annulus sampled by the 1-m aperture, and the corona that survives coronagraphic rejection sets the noise floor (Q_cor = 6.20×10⁹ photons/s against Q_exo = 8.01×10⁴ for the reference planet). The image-plane grid is the 64×64 raster, 20.9 m pitch.",
+    formula: "\\sigma_k=\\frac{\\sqrt{(Q_{\\rm cor}+Q_{\\rm exo}\\bar{s}_k)\\,t_s}}{Q_{\\rm exo}}",
     stats: [
-      { label: "Occulter Attenuation", value: "10⁻¹⁰", desc: "Starlight suppression" },
-      { label: "Ring Radius", value: "θ_E ≈ 1.7 arcsec", desc: "Angular Einstein radius" },
-      { label: "Azimuthal Bins", value: "360°", desc: "Full perimeter mapping" },
+      { label: "Coronal Background", value: "6.2×10⁹ s⁻¹", desc: "after rejection, 1 m @ 650 AU" },
+      { label: "Ring Radius (image plane)", value: "669 m", desc: "= D_img/2 at z = 650 AU" },
+      { label: "Sampling", value: "64×64 @ 20.9 m", desc: "the inverted measurement raster" },
       { label: "Distance", value: "650 AU", desc: "Spacecraft station" }
     ],
     keyPoints: [
-      "Starlight is suppressed by 10 orders of magnitude using an internal occulter.",
-      "The razor-thin ring concentrates photons from across the entire planetary disk.",
-      "Radial distance rho marks the distance from the optical optical focal axis."
+      "Starlight suppression is a mission requirement, not a result of this paper: the noise model simply takes the quoted post-coronagraphy corona rate as input.",
+      "The per-sample photon SNR at the fiducial 1800 s dwell is SNR_C = 43.16, reproduced in Figure 2.",
+      "Radial distance ρ marks distance from the optical focal axis; K(ρ) = d/(4ρ) for ρ > 0."
     ],
     simulatorTab: "einstein"
   },
@@ -196,23 +196,23 @@ const MEDIA_ITEMS: MediaItem[] = [
     id: "img-tdi-pipeline",
     type: "image",
     title: "TDI Deconvolution Pipeline Architecture",
-    subtitle: "End-to-end flowchart from observation phase and cloud deflation to reconstructed planetary surface map.",
+    subtitle: "End-to-end flowchart from the time-tagged sample stream and slot-offset profiling to the reconstructed planetary surface map.",
     category: "Deconvolution Algorithm",
     src: "/images/tdi_reconstruction_pipeline.jpg",
     thumbnail: "/images/tdi_reconstruction_pipeline.jpg",
     badge: "Algorithm Pipeline",
-    description: "Comprehensive infographic detailing the TDI deconvolution pipeline. On the left: observation phase with cloud interference creating a striped barcode measurement vector y. Center: the mathematical inversion engine applying generalized least squares with projection operator P_perp. Right: the reconstructed surface map with recovered continents and peer-reviewed metrics.",
-    formula: "(\\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{F} + \\mathbf{\\Lambda})^{-1} \\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{y}, \\quad \\mathbf{P}_\\perp = \\mathbf{I} - \\frac{1}{N_c}\\mathbf{1}\\mathbf{1}^T",
+    description: "Infographic of the inversion flow. Left: the measurement vector y, in which every dwell mixes light from the whole planet through the 1/ρ kernel and carries one shared cloud offset per dwell slot. Center: exact nuisance profiling — the slot offsets α enter through B and are removed by inverting the 256 block-diagonal H_j = B_jᵀC⁻¹B_j of the OU covariance, then re-anchored with Σ_b α_b = 0, giving A = A_free + qqᵀ/S. Right: the regularized GLS solution and its metrics.",
+    formula: "\\mathsf{A}=\\mathsf{A}_{\\rm free}+\\mathbf{q}\\mathbf{q}^{\\sf T}/S,\\qquad \\mathbf{q}=\\textstyle\\sum_j \\mathsf{G}_j^{\\sf T}\\mathsf{H}_j^{-1}\\mathbf{1}",
     stats: [
-      { label: "Correlation", value: "r = 0.342", desc: "Fiducial recovery" },
-      { label: "Slot-Profiling Gain", value: "+0.054 Δr", desc: "Per-slot nuisance handling" },
-      { label: "Structure SSIM", value: "0.109", desc: "Structural similarity" },
-      { label: "Benchmark SNR", value: "43.16", desc: "Cloud-free SNR" }
+      { label: "Correlation", value: "r = 0.342", desc: "±0.008, realized cover 0.56" },
+      { label: "Slot-Profiling Gain", value: "+0.054 Δr", desc: "F−A paired, 10/10 seeds" },
+      { label: "Structure SSIM", value: "0.106", desc: "±0.005 at the same cover" },
+      { label: "Benchmark SNR", value: "43.16", desc: "per 1800 s dwell" }
     ],
     keyPoints: [
-      "Defines the exact mathematical steps executed by the TDI algorithm.",
-      "Illustrates how common-mode cloud noise is projected out along the scan axis.",
-      "Highlights the verified peer-reviewed performance benchmarks."
+      "Profiling is a rank-one anchored correction, not a plain mean subtraction: v2's approximate deflation is audited and replaced (Section 4.2).",
+      "The disk-integrated albedo mode is exactly what profiling preserves; without the anchor it is projected out entirely.",
+      "Metrics shown are the archived 10-seed means with ddof=1 standard errors, quoted from results/audit.json."
     ],
     simulatorTab: "deflation"
   },
@@ -220,23 +220,23 @@ const MEDIA_ITEMS: MediaItem[] = [
     id: "img-target-catalog",
     type: "image",
     title: "Prime Habitable Zone Exoplanet Targets for the SGL",
-    subtitle: "Comparative telemetry cards and habitability indices for Proxima b, TRAPPIST-1e, Kepler-186f, and key systems.",
+    subtitle: "Comparative cards for the five confirmed nearby systems in Table 2, plus one refuted signal kept only as a dynamics illustration.",
     category: "Exoplanet Targets",
     src: "/images/sgl_target_exoplanets.jpg",
     thumbnail: "/images/sgl_target_exoplanets.jpg",
     badge: "Target Catalog",
-    description: "Infographic comparing six primary habitable zone exoplanet targets accessible by the SGL mission: Proxima Centauri b (1.3 pc), TRAPPIST-1e (12.1 pc), Kepler-186f (178 pc), LHS 1140 b (15 pc), Ross 128 b (3.4 pc), and Wolf 1061 c (4.3 pc). Displays distance, planetary radius, equilibrium temperature, and required spacecraft slew velocity Delta-v.",
-    formula: "\\Delta v_{90} = \\frac{D_{\\rm img}}{\\Delta t_{90}} \\approx 0.17\\text{--}3.2\\text{ km/s}",
+    description: "Illustrative artwork — the planets it depicts are not the paper's target list. Table 2 and Figure 8 of the manuscript evaluate five confirmed small planets near or interior to the habitable zone: Proxima Cen b (1.30 pc), Ross 128 b (3.38 pc), GJ 1061 d (3.67 pc), Teegarden c (3.83 pc) and GJ 273 b / Luyten's star (3.80 pc). The sixth row, τ Cet e, is retained only to illustrate low-acceleration tracking; its radial-velocity signal was refuted at 10 cm/s precision by Figueira et al. (2025).",
+    formula: "\\Delta v(T)=\\oint \\left|\\mathbf{a}_\\perp(t)\\right|\\,dt,\\qquad \\mathbf{a}_\\perp=-\\frac{GM_\\star}{r^2}\\left(\\cos E-e,\\ \\sin E\\sqrt{1-e^2}\\cos i\\right)",
     stats: [
-      { label: "Closest Target", value: "1.3 pc", desc: "Proxima Centauri b" },
-      { label: "Trappist Target", value: "12.1 pc", desc: "TRAPPIST-1e" },
-      { label: "Habitable Targets", value: "6 Systems", desc: "Cataloged in paper" },
-      { label: "Slew Feasibility", value: "Δv < 3 km/s", desc: "Solar sail reachable" }
+      { label: "Closest Target", value: "1.30 pc", desc: "Proxima Centauri b" },
+      { label: "Confirmed Systems", value: "5", desc: "+1 refuted illustration row" },
+      { label: "90-day Tracking Δv", value: "1.34–5.81 km/s", desc: "confirmed rows, face-on" },
+      { label: "Worst Case", value: "Proxima b", desc: "5.81 km/s: shortest period, 11.2 d" }
     ],
     keyPoints: [
-      "Evaluates target distance vs required transverse delta-v for focal tube tracking.",
-      "Proxima Centauri b offers the highest photon flux due to its 1.3 pc proximity.",
-      "TRAPPIST-1e offers an Earth-sized rocky world orbiting an ultra-cool dwarf star."
+      "Tracking cost is set by the projected transverse acceleration integrated over the window, so it scales with orbital period, not with distance — hence a factor 53 spread across these rows.",
+      "Focal-line ecliptic latitude (0.3°–60.8° here) drives the departure and plane-change cost, which this paper does not attempt to optimize.",
+      "τ Cet e is flagged as refuted everywhere it appears; no target claim rests on it."
     ],
     simulatorTab: "targets"
   }
@@ -391,7 +391,7 @@ export default function DemonstrationMediaCenter({
       // Bottom bar
       ctx.fillStyle = "#e2e8f0";
       ctx.font = "11px monospace";
-      ctx.fillText("PEER-REVIEWED ASTROPHYSICAL RESEARCH • SONTANKE ET AL. (2026)", 20, h - 20);
+      ctx.fillText("PEER-REVIEWED ASTROPHYSICAL RESEARCH • SONTAKKE (2026) — SINGLE-AUTHOR STUDY", 20, h - 20);
 
       if (progress < 1) {
         requestAnimationFrame(renderLoop);

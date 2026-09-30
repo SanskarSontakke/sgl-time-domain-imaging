@@ -51,7 +51,7 @@ export default function EinsteinRingSimulator() {
       ctx.fillStyle = "#fef08a";
       ctx.font = "bold 12px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("⚠️ Blinding Solar Corona Glare (10⁶× Exoplanet Signal)", cx, cy + 80);
+      ctx.fillText("⚠️ Residual Solar Corona (7.7×10⁴× Exoplanet Signal)", cx, cy + 80);
       ctx.font = "10px sans-serif";
       ctx.fillText("Activate Coronagraph to isolate Einstein Ring", cx, cy + 96);
     } else {
@@ -239,7 +239,7 @@ export default function EinsteinRingSimulator() {
                 <LatexMath math="K(\rho) \approx \frac{d}{4\rho} \quad \text{for } \rho \ge d/2" block />
               </div>
               <p className="text-[11px] text-blue-800 leading-relaxed">
-                As the spacecraft steps off the focal line, the Einstein ring breaks into two arcs. The aperture-averaged convolution integrates this intensity, reproducing Turyshev & Toth (2020) to machine precision!
+                As the spacecraft steps off the focal line, the Einstein ring breaks into two arcs. The aperture-averaged convolution integrates this intensity, reproducing the d/4ρ tail of Turyshev &amp; Toth (2020). Our own check of the discrete operator against the published deconvolution-noise scaling agrees to within tens of percent, not exactly — see Figure 2 and Section 2.3.
               </p>
             </div>
 

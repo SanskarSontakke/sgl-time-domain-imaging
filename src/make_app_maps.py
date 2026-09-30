@@ -16,16 +16,19 @@ Conventions, chosen to match src/make_figures.py:
     coadd (B2)] and hold the per-fc means over the 10 paired seeds -- exactly
     the row order the sandbox component indexes;
   * clouds[fc_0] is all zeros (the cloud-free campaign has no OU realization);
-    fc >= 1 use the snap-0 opacity of the unprefixed v2-era part files
-    (results/parts/clouds_f<i>_s0.npz), downsampled 2x2 from the 72x144
-    climate grid. The v3 suite does not archive the cloud field itself, so
-    this overlay is illustrative (its realized cover matches the v3 sweep to
-    ~0.02); the metric rows above are the authoritative v3 numbers.
+    fc >= 1 regenerate the opacity screen of the SAME v3 campaign the archived
+    maps come from -- the OU field seeded 100+11 (seed 11, expcommon.dataset)
+    stepped to the first dwell time -- downsampled 2x2 from the 72x144 climate
+    grid. It is a single snapshot, so its mean sits 0.00--0.04 below the
+    campaign-mean realized cover in clouds.npz (which averages over all 4096
+    dwell slots of the same field), and it is illustrative only: the
+    metric rows above are the authoritative v3 numbers.
 
 Run from src/:  python3 make_app_maps.py
 """
 
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -96,13 +99,22 @@ def main():
             m = north_up(cl[f"map_{meth}_fc{i}"])
             payload[f"{pref}_cividis"][f"fc_{i}"] = render(m)
             payload[f"{pref}_natural"][f"fc_{i}"] = render(m, cmap_nat=True)
+    # Opacity overlay: regenerate the v3 OU field rather than reading the
+    # superseded v2-era part files (which are the only place a snapshot was
+    # ever stored, and whose scene conventions do not match the shipped maps).
+    sys.path.insert(0, str(HERE))
+    import expcommon as E
+    import sglsim as S
+    camp = E.campaign()
     for i in range(len(FCS)):
         if i == 0:
             op = np.zeros((NLAT, NLON))
         else:
-            d = np.load(DATA / "parts" / f"clouds_f{i}_s0.npz")
-            op = np.asarray(d["snap0_opac"], float).reshape(NLAT, 2, NLON, 2)
-            op = op.mean(axis=(1, 3))
+            cloud = S.CloudModel(E.NLATF, E.NLONF, fc=E.FCS[i],
+                                 tau_days=E.TAU_DAYS, seed=100 + E.SEEDS[0])
+            cloud.step_to(float(camp.bins_t[0]))
+            full = cloud.opacity()
+            op = full.reshape(NLAT, 2, NLON, 2).mean(axis=(1, 3))
         payload["clouds"][f"fc_{i}"] = np.round(north_up(op), 3).tolist()
 
     blob = json.dumps(payload, separators=(",", ":"))

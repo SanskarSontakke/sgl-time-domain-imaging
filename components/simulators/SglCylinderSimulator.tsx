@@ -135,7 +135,7 @@ export default function SglCylinderSimulator() {
       ctx.fillText("☀️ Solar Gravity Lens", w * 0.42, cy1 - 8);
       ctx.fillStyle = "#64748b";
       ctx.font = "10px sans-serif";
-      ctx.fillText("z ≥ 547.5 AU", w * 0.44, cy1 + 10);
+      ctx.fillText("z ≥ 547.8 AU", w * 0.44, cy1 + 10);
 
       // Section 3: SGL 1.3-km Image Cylinder in the Focal Plane (Right side)
       const cx2 = w * 0.76;
@@ -244,7 +244,7 @@ export default function SglCylinderSimulator() {
         ctx.fillText("16-CRAFT FLEET CONCURRENT SLOTS", cx2 - 95, cy2 + r2 + 20);
         ctx.fillStyle = "#059669";
         ctx.font = "10px sans-serif";
-        ctx.fillText("Common-mode cloud variations cancelled via P⊥!", cx2 - 115, cy2 + r2 + 34);
+        ctx.fillText("Simultaneous-sample offsets profiled out!", cx2 - 118, cy2 + r2 + 34);
       }
 
       ctx.restore();
@@ -337,7 +337,7 @@ export default function SglCylinderSimulator() {
                 className="w-full range-slider"
               />
             </div>
-            <span className="text-[10px] text-slate-500 font-mono">Timescale τ ≈ 3.5 days advection</span>
+            <span className="text-[10px] text-slate-500 font-mono">Cloud field memory τ_c = 4 d; advection 6°/day</span>
           </div>
 
           <div className="bg-slate-50 p-2.5 rounded border border-slate-200 text-xs">
@@ -348,7 +348,7 @@ export default function SglCylinderSimulator() {
             <p className="text-slate-600 leading-snug">
               The focal image of an exo-Earth is compressed into a ~1.3 km cylinder at 650 AU.
               A single spacecraft takes months to raster scan it, during which clouds scramble the surface.
-              Our 16-craft fleet with slot deflation cancels cloud fluctuations in real time.
+              Our 16-craft fleet samples the whole raster nearly simultaneously, so the per-slot offsets are profiled out of the linear model rather than scanned through.
             </p>
           </div>
         </div>
