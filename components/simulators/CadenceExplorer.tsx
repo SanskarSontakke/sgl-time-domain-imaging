@@ -2,41 +2,59 @@
 
 import React, { useState } from "react";
 import { Sliders, CheckCircle2, AlertTriangle, ArrowRight, Lightbulb } from "lucide-react";
+import LatexMath from "../LatexMath";
 
 export default function CadenceExplorer() {
   // Configurable parameters
-  const [revisits, setRevisits] = useState<number>(8); // K = 1, 2, 4, 8, 16
+  const [revisits, setRevisits] = useState<number>(16); // M_p = 4, 8, ..., 64
   const [overheadSec, setOverheadSec] = useState<number>(45); // 45s standard slew+settle
 
-  // Fixed total dwell budget per slot = 7200 seconds
-  const totalBudgetSec = 7200;
+  // Fixed photon budget per raster position (arm A): M_p * t_s = 8 h = 28,800 s
+  const totalBudgetSec = 28800;
   const dwellSec = Math.round(totalBudgetSec / revisits);
   
   // Overhead and duty cycle
   const dutyCycle = dwellSec / (dwellSec + overheadSec);
   const smearDeg = (dwellSec / 86400) * 360; // Assuming 24 hr rotation
 
-  // Experimental curve values from results/cadence_ablation.npz
-  // K=1 (dwell 7200s): r=0.139
-  // K=2 (dwell 3600s): r=0.245
-  // K=4 (dwell 1800s): r=0.336 (benchmark)
-  // K=8 (dwell 900s):  r=0.485
-  // K=16 (dwell 450s): r=0.544
-  // Empirical interpolation function:
-  const getFidelity = (k: number) => {
-    // Model fit: r increases with sqrt(k) until overhead penalty kicks in
-    const theoreticalR = 0.12 + 0.11 * Math.sqrt(k);
-    const penalty = Math.pow(dutyCycle, 0.5);
-    return Math.min(0.58, theoreticalR * penalty);
+  // v3 arm-A cadence law (fixed 8 h per raster position, 6 paired seeds)
+  // M_p=4  (dwell 7200s): r = 0.049 ± 0.005
+  // M_p=8  (dwell 3600s): r = 0.173 ± 0.013
+  // M_p=16 (dwell 1800s): r = 0.346 ± 0.010
+  // M_p=32 (dwell 900s):  r = 0.497 ± 0.014
+  // M_p=64 (dwell 450s):  r = 0.571 ± 0.010
+  const getFidelity = (mp: number) => {
+    const v3Data = [
+      [4, 0.049],
+      [8, 0.173],
+      [16, 0.346],
+      [32, 0.497],
+      [64, 0.571]
+    ];
+    
+    // Find bracketing points
+    if (mp <= v3Data[0][0]) return v3Data[0][1];
+    if (mp >= v3Data[v3Data.length - 1][0]) return v3Data[v3Data.length - 1][1];
+    
+    for (let i = 0; i < v3Data.length - 1; i++) {
+      const [x0, y0] = v3Data[i];
+      const [x1, y1] = v3Data[i + 1];
+      if (mp >= x0 && mp <= x1) {
+        // Linear interpolation
+        const t = (mp - x0) / (x1 - x0);
+        return y0 + t * (y1 - y0);
+      }
+    }
+    return 0.571; // fallback
   };
 
   const estimatedR = getFidelity(revisits);
 
   const presets = [
-    { label: "Classic Long Dwell (K=1)", k: 1, desc: "Single pass of 7200s" },
-    { label: "Turyshev Benchmark (K=4)", k: 4, desc: "4 passes of 1800s" },
-    { label: "Our Optimized TDI (K=8)", k: 8, desc: "8 passes of 900s (Sweet Spot)" },
-    { label: "High Revisit (K=16)", k: 16, desc: "16 passes of 450s" },
+    { label: "Long dwell (M_p=4)", k: 4, desc: "4 dwells of 7,200 s (r = 0.049)" },
+    { label: "Nominal TDI (M_p=16)", k: 16, desc: "16 dwells of 1,800 s (r = 0.346)" },
+    { label: "Best within 90 d (M_p=32)", k: 32, desc: "32 dwells of 900 s (r = 0.497)" },
+    { label: "Fastest tested (M_p=64)", k: 64, desc: "64 dwells of 450 s (r = 0.571, 93.7 d)" },
   ];
 
   return (
@@ -52,7 +70,7 @@ export default function CadenceExplorer() {
           </h3>
         </div>
         <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-1 rounded">
-          Fixed Total Exposure: 7,200 s/slot
+          Fixed photon budget: 28,800 s per raster position
         </span>
       </div>
 
@@ -81,13 +99,13 @@ export default function CadenceExplorer() {
           <div className="space-y-4">
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-slate-700">Revisit Passes per Slot (K):</span>
-                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{revisits} passes</span>
+                <span className="font-semibold text-slate-700">Revisits per raster position (<LatexMath math="M_p" />):</span>
+                <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{revisits} dwells</span>
               </div>
               <input
                 type="range"
-                min="1"
-                max="24"
+                min="4"
+                max="64"
                 step="1"
                 value={revisits}
                 onChange={(e) => setRevisits(parseInt(e.target.value))}
@@ -95,16 +113,16 @@ export default function CadenceExplorer() {
               />
               <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-500 pt-1 text-center">
                 <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
-                  <span className="font-bold text-slate-700 block">K = 1</span>
-                  <span className="text-[9px] text-slate-400">Single dwell</span>
+                  <span className="font-bold text-slate-700 block">M_p = 4</span>
+                  <span className="text-[9px] text-slate-400">Longest dwell</span>
                 </div>
                 <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
-                  <span className="font-bold text-emerald-700 block">K = 8</span>
-                  <span className="text-[9px] text-emerald-600 font-bold">Optimal TDI</span>
+                  <span className="font-bold text-emerald-700 block">M_p = 32</span>
+                  <span className="text-[9px] text-emerald-600 font-bold">Best within 90 d</span>
                 </div>
                 <div className="bg-white/90 py-1 px-1 rounded border border-slate-200">
-                  <span className="font-bold text-slate-700 block">K = 24</span>
-                  <span className="text-[9px] text-slate-400">Overhead limit</span>
+                  <span className="font-bold text-slate-700 block">M_p = 64</span>
+                  <span className="text-[9px] text-slate-400">Fastest tested</span>
                 </div>
               </div>
             </div>
@@ -146,7 +164,7 @@ export default function CadenceExplorer() {
                 <span>Non-Technical Intuition for Judges</span>
               </div>
               <p className="text-amber-800 leading-relaxed">
-                Imagine trying to photograph a spinning carousel in a foggy park. If you take one 2-hour long exposure, the fog blurs everything permanently. But if you take <strong>8 quick 15-minute photos</strong> at different times, the weather changes randomly between photos, while the painted carousel stays in the same place! Averaging the 8 photos reveals the true carousel design.
+                Imagine trying to photograph a spinning carousel in a foggy park. If you take one very long exposure, the fog that moves during the exposure blurs everything permanently. But if you take <strong>many short snapshots</strong> at different times, the weather changes randomly between snapshots, while the painted carousel stays in the same place! Averaging the snapshots reveals the true carousel design.
               </p>
             </div>
           </div>
@@ -208,12 +226,12 @@ export default function CadenceExplorer() {
             {/* Quick Summary comparison */}
             <div className="text-xs text-slate-600 pt-1">
               <span className="font-semibold text-slate-700">Statistical Gain: </span>
-              {revisits > 1 ? (
+              {revisits > 4 ? (
                 <span className="text-emerald-700 font-medium">
-                  +{((estimatedR - 0.139) / 0.139 * 100).toFixed(0)}% image correlation over single-pass baseline!
+                  +{((estimatedR - 0.049) / 0.049 * 100).toFixed(0)}% image correlation over the M_p = 4 baseline!
                 </span>
               ) : (
-                <span className="text-amber-700">Baseline single-dwell without revisit averaging.</span>
+                <span className="text-amber-700">Baseline: the longest dwell allowed by the 8 h budget.</span>
               )}
             </div>
           </div>

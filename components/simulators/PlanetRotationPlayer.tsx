@@ -250,7 +250,7 @@ export default function PlanetRotationPlayer() {
         ["CLOUD FRACTION", `fc = ${cloudCover}% (fiducial)`],
         ["ZONAL JET STREAM", "v_zonal = +21 m/s (eastward)"],
         ["AXIAL OBLIQUITY", "23.4° tilt"],
-        ["NOISE COVARIANCE", "Clouds:Photons = 21:1 (dominant)"],
+        ["NOISE COVARIANCE", "Clouds:Photons = 12.8-21.0x (sigma)"],
       ];
 
       telemetry.forEach(([label, val], idx) => {

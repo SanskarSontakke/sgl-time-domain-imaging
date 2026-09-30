@@ -66,3 +66,7 @@ desktop.ini
 *.swp
 *.swo
 *~
+
+# TypeScript incremental build info
+*.tsbuildinfo
+next-env.d.ts

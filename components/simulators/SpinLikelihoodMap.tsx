@@ -15,7 +15,7 @@ export default function SpinLikelihoodMap() {
   const chi2 = 1.0 + 0.35 * Math.pow(dphiNorm, 2) + 0.55 * Math.pow(dpNorm, 2);
   
   // Corresponding surface correlation r
-  const rRecovery = Math.max(0.04, 0.326 * Math.exp(-0.5 * (Math.pow(dphiNorm * 0.7, 2) + Math.pow(dpNorm * 0.9, 2))));
+  const rRecovery = Math.max(0.04, 0.342 * Math.exp(-0.5 * (Math.pow(dphiNorm * 0.7, 2) + Math.pow(dpNorm * 0.9, 2))));
 
   return (
     <div className="card">
@@ -98,7 +98,7 @@ export default function SpinLikelihoodMap() {
               </div>
               <p className="text-blue-800 leading-snug">
                 Judges often ask: <em>"What if we don't know the exact rotation speed of the exoplanet before launch?"</em>
-                Our convex profile likelihood <LatexMath math="\chi^2" /> guarantees that simple in-flight gradient descent converges automatically to the exact rotational period within hours of scanning!
+                The whitened <LatexMath math="\chi^2" /> is numerically invariant to assumed initial phase (&lt;1e-11 relative) and monotone in assumed period, so the spin state is observable through reconstruction quality (<LatexMath math="r" /> peaks at truth) but NOT recoverable by minimizing photometric residuals; the ephemeris must come from external precursor astrometry.
               </p>
             </div>
           </div>

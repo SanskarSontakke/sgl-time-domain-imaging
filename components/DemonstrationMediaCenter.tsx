@@ -105,17 +105,17 @@ const MEDIA_ITEMS: MediaItem[] = [
     src: "/videos/tdi_deconvolution_timelapse.gif",
     thumbnail: "/images/tdi_reconstruction_pipeline.jpg",
     badge: "Algorithmic Convergence",
-    description: "Follows the four-stage TDI mathematical inversion: Stage 1 reveals the raw SGL observation degraded by horizontal diurnal spin stripes and 21:1 cloud noise; Stage 2 applies the projection operator P_perp to cancel common-mode cloud albedo; Stage 3 applies Tikhonov regularization in the spectral domain; Stage 4 demonstrates resolution enhancement as cadence increases to K=64.",
+    description: "Follows the four-stage TDI mathematical inversion: Stage 1 reveals the raw SGL observation degraded by horizontal diurnal spin stripes and 12.8-21.0x (sigma) cloud noise; Stage 2 eliminates the per-slot nuisance level (the common-mode cloud brightness) by profile likelihood projection; Stage 3 applies Tikhonov regularization in the spectral domain; Stage 4 demonstrates fidelity growth as the revisit count rises to M_p=64.",
     formula: "\\hat{\\mathbf{m}} = (\\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{F} + \\mathbf{\\Lambda})^{-1} \\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{y}",
     stats: [
-      { label: "Initial Fidelity", value: "r = 0.13", desc: "Raw phase-binned" },
-      { label: "Deflation Gain", value: "Δr = +0.041", desc: "P_perp operator benefit" },
-      { label: "Fiducial Recon", value: "r = 0.334", desc: "At fc = 0.55, K = 8" },
-      { label: "High Cadence", value: "r = 0.544", desc: "Cadence Law at K = 64" }
+      { label: "Long-Dwell Baseline", value: "r = 0.049", desc: "M_p = 4, 7200 s dwells" },
+      { label: "Slot-Profiling Gain", value: "Δr = +0.054", desc: "Per-slot nuisance handling" },
+      { label: "Fiducial Recon", value: "r = 0.342", desc: "At fc = 0.55, M_p = 16" },
+      { label: "High Cadence", value: "r = 0.571", desc: "Cadence Law at M_p = 64" }
     ],
     keyPoints: [
       "Directly validates how the projection operator eliminates cloud-induced horizontal barcodes.",
-      "Recovers continental boundaries with 95% confidence interval [0.027, 0.054].",
+      "Recovers continental boundaries with slot-profiling gain Δr = +0.054 ± 0.006.",
       "Demonstrates convergence from noise floor to continental-scale geography."
     ],
     simulatorTab: "sandbox"
@@ -162,7 +162,7 @@ const MEDIA_ITEMS: MediaItem[] = [
       { label: "Zonal Drift", value: "+21 m/s", desc: "Atmospheric circulation" }
     ],
     keyPoints: [
-      "Visualizes the physical origin of the cloud-to-photon noise ratio (21:1).",
+      "Visualizes the physical origin of the cloud-to-photon noise ratio (12.8-21.0x in sigma).",
       "Depicts day/night terminator with realistic Rayleigh atmospheric scattering.",
       "Demonstrates why time-domain modeling is essential for moving atmospheres."
     ],
@@ -204,8 +204,8 @@ const MEDIA_ITEMS: MediaItem[] = [
     description: "Comprehensive infographic detailing the TDI deconvolution pipeline. On the left: observation phase with cloud interference creating a striped barcode measurement vector y. Center: the mathematical inversion engine applying generalized least squares with projection operator P_perp. Right: the reconstructed surface map with recovered continents and peer-reviewed metrics.",
     formula: "(\\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{F} + \\mathbf{\\Lambda})^{-1} \\mathbf{F}^T \\mathbf{C}_y^{-1} \\mathbf{y}, \\quad \\mathbf{P}_\\perp = \\mathbf{I} - \\frac{1}{N_c}\\mathbf{1}\\mathbf{1}^T",
     stats: [
-      { label: "Correlation", value: "r = 0.334", desc: "Fiducial recovery" },
-      { label: "Deflation Gain", value: "+0.041 Δr", desc: "Cloud removal boost" },
+      { label: "Correlation", value: "r = 0.342", desc: "Fiducial recovery" },
+      { label: "Slot-Profiling Gain", value: "+0.054 Δr", desc: "Per-slot nuisance handling" },
       { label: "Structure SSIM", value: "0.109", desc: "Structural similarity" },
       { label: "Benchmark SNR", value: "43.16", desc: "Cloud-free SNR" }
     ],

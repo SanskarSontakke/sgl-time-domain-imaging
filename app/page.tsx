@@ -83,15 +83,15 @@ export default function HomePage() {
             </div>
 
             <div className="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200/80 shadow-xs">
-              <div className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 truncate">Deflation Benefit</div>
-              <div className="text-sm sm:text-base font-extrabold font-mono text-emerald-600 mt-0.5">+0.041 Δr</div>
-              <div className="text-[9px] sm:text-[10px] text-slate-500 truncate">95% CI: [0.027, 0.054]</div>
+              <div className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 truncate">Slot-Profiling Benefit</div>
+              <div className="text-sm sm:text-base font-extrabold font-mono text-emerald-600 mt-0.5">+0.054 Δr</div>
+              <div className="text-[9px] sm:text-[10px] text-slate-500 truncate">±0.006 (paired, 10 seeds)</div>
             </div>
 
             <div className="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200/80 shadow-xs">
               <div className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 truncate">Surface Fidelity</div>
-              <div className="text-sm sm:text-base font-extrabold font-mono text-blue-700 mt-0.5">r = 0.326</div>
-              <div className="text-[9px] sm:text-[10px] text-slate-500 truncate">At 55% cloud cover</div>
+              <div className="text-sm sm:text-base font-extrabold font-mono text-blue-700 mt-0.5">r = 0.342</div>
+              <div className="text-[9px] sm:text-[10px] text-slate-500 truncate">±0.008 at 55% cloud cover</div>
             </div>
 
             <div className="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200/80 shadow-xs">

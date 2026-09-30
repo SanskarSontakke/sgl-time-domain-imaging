@@ -25,16 +25,17 @@ export default function ImageReconstructionSandbox() {
   const fcKey = `fc_${fcIndex}` as keyof typeof RECONSTRUCTION_DATA.clouds;
 
   // Real Pearson r and SSIM directly from publication simulation results
+  // (payload rows are ordered [profiled TDI, white-noise GLS, phase-binned
+  // coadd], matching the selector below; means over the 10 paired v3 seeds).
   const methodRowIdx = method === "gls" ? 0 : method === "white" ? 1 : 2;
   const baseR = RECONSTRUCTION_DATA.pearson[methodRowIdx][fcIndex];
   const baseSSIM = RECONSTRUCTION_DATA.ssim[methodRowIdx][fcIndex];
 
-  // Dynamically account for fleet size physics (Table 2 in publication):
-  // Single craft cannot perform simultaneous common-mode subtraction (deflation lost)
-  // Dense fleet improves sampling cadence
-  const fleetDeltaR = method === "gls" 
-    ? (numCrafts < 4 ? -0.041 : numCrafts >= 24 ? 0.020 : 0.000)
-    : 0;
+  // Fleet-size physics (Table 2 of the publication): fewer than 4 craft per
+  // slot leave the per-slot nuisance level unresolved, so the slot-profiling
+  // gain measured in the paired ablation (+0.054) is forfeited. No other
+  // fleet-size dependence is claimed anywhere in the paper.
+  const fleetDeltaR = method === "gls" && numCrafts < 4 ? -0.054 : 0;
   const currentR = Math.max(0.01, Math.min(0.999, baseR + fleetDeltaR));
   const currentSSIM = Math.max(0.01, Math.min(0.999, baseSSIM + (fleetDeltaR * 0.4)));
 
@@ -236,7 +237,7 @@ export default function ImageReconstructionSandbox() {
             </div>
 
             <div className="text-[11px] text-slate-500 mt-2.5 text-center leading-tight">
-              True continental geography (Americas, Eurasia, Africa)
+              Synthetic Earth-like albedo field (truth seed 7, 36×72 grid)
             </div>
           </div>
 
@@ -393,7 +394,7 @@ export default function ImageReconstructionSandbox() {
             <div className={`text-xl font-extrabold font-mono mt-0.5 ${currentR > 0.3 ? "text-emerald-700" : "text-amber-700"}`}>
               {currentR.toFixed(3)}
             </div>
-            <div className="text-[10px] text-slate-500">Benchmark: 0.326 at fc=0.55</div>
+            <div className="text-[10px] text-slate-500">Benchmark: 0.342 at fc=0.55</div>
           </div>
 
           <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
@@ -403,21 +404,23 @@ export default function ImageReconstructionSandbox() {
           </div>
 
           <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-            <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Deflation Benefit</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Slot-Profiling Benefit</div>
             <div className="text-xl font-extrabold font-mono text-emerald-600 mt-0.5">
-              {method === "gls" && numCrafts >= 4 ? "+0.041 Δr" : "0.000"}
+              {method === "gls" && numCrafts >= 4 ? "+0.054 Δr" : "0.000"}
             </div>
             <div className="text-[10px] text-slate-500">
-              {method === "gls" && numCrafts >= 4 ? "95% CI: [0.027, 0.054]" : "Inactive (requires swarm)"}
+              {method === "gls" && numCrafts >= 4 ? "Slot-profiling: ±0.006" : "Inactive (requires swarm)"}
             </div>
           </div>
 
           <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">
-            <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Harmonic Degree</div>
+            <div className="text-[10px] uppercase font-bold text-slate-400 truncate">Effective Harmonic Degree</div>
             <div className="text-xl font-extrabold font-mono text-blue-600 mt-0.5">
-              ℓ ≈ {activeFc === 0 ? "20" : activeFc <= 0.25 ? "12" : activeFc <= 0.4 ? "8" : "5"}
+              {activeFc === 0 ? "\u2113 \u2264 20" : "\u2113 \u2248 9"}
             </div>
-            <div className="text-[10px] text-slate-500">Resolved feature scale</div>
+            <div className="text-[10px] text-slate-500">
+              {activeFc === 0 ? "Grid ceiling (36\u00d772)" : "r(\u2113) \u2265 0.5 band (\u22482200 km)"}
+            </div>
           </div>
         </div>
       </div>

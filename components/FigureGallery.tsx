@@ -53,8 +53,8 @@ const FIGURES: FigureItem[] = [
     filename: "/figures/fig_ssim_fc.png",
     pdfFilename: "/figures/fig_ssim_fc.pdf",
     caption: "(a) Pearson correlation coefficient r and (b) SSIM as a function of cloud fraction fc. Comparison between Time-Domain Inversion with slot deflation (blue), clouds-as-white-noise GLS (amber), and naive phase-binned coaddition (green).",
-    takeaway: "TDI with slot deflation consistently outperforms naive methods across all weather conditions, preserving high structural fidelity.",
-    keyMetric: "Pearson r = 0.326 ± 0.034 at 55% Clouds",
+    takeaway: "TDI with slot-profiling consistently outperforms naive methods across all weather conditions, preserving high structural fidelity.",
+    keyMetric: "Pearson r = 0.342 ± 0.008 at 55% Clouds",
   },
   {
     id: "fig5",
@@ -72,9 +72,9 @@ const FIGURES: FigureItem[] = [
     title: "Robustness Suite: Spin Ephemeris & Scale Resolution",
     filename: "/figures/fig_robust.png",
     pdfFilename: "/figures/fig_robust.pdf",
-    caption: "(a) Sensitivity to spin pole tilt Δθpole and phase offset Δϕ0. (b) Profile likelihood χ² landscape over period error and phase offset, showing a sharp convex global minimum at (0,0). (c) Effective scale-dependent resolution r(ℓ) resolving spherical harmonics to ℓ ≈ 14.",
-    takeaway: "Confirms that unknown rotation periods and phase offsets can be determined self-consistently in-flight through profile likelihood minimization.",
-    keyMetric: "Sharp Global χ² Minimum at Truth",
+    caption: "(a) Sensitivity to spin pole tilt Δθpole and phase offset Δϕ0. (b) Reconstruction quality r peaks at the truth, so spin state can only be validated through image quality; the ephemeris must come from external precursor observations. (c) Effective scale-dependent resolution r(ℓ) resolving spherical harmonics to ℓ ≈ 14.",
+    takeaway: "Reconstruction quality r peaks at the truth, so spin state can only be validated through image quality; the ephemeris must come from external precursor observations.",
+    keyMetric: "r Peaks at Truth; Ephemeris from Precursor",
   },
   {
     id: "fig7",

@@ -1,0 +1,31 @@
+{
+  "denom_A_fro": 6836.824229910532,
+  "denom_b_norm": 2029.9974284245689,
+  "rel_err_A_fro": 3.1196415560046423e-07,
+  "max_rel_err_A": 8.056015803430276e-07,
+  "rel_err_A_round_only": 1.020603769601017e-08,
+  "rel_err_b": 4.128900675906546e-07,
+  "rel_err_b_round_only": 1.4726711566836692e-08,
+  "rel_err_A_blockorder": 5.309252933776856e-16,
+  "rel_err_b_blockorder": 1.136847777834534e-16,
+  "cond_A_unregularized": Infinity,
+  "cond_A_lambda": 532895.5452487451,
+  "lam_eff": 0.008914412136125847,
+  "normal_eq_residual_rel": 1.3436563747502053e-15,
+  "map_diff_normal_vs_qr": 1.6672697114635312e-13,
+  "max_abs_map": 1.7492046156188594,
+  "rank_A_unregularized": 2016,
+  "ns": 2592,
+  "regime": {
+    "n": 32,
+    "nsc": 16,
+    "mp": 16,
+    "ts": 1800.0,
+    "nsamp": 16384,
+    "ns": 2592,
+    "note": "reduced size; the fiducial n=64 design would need ~2.8 GB in two float64 copies"
+  },
+  "fiducial_chunk_order_rel_diff": 3.4000660015301285e-13,
+  "fiducial_profiled_vs_v2_rel_diff": 0.0035824207027970213,
+  "fiducial_absmax": 1.0735624657653635
+}

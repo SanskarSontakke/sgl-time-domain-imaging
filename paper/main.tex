@@ -17,22 +17,39 @@
 \fancyfoot[C]{\small\thepage}
 \providecommand{\arxiv}[1]{arXiv:#1}
 \newcommand{\acknowledgments}{\section*{Acknowledgments}}
+% All text added or altered in the revision is wrapped in \rev{}, which renders
+% in BOLDFACE as the editor requested.  Set \revflag=0 to produce an unmarked
+% (clean) version without re-editing the source.
+\newif\ifrevflag \revflagtrue
+% \rev marks text added or altered in this revision in BOLDFACE, as the editor
+% requested.  It is deliberately a GROUP rather than \textbf so that a single
+% \rev{...} can cover blank lines, itemize environments, tables and whole
+% subsections.  The \ifmmode guard makes \rev a no-op inside mathematics:
+% \bfseries is illegal in math mode, and a global \mathversion{bold} would
+% depend on bold math fonts for every family used.  Changed equations are
+% therefore marked by the bold sentence that introduces them and are listed by
+% number in the point-by-point response.  \revflagfalse yields the clean version.
+\ifrevflag
+  \newcommand{\rev}[1]{\relax\ifmmode{#1}\else{\bfseries #1}\fi}
+\else
+  \newcommand{\rev}[1]{#1}
+\fi
 
 \begin{document}
 
 \twocolumn[{%
 \begin{center}
-{\LARGE\bfseries Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets
+{\Large\bfseries Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets
 with the Solar Gravitational Lens: Reconstruction Algorithms,
 Observing-Cadence Requirements, and Mission Targets\par}
-\vspace{4mm}
+\vspace{2.5mm}
 {\large Sanskar Sontakke\par}
 \vspace{1mm}
 {\small\itshape Independent Researcher\\
 sanskarsontakke@gmail.com\quad ORCID: 0009-0008-4531-5707\par}
 \vspace{2mm}
-\vspace{4mm}
-\begin{minipage}{0.86\textwidth}
+\vspace{2mm}
+\begin{minipage}{0.84\textwidth}
 \small
 \textbf{ABSTRACT}\\[1mm]
 The solar gravitational lens (SGL) can, in principle, deliver multipixel
@@ -51,33 +68,48 @@ formulate image recovery as a regularized generalized least-squares
 inversion of the time-tagged sample stream (time-domain inversion, TDI,
 distinguished here from detector-level time-delay integration), in which
 rotation and illumination are modeled directly by the forward operator and
-cloud variability enters statistically. For a rotating, cloud-free planet
-observed under known spin geometry, TDI recovers the surface albedo map with
-Pearson $r=0.990\pm0.001$ (SSIM $=0.918\pm0.002$), demonstrating that
-rotational aliasing is tractable under accurately characterized spin
-ephemerides rather than an intrinsic information ceiling. Clouds, not
-coronal photon noise, dominate the error budget: per-sample cloud-induced
-variance exceeds coronal shot noise by factors of 14--23, collapsing
-fidelity to $r\simeq0.26$ at 72\% cover under single-campaign budgets.
-Through a factorial mechanism ablation, we isolate the causal driver of the
-observing-cadence law: replacing 4 long dwells with 64 short revisits
-improves $r$ from 0.14 to 0.54 because revisits sample statistically
-independent cloud states, while exposure smear and phase conditioning are
-secondary. Slew and settling overheads ($\sim$45~s) set an asymptotic duty
-cycle ceiling ($\eta\simeq91\%$ at 450~s). Component-wise ablation shows
-slot deflation supplies the primary gain ($\Delta r=+0.041$, $p<10^{-3}$),
-removing disk-integrated cloud modes. Reconstruction requires spin-axis pole
-orientation to $\lesssim5^\circ$, initial phase to $\lesssim5^\circ$, and
-period to $\sim10^{-4}$, refinable in-flight via profile likelihood. Surface
-correlation $r(\ell)$ resolves spherical harmonic features to $\ell\approx20$,
-and a land--ocean dichotomy separation metric yields $d'=0.64$ vs.\ spatial
-surrogate nulls ($p<0.02$). Finally, we map requirements onto missions: we
-rank the five nearest confirmed potentially habitable planets with propagated
-physical uncertainties, evaluate image-plane dynamics
-(0.1--5.8~km\,s$^{-1}$ per 90~d), discuss deep-perihelion sailcraft
-($\sigma_{\rm tot}\simeq2.3$--4.9~g\,m$^{-2}$), planar radioisotope tiles, and
-optical relays, and reframe multi-spacecraft swarms as an asymptotic
-architectural scenario.
+cloud variability enters statistically. \rev{For a rotating, cloud-free planet observed under known spin geometry, TDI
+recovers the surface albedo map with Pearson $r=0.9786\pm0.0002$
+($\mathrm{SSIM}=0.848\pm0.001$) over 10 paired seeds. Rotational aliasing is
+tractable under characterized ephemerides; it is not an information ceiling, and
+the correlation lost within the supported harmonic range is regularization, not
+spin.} \rev{Clouds, not coronal photon noise, dominate the error budget:
+per-sample cloud-induced variance exceeds coronal shot noise by
+$163$--$440$ ($12.8$--$21.0$ in standard deviation) at $t_s=1800$~s, collapsing
+fidelity to $r=0.249\pm0.010$ at 71\% realized cover under single-campaign
+budgets.} \rev{The observing-cadence law is measured under two explicit,
+mutually exclusive resource ledgers (fixed 8~h of photons per raster position,
+or fixed 89.87~d of wall clock): replacing 4 long dwells with 64 short revisits
+improves $r$ from $0.049$ to $0.571$ at fixed photons, monotonically and
+unanimously across six paired seeds, while the two arms agree to within the
+paired standard error. Slew, settling and metrology overheads (45~s per dwell)
+reduce the duty cycle from 99.4\% to 90.5\% over that range.} \rev{Ablation of
+the estimator itself shows that the algorithmic gain comes from eliminating the
+per-dwell-slot cloud nuisance: exact anchored profiling of the slot means lifts
+$r$ by $+0.054\pm0.006$ over a fit that ignores them ($p=1.1\times10^{-5}$,
+10/10 seeds), whereas temporal whitening contributes nothing measurable at the
+fiducial cadence ($-0.003\pm0.002$, $p=0.13$).} \rev{The spin-ephemeris
+requirement is measured rather than asserted: a $5^\circ$ pole tilt costs
+$0.057$ in $r$ and a $5^\circ$ initial-phase error $0.047$, and $60^\circ$ of
+phase error destroys the map entirely. We withdraw the v2 claim that residual
+misalignments are refinable in flight via profile likelihood: the whitened
+$\chi^2$ is exactly invariant to assumed initial phase and monotone in assumed
+period over the grid tested, so the spin state is observable through image
+quality but not recoverable from photometric residuals by that route.}
+\rev{Surface correlation $r(\ell)$, computed with a real spherical-harmonic
+transform and $\cos\vartheta$ quadrature weights, stays above $0.99$ for all
+degrees up to the $\ell=20$ ceiling of the $36\times72$ grid when cloud-free,
+and under clouds falls below $0.5$ at $\ell\simeq9$ in a five-point running mean
+($\sim2200$~km for an Earth-radius planet). A land--ocean separation of
+$d'=0.73\pm0.03$ at $55.8\%$ realized cover exceeds every member of a 40-sample
+physical cloud-only null, giving $p\le0.024$ --- the ensemble floor, not a
+measurement of $0.02$.} \rev{Finally, we map requirements onto missions: we list
+the five nearest confirmed potentially habitable planets around M dwarfs plus
+$\tau$~Cet~e as a reproducible nominal-proxy table (not an uncertainty
+propagation), evaluate image-plane dynamics ($0.11$--$5.8$~km\,s$^{-1}$ of
+along-track velocity change per 90~d), discuss deep-perihelion sailcraft,
+planar radioisotope tiles and optical relays, and swarms as an asymptotic
+architectural scenario.}
 \\[2mm]
 \textbf{Keywords:} gravitational lensing: strong --- planets and
 satellites: terrestrial planets --- techniques: image processing ---
@@ -158,22 +190,41 @@ First (Sections~\ref{sec:model}--\ref{sec:methods}), we build a transparent,
 end-to-end simulator---partially validated against the published photometric
 and deconvolution benchmarks---in which planetary rotation, orbital
 illumination, and stochastic advecting clouds are modeled explicitly.
-Second (Section~\ref{sec:results}), we formulate reconstruction as regularized
-generalized least squares (GLS) on time-tagged samples (time-domain inversion,
-TDI; note this algorithmic inverse problem is distinct from hardware
-time-delay integration in detector readouts). We isolate the causal mechanism
-of the observing-cadence law via a factorial ablation (smear modeling,
-cloud-free controls, independent weather sampling, and operational overheads)
-and present a component-wise ablation with paired bootstrap confidence intervals.
-Third, we broaden robustness tests to include non-stationary latitudinal cloud
-banding (ITCZ and desert belts), surface-correlated clouds, and affine
-de-biasing errors ($\Delta f_c, \Delta A_{\text{cl}}$). Fourth, we extend the
-geometric requirement beyond the rotation period to include spin-axis pole
-orientation, initial phase, and profile-likelihood recovery. Fifth
-(Section~\ref{sec:mission}), we evaluate effective spatial resolution $r(\ell)$,
-land--ocean dichotomy detection metrics, propagate physical uncertainties in
-target rankings, and translate cadence requirements into realistic mission and
-swarm trade-offs \citep{niac20,helvajian23,friedman24,tur26prop}.
+\rev{To that first item we add the two audits the v2 framework lacked: a
+convergence study of the intra-dwell exposure integral (Section~\ref{sec:quad}),
+which shows that the 3-node rule previously used aliases rotational harmonic
+$m=36$ at unit gain, and a numerical-precision and conditioning audit of the
+normal equations (Sections~\ref{sec:infaudit}, \ref{sec:precisionnum}), which
+identifies the constant-albedo mode as the quantity the slot nuisance actually
+regularizes.}
+\rev{Second (Section~\ref{sec:results}), we formulate reconstruction as
+regularized generalized least squares on time-tagged samples (time-domain
+inversion, TDI; distinct from hardware time-delay integration in detector
+readouts), with the per-dwell-slot cloud mean handled by exact anchored nuisance
+profiling rather than the approximate deflation of v2. We isolate the
+observing-cadence law under two named, mutually exclusive resource ledgers
+(fixed photons per raster position, or fixed wall clock) rather than the single
+undeclared budget of v2, and ablate the estimator --- slot handling, whitening,
+anchoring --- holding data and operator fixed. Every number is reported as a
+mean and standard error over paired seeds, with paired $t$-statistics, win
+counts and the exact attainable significance floor, and with a physical
+cloud-only null in place of v2's geometry-scrambled surrogate.}
+\rev{Third, we broaden the robustness tests to non-stationary latitudinal cloud
+banding, multi-timescale weather, per-pass independent weather, surface-coupled
+clouds, and a full $5\times5$ grid of affine cloud-climatology errors, and we
+state explicitly which metrics are blind to which errors ($r$ is exactly affine
+invariant; bias, RMSE and contrast are not).}
+\rev{Fourth, we extend the geometric requirement to spin-pole tilt and initial
+phase with measured tolerances, and we test --- and refute --- the v2 claim that
+the residual spin state is refinable in flight from the profile likelihood:
+the whitened objective is exactly invariant to assumed initial phase.}
+\rev{Fifth (Section~\ref{sec:mission}), we evaluate effective spatial resolution
+$r(\ell)$ with a real spherical-harmonic transform and an explicit quadrature
+error bound, land--ocean detection against two nulls with stated ensemble
+floors, and translate cadence requirements into mission terms using an
+effective-independent-look count that depends on the assumed weather
+decorrelation time; the target table is a reproducible nominal-proxy list, not
+an uncertainty propagation.}
 
 \section{SGL Photometric Model and Validation}
 \label{sec:model}
@@ -277,13 +328,28 @@ generated by thresholded multi-octave Gaussian random fields on a
 $144\times72$ longitude--latitude grid (Fig.~\ref{fig:model}b). The planet
 rotates with period $P_{\rm rot}=24$~h and is illuminated by its host star
 with a Lambertian terminator whose sub-stellar point drifts through
-$\sim$90$^\circ$ of orbital phase ($P_{\rm orb}=1$~yr) during the campaign.
-For short-period habitable-zone planets around M-dwarfs ($P\sim10$--20~d),
-the target sweeps through multiple full orbits during a 90-day campaign,
-repeatedly covering all 360$^\circ$ of orbital illumination; the 90$^\circ$
-drift modeled here is a conservative intermediate case.
-Each dwell averages three sub-exposures so that intra-dwell rotational
-smear ($7.5^\circ$ per 1800~s dwell) is present in the synthetic data.
+\rev{$86.1^\circ$ of orbital phase over the 87.33-day fiducial campaign
+($P_{\rm orb}=1$~yr, $360^\circ\times87.33/365.25$; $88.7^\circ$ over a
+90.0-day window)}.
+\rev{The simulation holds the sub-stellar latitude fixed at the equator:
+obliquity is not modeled, so the illumination drift here is purely orbital in
+longitude and the seasonally-migrating intertropical zone of a tilted planet is
+outside the tested regime (Section~\ref{sec:discussion}).}
+\rev{For the short-period habitable-zone planets around M dwarfs listed in
+Section~\ref{sec:targets} ($P\sim10$--20~d), a 90-day campaign spans 5--9 full
+orbits and therefore samples all orbital phases repeatedly; the single
+sub-90$^\circ$ drift modeled here is the \emph{least} phase-covering case, not
+a conservative envelope for every target, because the two regimes differ in
+which longitudes are ever illuminated (a synchronous, zero-obliquity planet
+keeps a fixed sub-stellar longitude). We therefore report the tested case and
+do not claim the benchmark is conservative for all listed targets.}
+\rev{Each dwell is integrated over $n_{\rm sub}=16$ Gauss--Legendre
+sub-exposures spanning the dwell, so intra-dwell rotational smear
+($7.5^\circ$ per 1800~s dwell) is present in both the synthetic data and the
+forward operator. A uniformly-spaced 3-node rule was tested and rejected: its
+node spacing of $t_s/3$ aliases azimuthal harmonic $m=36$ onto the disk-integrated
+mean with unit gain instead of annihilating it, a response error of order unity
+that propagates directly into the reconstruction (Section~\ref{sec:quad}).}
 
 \subsection{Stochastic cloud fields: stationary and structured}
 The baseline cloud model is an advecting Ornstein--Uhlenbeck (OU) Gaussian
@@ -291,20 +357,33 @@ random field on the fine grid: spatial correlation length $12^\circ$,
 zonal advection $6^\circ$\,day$^{-1}$, temporal decorrelation $\tau_c=4$~d,
 mapped through a soft threshold to an opacity screen $c\in[0,1]$. The
 effective scene is $A_{\rm eff}=(1-c)\,A_{\rm surf}+c\,A_{\rm cl}$ with
-$A_{\rm cl}=0.65$. Realized mean covers are 0.22, 0.38, 0.56, and 0.72.
+$A_{\rm cl}=0.65$. \rev{The sweep is over the \emph{specified} cover parameter
+$f_c\in\{0,0.25,0.40,0.55,0.70\}$; because the soft threshold saturates, the
+realized mean covers are slightly different ($0.22$, $0.38$, $0.55$, $0.70$
+respectively, averaged over seeds) and every table in this paper quotes
+specified $f_c$ together with the realized cover it produced.}
 
-To test robustness against non-terrestrial weather, we implement three
-extended climatology variants:
-(i) {\it Latitudinal zonation:} an Earth-like zonal mean profile
-$w_{\rm lat}(\theta)=1.0+0.35\cos(2\theta)-0.25\cos(4\theta)$, concentrating
-clouds along an equatorial Intertropical Convergence Zone (ITCZ) and
-mid-latitude storm tracks while suppressing subtropical desert belts;
+\rev{To test robustness against non-terrestrial weather we implement four
+extended climatology variants, each re-normalized so that the realized mean
+cover matches the baseline $f_c$ it is compared with (otherwise a variant that
+simply has more or less cloud would be confounded with a variant that has a
+different cloud \emph{pattern}):}
+(i) \rev{{\it Banded zonal profile:} the opacity field is multiplied by
+$w_{\rm lat}(\theta)=1+0.35\cos2\theta-0.25\cos4\theta$, normalized to unit
+mean. We previously labelled this an ``ITCZ'' profile, which it is not: its
+maximum ($1.31$) lies at $\pm35^\circ$ --- the subtropical region an ITCZ model
+should \emph{suppress} --- its equatorial value is a mild $1.10$, and it is
+symmetric about the equator and never migrates. It is a test of latitudinal
+inhomogeneity only, and we report it as such.}
 (ii) {\it Surface-correlated cloudiness:} coupling cloud opacity to surface
 reservoirs, $g_{\rm eff}=g-\beta_{\rm surf}(A_{\rm surf}-\bar{A})$, enhancing
 convection over low-albedo tropical oceans; and
-(iii) {\it Multi-timescale temporal evolution:} summing a rapid convective
-mode ($\tau_1=1$~d, weight 40\%) and a persistent synoptic regime
-($\tau_2=7$~d, weight 60\%).
+(iii) {\it Multi-timescale temporal evolution:} \rev{summing a rapid convective
+mode and a persistent synoptic regime with weights $(0.3,0.7)$ and correlation
+times $(1~{\rm d},10~{\rm d})$, normalized to unit variance.}
+\rev{(iv) {\it Per-pass independent weather:} a fresh, temporally uncorrelated
+cloud realization for every pass, included as the causal control of
+Section~\ref{sec:cadence} rather than as a physical climate.}
 
 \subsection{Campaign and sampling geometry}
 The campaign matches current swarm concepts \citep{tt22mnras,helvajian23}:
@@ -312,20 +391,64 @@ $N_{\rm sc}=16$ spacecraft sample an $n\times n=64\times64$ raster
 ($\Delta_{\rm img}=20.9$~m pitch, 4096 pixels) in boustrophedon order,
 divided into 256 dwell slots. In each dwell slot, 16 pixels are sampled
 simultaneously by spacecraft spaced across adjacent raster tracks with
-transverse separations of $\sim$80--300~m. Nominal dwells are $t_s=1800$~s
-with $M_p=16$ complete passes (90.0~d wall-clock, 8~h per pixel, 65,536
-time-tagged samples). Random inter-pass gaps (0--12~h) emulate calibration
-and slew overhead and break rotational phase locking.
+transverse separations of $\sim$80--300~m. \rev{Nominal dwells are
+$t_s=1800$~s with $M_p=16$ complete passes, giving 65{,}536 time-tagged
+samples, $8.00$~h of integration per raster position, $85.33$~d of exposure
+time, $2.13$~d of charging overheads, and a wall-clock length of
+$\mathbf{87.33}$~d --- not the $90.0$~d quoted previously, which silently
+assumed zero overhead.} \rev{Inter-pass dead time is now an explicit,
+auditable ledger instead of a random draw: the fiducial campaign charges
+$T_{\rm oh}=45$~s per dwell (30~s translation slew, 10~s pointing settling,
+5~s inter-spacecraft metrology) and no additional random gap. The earlier
+$0$--$12$~h random gaps are removed because they made the wall-clock length
+seed-dependent and were never reconciled with the 90-day claim.}
 
-Cloud-induced signal fluctuations have per-sample standard deviations
-$\sigma_{\rm cl}=0.33$, 0.43, 0.49, and 0.53 for the four cloud covers---i.e.,
-{\it 14--23 times larger} than coronal shot noise $\sigma_{\rm cor}=0.023$.
-Planetary weather completely dominates the single-sample photometric error budget.
+\rev{\subsection{Resource conventions: two mutually exclusive ledgers}
+\label{sec:ledger}
+The referee correctly observed that ``fixed 8~h per pixel'' and ``fixed 90-day
+campaign'' cannot both be satisfied as $M_p$ grows. We therefore run the
+cadence study under two explicitly named arms and never mix them.
+\begin{itemize}
+\item {\bf Arm A (photons):} hold $M_p t_s=8$~h per raster position and let the
+wall clock be whatever it needs. Then $t_s=7200,3600,1800,900,450$~s for
+$M_p=4,8,16,32,64$ give $85.73,86.27,87.33,89.47,\mathbf{93.73}$~d; the
+$M_p=64$ configuration \emph{violates} a 90-day cap.
+\item {\bf Arm B (wallclock):} force the campaign to $89.87$~d including
+overheads and let $t_s$ fall to $7548.8,3751.9,1853.4,904.2,\mathbf{429.6}$~s,
+so the photons per position fall from $8.39$~h to $7.64$~h instead of staying
+at 8~h.
+\end{itemize}
+Every cadence number in Section~\ref{sec:cadence} is reported per arm, and the
+two arms answer different questions: Arm A isolates the statistical effect of
+revisit count at constant photons, Arm B is what a 90-day mission can actually
+buy.}
+
+\rev{Cloud-induced signal fluctuations are calibrated against the data the
+estimator actually sees, i.e.\ the per-sample standard deviation of the
+cloud-only component of the disk-integrated signal with the 16-node
+Gauss--Legendre exposure integration of Section~\ref{sec:quad}. The resulting
+values are $\sigma_{\rm cl}=0.296,0.378,0.441,0.486$ for $f_c=0.25,0.40,0.55,
+0.70$, against the coronal single-dwell noise $\sigma_{\rm cor}=0.0232$ at
+$t_s=1800$~s. That is a standard-deviation ratio of $\mathbf{12.8}$--
+$\mathbf{21.0}$, or a \emph{variance} ratio of $\mathbf{163}$--
+$\mathbf{440}$. The previously quoted ``14--23 times'' was a standard-deviation
+ratio computed with the rejected 3-node quadrature; it is neither the variance
+ratio its wording implied nor reproducible under the corrected operator.
+Planetary weather dominates the single-sample photometric error budget by more
+than two orders of magnitude in variance.}
 
 \section{Reconstruction Methods}
 \label{sec:methods}
 
 \subsection{Time-domain inversion (TDI)}
+\rev{Two notational points precede the estimator. We write the target distance
+as $z_0$ (pc-scale) and the spacecraft heliocentric distance as $z$ (AU-scale),
+reserving $z/z_0$ for the imaging magnification; the minimum heliocentric
+distance for a ray of impact parameter $b$ is $z_{\min}\simeq b^2/2r_g$ and is
+\emph{not} the same quantity as the target distance $z_0$. Second, all
+reconstructions use $n_{\rm sub}=16$ Gauss--Legendre sub-exposures (Eq.~\ref{eq:forward}); the number of nodes is a parameter of the operator, not a
+free-tuning knob, and Section~\ref{sec:quad} shows why the previously used
+3-node rule is inadequate.}
 Let $\mathbf{s}\in\mathbb{R}^{n_s}$ be the static surface albedo map on
 a $72\times36$ reconstruction grid ($n_s=2592$, coarser than the truth grid).
 Each sample $k$, taken at time $t_k$ and image-plane pixel $p_k$, satisfies
@@ -337,7 +460,8 @@ y_k=\mathbf{f}_k^{\sf T}\mathbf{s}+\varepsilon_k,\qquad
 where $\Pi(t)$ renders the map at the rotation phase, illumination, and
 spin-pole geometry of time $t$, and $\mathbf{k}_{p_k}$ is the SGL kernel row.
 Setting $n_{\rm sub}=1$ corresponds to an instantaneous midpoint model;
-$n_{\rm sub}=3$ integrates over intra-dwell exposure smear.
+\rev{$n_{\rm sub}=16$ uses the Gauss--Legendre nodes $\delta t_m$ and weights of
+the dwell interval, which is what the synthetic data are integrated with.}
 The error $\varepsilon_k$ contains coronal shot noise and cloud fluctuations.
 The climatological mean-cloud bias is removed by the affine correction
 $\hat{\mathbf{s}}=(\hat{\mathbf{s}}_{\rm raw}-f_cA_{\rm cl})/(1-f_c)$.
@@ -352,222 +476,838 @@ TDI solves the regularized generalized least-squares problem:
 with spherical-grid Laplacian $\mathsf{L}$ and
 $\lambda_{\rm eff}=\lambda\,{\rm tr}(\mathsf{F}^{\sf T}\mathsf{C}^{-1}\mathsf{F})/{\rm tr}(\mathsf{L}^{\sf T}\mathsf{L})$
 ($\lambda=3\times10^{-3}$, frozen on calibration seed 99).
-Four distinct combinations of weighting and projection are ablated:
-\begin{itemize}
-\item {\it Diagonal (White):} $\mathsf{C}=\mathrm{diag}(\sigma_k^2+\sigma_{\rm cl}^2)$,
-the assumption that clouds average like uncorrelated white noise \citep{toth25clouds}.
-\item {\it Temporal Whitening:} $\mathsf{C}$ is block diagonal over image-plane
-pixels; for the $M_p$ visits of pixel $p$,
-$(\mathsf{C}_p)_{ij}=\sigma_{\rm cl}^2\exp(-|t_i-t_j|/\tau_c)+\delta_{ij}\sigma_k^2$.
-\item {\it Slot Deflation:} because $K(\rho)\propto1/\rho$, instantaneous
-disk-integrated cloudiness perturbs all $N_{\rm sc}=16$ simultaneous samples
-coherently. We project out the per-slot mean: $\mathbf{y}\leftarrow\mathbf{y}-\bar{\mathbf{y}}$,
-$\mathsf{F}\leftarrow\mathsf{F}-\bar{\mathsf{F}}$, rescaling white noise by
-$\sqrt{1-1/N_{\rm sc}}$. This orthogonal projection removes 256 common modes
-(6.25\% rank reduction) while retaining $1-1/N_{\rm sc}=93.75\%$ of the information.
-\item {\it Full TDI:} combines slot deflation with temporal whitening.
-\end{itemize}
+\rev{That weight is carried unchanged through the revised suite; it is not
+claimed to be optimal --- Section~\ref{sec:lamsens} sweeps six decades of it and
+finds the objective unable to select one without truth.}
+\rev{$\mathsf{C}$ is the working covariance, block diagonal over image-plane
+pixels: the $M_p$ samples of pixel $p$ (one per pass, at the same raster
+position) are correlated by the OU cloud field,}
+\begin{equation}
+\rev{(\mathsf{C}_p)_{ij}=\sigma_{\rm cl}^2\exp(-|t_i-t_j|/\tau_c)+\delta_{ij}\sigma_i^2 ,}
+\label{eq:cp}
+\end{equation}
+\rev{while different pixels are treated as conditionally independent given the
+surface map (the spatial cloud correlation is absorbed into $\sigma_{\rm cl}$
+rather than modeled across pixels; Section~\ref{sec:discussion} states what this
+approximation costs).}
+\rev{Four weighting/projection combinations are ablated in
+Section~\ref{sec:ablation}: (White) diagonal
+$\mathsf{C}=\mathrm{diag}(\sigma_k^2+\sigma_{\rm cl}^2)$, the assumption that
+clouds average like uncorrelated white noise \citep{toth25clouds}; (OU)
+Eq.~\ref{eq:cp} without any slot treatment; (v2 deflation), the approximate
+per-slot projection described below; and (Full TDI), exact nuisance profiling
+with Eq.~\ref{eq:cp}.}
+
+\rev{\subsection{Nuisance profiling of the simultaneous-sample offsets}
+\label{sec:profiling}
+Because $K(\rho)\propto1/\rho$, an instantaneous disk-integrated cloud
+fluctuation perturbs all $N_{\rm sc}=16$ simultaneous samples coherently. The
+v2 treatment subtracted the per-slot mean of both $\mathbf{y}$ and
+$\mathsf{F}$ and rescaled the marginal noise by $\sqrt{1-1/N_{\rm sc}}$,
+claiming that this ``removes 256 common modes (6.25\% rank reduction) while
+retaining $1-1/N_{\rm sc}=93.75\%$ of the information''. Both the mechanism and
+the numbers in that sentence are wrong, and the revised treatment replaces it
+with the exact profile likelihood of the referee's eq.~(R11).}
+
+\rev{Write the model with slot nuisance offsets $\boldsymbol\alpha$,
+\begin{equation}
+\mathbf{y}=\mathsf{F}\mathbf{s}+\mathsf{B}\boldsymbol\alpha+\boldsymbol\varepsilon,
+\qquad \boldsymbol\varepsilon\sim\mathcal N(0,\mathsf{C}),
+\label{eq:nuisance}
+\end{equation}
+where $\mathsf{B}$ is the indicator matrix of dwell slots ($\mathsf{B}$ has one
+column per slot, 4096 columns). The key structural fact, which the v2
+``orthogonal projection'' narrative missed, is that $\mathsf{C}$ is block
+diagonal over \emph{image-plane pixels}, while $\mathsf{B}$ couples slots
+\emph{within} a pixel. The $M_p$ samples belonging to pixel $p$ sit in $M_p$
+different slots, so}
+\begin{equation}
+\rev{\mathsf{H}\equiv\mathsf{B}^{\sf T}\mathsf{C}^{-1}\mathsf{B}
+=\mathrm{blkdiag}\left(\mathsf{H}_1,\ldots,\mathsf{H}_{n_{\rm bin}}\right),}
+\label{eq:H}
+\end{equation}
+\rev{with $n_{\rm bin}=256$ blocks of size $M_p\times M_p$ --- \emph{not}
+diagonal, i.e.\ the offsets are statistically coupled through
+the shared temporal cloud covariance of a single pixel. Profiling them out
+therefore requires inverting those $M_p\times M_p$ blocks: with
+$\mathsf{G}_j=\mathsf{B}_j^{\sf T}\mathsf{C}^{-1}\mathsf{F}$,
+$\mathbf{g}_j=\mathsf{B}_j^{\sf T}\mathsf{C}^{-1}\mathbf{y}$ and
+$\mathsf{H}_j=\mathsf{B}_j^{\sf T}\mathsf{C}^{-1}\mathsf{B}_j$, the free
+(unconstrained) profile is}
+\begin{align}
+\rev{\mathsf{A}_{\rm free}}&\rev{=\mathsf{F}^{\sf T}\mathsf{C}^{-1}\mathsf{F}
+-\sum_j \mathsf{G}_j^{\sf T}\mathsf{H}_j^{-1}\mathsf{G}_j,}
+\label{eq:profilea}\\
+\rev{\mathbf{b}_{\rm free}}&\rev{=\mathsf{F}^{\sf T}\mathsf{C}^{-1}\mathbf{y}
+-\sum_j \mathsf{G}_j^{\sf T}\mathsf{H}_j^{-1}\mathbf{g}_j\,.}
+\label{eq:profileb}
+\end{align}
+\rev{With the standard anchoring constraint $\sum_b\alpha_b=0$ this collapses
+to a rank-one correction,}
+\begin{equation}
+\rev{\mathsf{A}=\mathsf{A}_{\rm free}+\mathbf{q}\mathbf{q}^{\sf T}/S\,,\qquad
+\mathbf{b}=\mathbf{b}_{\rm free}+\mathbf{q}\,m/S\,,}
+\label{eq:anchor}
+\end{equation}
+\rev{where $\mathbf{v}_j=\mathsf{H}_j^{-1}\mathbf{1}$ and}
+\begin{equation}
+\rev{\mathbf{q}=\sum_j\mathsf{G}_j^{\sf T}\mathbf{v}_j\,,\qquad
+S=\sum_j\mathbf{1}^{\sf T}\mathbf{v}_j\,,\qquad
+m=\sum_j\mathbf{v}_j^{\sf T}\mathbf{g}_j\,.}
+\label{eq:anchordef}
+\end{equation}
+\rev{which is exact and costs only the block inversions already required by
+Eqs.~\ref{eq:profilea}--\ref{eq:profileb}. Without anchoring the offsets are only
+projected out, and the estimator loses the disk-integrated albedo information
+entirely; Eq.~\ref{eq:anchor} is what ``full TDI'' means in this paper.}
+
+\subsection{Exposure quadrature: convergence of the smear operator}
+\label{sec:quad}
+\rev{Eq.~\ref{eq:forward} averages the illumination/rotation operator over the
+dwell, and the synthetic data are generated with the same rule, so the
+sub-exposure count $n_{\rm sub}$ is part of the operator definition rather than
+a tuning knob. v2 used three \emph{equally spaced}, equal-weight sub-exposures at
+$-t_s/3$, $0$, $+t_s/3$, which is neither a Gauss--Legendre rule nor a convergent
+quadrature of the smear kernel. Writing the exact rotational-harmonic response of
+a dwell of length $t_s$ as $R_m(t_s)=\mathrm{sinc}(m\Omega t_s/2)$ with
+$\Omega=2\pi/P_{\rm rot}$, the equal-spaced rule gives}
+\begin{equation}
+\rev{R_{m}^{({\rm eq}\,3)}=\tfrac13\left[2\cos\!\left(\tfrac{m\Omega t_s}{3}\right)+1
+\right]\,,}
+\label{eq:alias}
+\end{equation}
+\rev{so at $t_s=7200$~s the exact response $R_{36}=0$ becomes
+$R_{36}^{({\rm eq}\,3)}=1.000000$.}
+\rev{At $P_{\rm rot}=24$~h the node spacing $t_s/3$ is $2400$~s at $t_s=7200$~s,
+i.e.\ $10^\circ$ of longitude, which is exactly the period of the $m=36$
+azimuthal harmonic on the $72$-column grid. That harmonic is sampled at its own
+period, so instead of being averaged to zero it is passed at unit gain; the same
+holds approximately for $m=35$--$40$, where the equal-spaced rule returns
+$+0.99$ to $+0.84$ against true responses of $\pm0.07$. The worst error over
+$m\le40$ at $t_s=7200$~s is $1.02$ --- larger than the response itself. This is a
+quadrature alias, not a smoothing error: the rule is blind to the very structure
+it is meant to average out, and data and operator generated with it are
+self-consistent, so the mismatch is invisible in residuals and shows up only in
+the recovered map.}
+
+\rev{Table~\ref{tab:quad} reports $\max_{m\le40}|R_m^{(n_{\rm sub})}-R_m|$ for
+Gauss--Legendre rules, computed by
+{\tt sglsim.exposure\_quadrature\_convergence}. Convergence is monotonic in
+$n_{\rm sub}$ at fixed $t_s$ and the GL rules never recover unit gain at an
+aliased harmonic: GL-3 peaks at $0.88$ rather than $1.02$, and GL-16 is
+\emph{spectrally converged} --- its worst error over all five dwell lengths is
+$2.6\times10^{-13}$, i.e.\ machine precision even for the 7200~s dwells of
+Arm~A, where the intra-dwell smear alone is $30^\circ$. GL-16 is therefore used
+everywhere: in the data, in the forward operator, in the $\sigma_{\rm cl}$
+calibration of Section~\ref{sec:ledger}, and in every reconstruction. The
+practical consequence is that the $t_s=7200$~s ($M_p=4$) cadence points of the
+original analysis were computed with an operator whose response error at the
+highest retained harmonic is of order unity; they are superseded by the
+Arm~A/Arm~B numbers of Section~\ref{sec:cadence}.}
+
+\begin{table*}[t]
+\centering
+\caption{\rev{Maximum rotational-harmonic response error over $1\le m\le40$
+against the exact sinc, by dwell length $t_s$. The top row is the equal-spaced
+rule used in v2; the rest are Gauss--Legendre. From
+{\tt results/quadrature.npz} (\texttt{eq3\_max\_err}, \texttt{gl\_max\_err}).}}
+\label{tab:quad}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+\rev{Rule} & \multicolumn{5}{c}{\rev{$\max_{m\le40}|R_m^{(n)}-R_m|$ by dwell $t_s$}}\\
+\cmidrule(lr){2-6}
+\rev{} & \rev{7200} & \rev{3600} & \rev{1800} & \rev{900} & \rev{450~s}\\
+\midrule
+\rev{equal-3 (v2)} & \rev{$1.0$}    & \rev{$1.3\times10^{-1}$} & \rev{$3.6\times10^{-2}$} & \rev{$2.4\times10^{-2}$} & \rev{$7.4\times10^{-3}$}\\
+\rev{GL-3}  & \rev{$8.8\times10^{-1}$} & \rev{$2.7\times10^{-1}$} & \rev{$8.3\times10^{-3}$} & \rev{$1.5\times10^{-4}$} & \rev{$2.5\times10^{-6}$}\\
+\rev{GL-5}  & \rev{$5.1\times10^{-1}$} & \rev{$3.5\times10^{-3}$} & \rev{$5.3\times10^{-6}$} & \rev{$5.8\times10^{-9}$} & \rev{$5.8\times10^{-12}$}\\
+\rev{GL-8}  & \rev{$4.8\times10^{-3}$} & \rev{$2.4\times10^{-7}$} & \rev{$4.9\times10^{-12}$} & \rev{$4.4\times10^{-16}$} & \rev{$2.2\times10^{-16}$}\\
+\rev{GL-16} & \rev{$2.6\times10^{-13}$} & \rev{$6.4\times10^{-16}$} & \rev{$6.4\times10^{-16}$} & \rev{$2.2\times10^{-16}$} & \rev{$2.2\times10^{-16}$}\\
+\rev{GL-32} & \rev{$1.2\times10^{-15}$} & \rev{$1.1\times10^{-15}$} & \rev{$1.0\times10^{-15}$} & \rev{$4.4\times10^{-16}$} & \rev{$2.2\times10^{-16}$}\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\rev{\subsection{What profiling actually removes: an information audit}
+\label{sec:infaudit}
+The rank/percentage framing of the v2 deflation paragraph cannot be repaired,
+so we replaced it with a direct eigenvalue audit of the normal matrix at the
+fiducial campaign (Table~\ref{tab:infaudit}, produced by
+{\tt sglsim.profiling\_information\_audit}). Three findings.
+
+First, profiling removes \textbf{no rank at all}. The un-profiled normal matrix
+already has nullity 288, the free profile has nullity 288, and the anchored
+profile has nullity 288. The null space is a property of the reconstruction
+grid and the raster, not of the nuisance treatment: 144 basis columns are
+\emph{identically zero} because they live in the two polar latitude rows of the
+equirectangular grid, which a circular image-plane raster never samples (the
+projected disk does not reach $|{\rm lat}|=90^\circ$ cell centres). The
+remaining 144 null directions are the associated near-degenerate partners; the
+smallest retained eigenvalue with $\lambda_{\rm eff}$ regularization is
+$6.3\times10^{-6}$ against a maximum of $2.9\times10^{3}$.
+
+Second, what profiling removes is the \emph{response along the mean-albedo
+direction}, measured as the constant-mode gain $\|\mathsf{A}\mathbf{1}\|/\|\mathbf{1}\|$:
+$913.7$ un-profiled, $18.79$ for the free profile ($2.06\%$ retained), and
+$774.1$ for the anchored profile ($84.72\%$ retained). The free profile is
+therefore not a mild correction --- it attenuates the disk-integrated albedo
+by a factor of 49, which is why anchoring is mandatory rather than cosmetic.
+
+Third, the identity $\mathsf{W}_\perp\mathsf{B}=0$ quoted in v2 is a trivial
+property of any profile likelihood (the residual is orthogonal to the nuisance
+space by construction); it is not evidence of a surface-mode degeneracy, and
+an earlier version of this work read it as one.}
+
+\begin{table}[t]
+\centering
+\caption{\rev{Information audit of slot-offset profiling at the fiducial
+campaign ($n=64$, $N_{\rm sc}=16$, $M_p=16$, $n_s=2592$). Nullity is unchanged
+by profiling; the constant-mode gain is what changes. \texttt{free} = offsets
+projected out, \texttt{anchored} = Eq.~\ref{eq:anchor}.}}
+\label{tab:infaudit}
+\footnotesize
+\setlength{\tabcolsep}{1.6pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{lccc}
+\toprule
+\rev{Quantity} & \rev{un-profiled} & \rev{free} & \rev{anchored} \\
+\midrule
+\rev{nullity} & \rev{288} & \rev{288} & \rev{288} \\
+\rev{exactly-zero basis columns} & \rev{144} & \rev{144} & \rev{144} \\
+\rev{constant-mode gain} & \rev{913.7} & \rev{18.79} & \rev{774.1} \\
+\rev{fraction of gain retained} & \rev{1} & \rev{0.0206} & \rev{0.8472} \\
+\rev{largest eigenvalue} & \rev{2940} & \rev{429.9} & \rev{1030} \\
+\rev{$\lambda_{\rm eff}$} & \rev{0.00842} & \rev{0.00558} & \rev{0.00564} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Numerical precision verification}
+\label{sec:precisionnum}
 The normal matrix $\mathsf{A}=\mathsf{F}^{\sf T}\mathsf{C}^{-1}\mathsf{F}$
 is accumulated in single precision (`float32`) and solved in double precision
-(`float64`). A precision verification test comparing single-precision
-accumulation against full double-precision accumulation reveals a maximum
-relative difference of $2.92\times10^{-7}$ and RMS relative difference of
-$3.43\times10^{-7}$, proving single-precision accumulation does not degrade
-reconstruction fidelity.
+(`float64`).
+\rev{The v2 precision test was vacuous: it compared two double-precision
+accumulations and reported their difference, which measures nothing. It is
+replaced by a test that actually probes the single-precision path --- the same
+design matrix, rounded to float32 before accumulation, versus the float64
+reference --- at a reduced but honest problem size ($n=32$, 16{,}384 samples;
+the fiducial $n=64$ design would need 2.8~GB in two float64 copies inside the
+test harness), with the results in Table~\ref{tab:precision}.}
+\rev{Three numbers matter. The float32 design matrix differs from the float64
+reference by $3.1\times10^{-7}$ in Frobenius norm and the right-hand side by
+$4.1\times10^{-7}$, i.e.\ at the float32 machine-precision level, and the same
+quantities differ by only $1.0\times10^{-8}$ and $1.5\times10^{-8}$ from
+rounding alone --- confirming the discrepancy is representational, not
+algorithmic. Second, changing the \emph{summation order} of the blockwise
+float64 accumulation perturbs $\mathsf{A}$ by $5.3\times10^{-16}$, which is the
+number the v2 test was reporting. Third, and most relevant for the science:
+solving the regularized normal equations versus a QR solve of the same whitened
+design changes the recovered map by $1.7\times10^{-13}$ relative to the map
+norm, and chunking the profiler in different orders changes the fiducial map by
+$3.4\times10^{-13}$.}
+\rev{The unregularized normal matrix is exactly singular (rank 2016 of 2592 at
+the reduced size, nullity 288 at the fiducial size, Table~\ref{tab:infaudit}),
+so $\kappa(\mathsf{A})$ is reported only after regularization, where
+$\kappa=5.3\times10^{5}$ and the normal-equation residual is
+$1.3\times10^{-15}$. Single-precision accumulation is therefore adequate for
+this estimator, but the claim is now stated with its scope: it is a statement
+about the linear algebra, verified at reduced size, not a general bound.}
+
+\begin{table}[t]
+\centering
+\caption{\rev{Numerical precision audit (\texttt{sglsim.check\_numerical\_precision},
+reduced size $n=32$, $N_{\rm sc}=16$, $M_p=16$).}}
+\label{tab:precision}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lc}
+\toprule
+\rev{Quantity measured} & \rev{Relative error} \\
+\midrule
+\rev{float32 vs float64 design $\mathsf{A}$ (Frobenius)} & \rev{$3.1\times10^{-7}$} \\
+\rev{float32 vs float64 right-hand side $\mathbf{b}$} & \rev{$4.1\times10^{-7}$} \\
+\rev{rounding-only contribution to $\mathsf{A}$} & \rev{$1.0\times10^{-8}$} \\
+\rev{float64 summation-order change to $\mathsf{A}$} & \rev{$5.3\times10^{-16}$} \\
+\rev{normal-equation vs QR solve (map)} & \rev{$1.7\times10^{-13}$} \\
+\rev{profiler chunk-order change (map)} & \rev{$3.4\times10^{-13}$} \\
+\rev{regularized condition number $\kappa(\mathsf{A})$} & \rev{$5.3\times10^{5}$} \\
+\rev{unregularized rank / grid size} & \rev{$2016/2592$} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Baselines and statistical metrics}
-We compare TDI against two established baselines: B1 (static Wiener inverse
-of the all-visit mean raster; \citealt{toth21}) and B2 (phase-binned coadds
-into 8 rotational bins deconvolved via Wiener filter and back-projected;
-emulating \citealt{tur26bench}).
+\label{sec:baselines}
+\rev{We compare TDI against two registration-free coadd baselines, both
+evaluated on the same surface grid and with the same debiasing. B1 is the
+phase-\emph{blind} limit of the same pipeline (a single rotational bin: the
+all-visit mean raster, Wiener-deconvolved and back-projected through the mean
+illumination; cf.\ \citealt{toth21}). B2 is the phase-registered coadd baseline
+emulating \citet{tur26bench}: samples are binned in rotational phase, each bin
+is Wiener-deconvolved, and the bins are back-projected onto the sphere by
+bilinear interpolation weighted by illumination.}
+
+\rev{The bin count of B2 is not a free parameter and we now fix it explicitly.
+A pass visits a given image-plane pixel once, and consecutive dwell slots are
+$t_s=1800$~s apart, i.e.\ $1/48$ of the rotation period: there are 48 distinct
+sample phases per rotation. Coadding into only 8 phase bins averages over
+$45^\circ$ of longitude, and on ideal cloud-free noiseless data that baseline
+collapses to $r=0.07$ for reasons that have nothing to do with time-domain
+inversion; $r=0.94$ is obtained at 16 bins, which is the best-tuned compromise
+between rotational smear and the number of samples per bin ($3\times M_p=16$
+here). All B1/B2 numbers quoted below use $n_{\rm bins}=16$ for B2 and the
+same Wiener regularization $K_w=3\times10^{-3}$; the naive 8-bin variant is
+reported in Table~\ref{tab:clouds} only to quantify the artifact, so that the
+competitor is not a straw man.}
+
 Metrics are evaluated over latitudes $|b|\le60^\circ$ across an expanded
 ensemble of 10 paired seeds (seeds 11--20). Scalar metrics ($r$, SSIM, NRMSE)
 are computed per realization seed and then averaged over seeds (with 95\%
 bootstrap confidence intervals), rather than computed on a seed-averaged map.
+\rev{Because 10 seeds is a small ensemble, we now report the exact attainable
+significance floor alongside every $p$-value: for $n=10$ paired samples the
+smallest attainable two-sided sign-flip (Wilcoxon) $p$ is $2/2^{10}=1.95\times
+10^{-3}$, so no paired test on this ensemble can support $p<10^{-3}$, and any
+such statement in v2 was not attainable. We also report a second, independent
+null: a cloud-only null in which the surface is replaced by the mean and only
+the weather is retained, whose finite ensemble size limits attainable $p$ to
+$1/(N_{\rm null}+1)$.}
+\rev{Finally, SSIM and the land--ocean contrast ratio are computed on the
+coarse $36\times72$ reconstruction grid with the same latitude mask as $r$, and
+the harmonic decomposition of Section~\ref{sec:clouds} uses real spherical
+harmonics with $\cos\vartheta$ quadrature weights, not a 2D FFT on an
+equirectangular array (which is not a spherical-harmonic decomposition: the
+grid cells are not equal-area and the azimuthal sampling is aliased at high
+$|{\rm lat}|$).}
 
 \section{Results}
 \label{sec:results}
 
 \subsection{Planetary rotation under characterized geometry}
 \label{sec:rotation}
-For a rotating, orbit-illuminated cloud-free planet under known spin geometry,
-TDI achieves Pearson $r=0.990\pm0.001$ and $\mathrm{SSIM}=0.918\pm0.002$
-(Fig.~\ref{fig:gallery}, top center).
-To determine the information loss attributable strictly to rotation, we
-compare this solution against an ideal static-scene observation under
-identical photon budget and aperture: the static scene achieves $r=0.075$
-when inverted with a static model, whereas TDI with the dynamic operator
-reaches $r=0.991$.
-Once every sample is time-tagged and the rotation/illumination ephemeris is
-folded into the forward operator, rotation per se introduces virtually zero
-information loss. Rotational aliasing is tractable under accurately
-characterized spin and viewing geometry.
+\rev{\emph{Headline result, cloud-free.} For a rotating, orbit-illuminated
+cloud-free planet observed with the fiducial 90-day campaign and exactly known
+spin geometry, the profiled time-domain estimator recovers Pearson
+$r=0.9786\pm0.0002$ (standard error over 10 paired weather seeds),
+$\mathrm{SSIM}=0.8482\pm0.0010$, normalized RMSE $0.0628\pm0.0003$, albedo bias
+$-0.0006\pm0.0006$, and land--ocean contrast ratio $1.056\pm0.001$
+(Fig.~\ref{fig:gallery}, top center; Table~\ref{tab:clouds}, first column). All
+numbers in this section and in Table~\ref{tab:clouds} come from the $16$-node
+exposure quadrature of Section~\ref{sec:quad}, the exact anchored nuisance
+profiling of Section~\ref{sec:profiling}, and phase bins registered into
+$16$ rotational bins; they therefore differ from the v2 values
+($r=0.990$, $\mathrm{SSIM}=0.918$), which used the approximate deflation and a
+coarser quadrature.}
+
+\rev{To attribute what remains, we compare three reference configurations on the
+\emph{same} data. (i) The phase-blind coadd (B1), which treats the campaign as a
+single static exposure, collapses to $r=0.1155\pm0.0004$: with rotation
+unmodeled the surface is essentially unrecoverable, and the $+0.863$ gap to TDI
+is the contribution of the time-registered forward operator alone. (ii)
+Registering the coadds into $16$ rotational phase bins (B2) recovers most of the
+signal, $r=0.9361\pm0.0001$, but with a $-0.048$ albedo bias and a contrast
+ratio of only $0.844$: binning averages within each $22.5^{\circ}$ phase window
+and flattens the map. (iii) A white-noise GLS fit with the same time-dependent
+operator reaches $r=0.9802\pm0.0002$, i.e.\ $0.0015$ \emph{above} the profiled
+estimator (paired difference $-0.0015$, 0/10 seeds in favour of whitening,
+$t=-22.6$).}
+
+\rev{Finally, the static ideal-data reference the referee asked for. We rebuild
+the campaign with the planet \emph{frozen}: the same $64\times64$ raster, the
+same $16$ revisits and the same $1800$~s dwell --- so every raster position
+receives exactly the same $8$~h of integration and there is no weather --- but
+all passes see one identical pose, so there is no rotational smearing to model
+and no phase coverage to solve. Scored on the same seeds with the same estimator
+(archive {\tt static\_reference.npz}), that best case of any observation of this
+planet at this dose gives $r=0.4074\pm0.0254$ (standard deviation across seeds
+$0.0804$, per-seed range $0.284$--$0.523$), $\mathrm{SSIM}=0.3604$, normalized
+RMSE $0.4299$. It is \emph{worse} than the rotating cloud-free planet by
+$+0.5728\pm0.0254$ in favour of rotation ($p=3\times10^{-9}$, 10/10 seeds), and
+the rotating cloudy campaign sits between them: $-0.6379\pm0.0083$ relative to
+rotating cloud-free ($p=5\times10^{-14}$, 10/10). The reason is the conditioning
+of the operator rather than any information argument: with the planet frozen,
+the $16$ pose-passes of each raster position are literally identical rows of
+$F$, so the time-domain design loses the rank that rotation supplies and the
+regularizer does all the work --- a frozen planet is not an easier inverse
+problem, it is a degenerate one. This is the quantitative form of the claim
+above: the loss attributable to rotation \emph{per se} is not a loss at all, and
+the whole $0.638$ gap the paper is about is weather, measured against a rotation
+reference that rotation is helping.}
+
+\rev{That last comparison is the honest statement of what rotation alone costs.
+With no weather there is no correlated noise for temporal whitening to remove, so
+whitening buys nothing and slightly dilutes the fit; the remaining signal
+correlation comes from the time-dependent operator, which both configurations
+share. Rotation per se is therefore not the information bottleneck:
+the scale-dependent correlation $r(\ell)$ of Section~\ref{sec:res} stays above
+$0.99$ for every degree $\ell\le20$ the grid supports, so no rotational band is
+lost relative to the $\ell=20$ quadrature ceiling, and the residual
+$1-r\simeq0.021$ is regularization and aperture, not aliasing. The v2 claim that
+rotation ``introduces virtually zero information loss'' was stronger than these
+data support: rotation is \emph{tractable} under characterized geometry, and the
+degradation budget is dominated by weather, not spin.}
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{figures/fig_gallery.pdf}
-\caption{Reconstruction gallery for the fiducial 90-day campaign.
-Top: truth surface albedo; TDI reconstruction of the rotating cloud-free
-planet ($r=0.99$); static Wiener image (B1) at $f_c=0.55$, illustrating
-complete breakdown. Bottom, all at $f_c\simeq0.55$: phase-binned coadd
-(B2), white-noise GLS (B3), and TDI. The gross continental dichotomy is
-recovered, but fine features are smoothed by weather noise.}
+\caption{\rev{Reconstruction gallery for the fiducial 90-day campaign
+($n=64$, $M_p=16$, $t_s=1800$~s, 16-node exposure quadrature).
+Top: truth surface albedo; TDI reconstruction of the rotating cloud-free planet
+($r=0.979$, $\mathrm{SSIM}=0.848$); phase-blind coadd (B1) at realized cover
+$0.56$, which is essentially featureless ($r=0.042$). Bottom, all at realized
+cover $\simeq0.56$: $16$-bin phase-binned coadd (B2), white-noise GLS (B3), and
+TDI. The gross continental dichotomy is recovered, but fine features are erased
+by weather.}}
 \label{fig:gallery}
 \end{figure*}
 
 \subsection{Cloud degradation and effective spatial resolution}
 \label{sec:clouds}
-Table~\ref{tab:clouds} and Figure~\ref{fig:ssimfc} document the collapse of
-fidelity with increasing cloud cover at fixed single-campaign resources.
-Mean correlation falls from 0.990 (cloud-free) to 0.572 at 22\% cover,
-0.334 at 56\% cover, and 0.263 at 72\% cover (95\% bootstrap CI: [0.241, 0.284]).
-Small-scale structure is erased first: SSIM drops to $0.109\pm0.010$ at $f_c=0.56$
-and $0.065\pm0.008$ at $f_c=0.72$.
+\rev{Table~\ref{tab:clouds} and Figure~\ref{fig:ssimfc} document the collapse of
+fidelity with cloud cover at fixed single-campaign resources. The cover
+realized by the OU field differs from the nominal parameter, so both are
+quoted: mean realized cover is $0.237$, $0.398$, $0.558$ and $0.710$ for the
+nominal $f_c=0.25,0.40,0.55,0.70$ runs.}
+
+\rev{Mean correlation falls from $0.9786$ (cloud-free) to $0.5966\pm0.0083$ at
+$23.7\%$ realized cover, $0.4538\pm0.0070$ at $39.8\%$, $0.3422\pm0.0078$ at
+$55.8\%$ and $0.2491\pm0.0100$ at $71.0\%$. SSIM falls faster: $0.288\pm0.005$
+already at $23.7\%$ cover and $0.061\pm0.003$ at $71.0\%$, i.e.\ small-scale
+structure is erased first, which is the expected signature of a noise process
+whose power is broad in $\ell$ (Section~\ref{sec:res}).}
+
+\rev{Two comparisons in Table~\ref{tab:clouds} qualify the headline claim.
+(1)~At every cloudy cover the profiled estimator beats the white-noise GLS
+fit by $\Delta r=+0.069$ to $+0.054$ (10/10 paired seeds in favour,
+$t=9.3$ to $7.4$), so the OU temporal covariance model earns its keep only
+once weather is present. (2)~At $23.7\%$ cover the $16$-bin phase-binned
+coadd (B2) actually scores \emph{higher} than TDI, $r=0.6097$ vs.\ $0.5966$
+(paired $\Delta r=-0.013$, 1/10 seeds in favour of TDI, $t=-2.62$), and the
+gap only reverses at higher cover ($+0.006$ at $39.8\%$, $+0.025$ at
+$55.8\%$, $+0.046$ at $71.0\%$, $t=0.79$ to $6.14$). B2 is a
+non-parametric estimator: it makes no assumption about cloud statistics, so
+at low cover --- where the cloud nuisance is small --- its binning variance
+costs less than TDI's model error. The claim we can defend is therefore not
+``TDI is always better than phase-binning,'' but ``TDI's advantage grows
+with cover, and at high cover B2 additionally carries a bias that TDI does
+not'' ($+0.065$ vs.\ $+0.019$ albedo bias and contrast ratio $0.786$ vs.\
+$1.024$ at $71\%$ cover).}
 
 \begin{table}[t]
 \centering
-\caption{Map fidelity vs.\ mean cloud cover (fiducial campaign;
-mean and 95\% bootstrap CI over 10 paired seeds).}
+\caption{\rev{Map fidelity vs.\ cloud cover for the fiducial campaign
+($n=64$, $M_p=16$, $t_s=1800$~s, 16-node quadrature, exact anchored
+profiling). Rows are means $\pm$ standard error over 10 paired weather
+seeds; the B2/B1 rows use 16, 8 and 1 rotational phase bins respectively.}}
 \label{tab:clouds}
 \footnotesize
-\setlength{\tabcolsep}{2.5pt}
+\setlength{\tabcolsep}{2.2pt}
+\resizebox{\columnwidth}{!}{%%
 \begin{tabular}{lccccc}
 \toprule
-Method & $f_c{=}0$ & 0.22 & 0.38 & 0.56 & 0.72\\
+\rev{Method} & \rev{$f_c{=}0$} & \rev{0.24} & \rev{0.40} & \rev{0.56} & \rev{0.71}\\
 \midrule
-\multicolumn{6}{c}{Pearson $r$}\\
-TDI (this work)        & 0.990 & 0.572 & 0.432 & 0.334 & 0.263 \\
-                       & $\pm0.001$ & $\pm0.018$ & $\pm0.022$ & $\pm0.021$ & $\pm0.022$ \\
-White GLS (B3)         & 0.991 & 0.543 & 0.402 & 0.308 & 0.239 \\
-                       & $\pm0.001$ & $\pm0.019$ & $\pm0.024$ & $\pm0.022$ & $\pm0.021$ \\
-Phase-binned (B2)      & 0.669 & 0.328 & 0.215 & 0.129 & 0.052 \\
-                       & $\pm0.008$ & $\pm0.015$ & $\pm0.018$ & $\pm0.016$ & $\pm0.014$ \\
+\multicolumn{6}{c}{\rev{Pearson $r$}}\\
+\rev{TDI (profiled)}   & \rev{0.9786} & \rev{0.5966} & \rev{0.4538} & \rev{0.3422} & \rev{0.2491}\\
+\rev{}                 & \rev{$\pm.0002$} & \rev{$\pm.0083$} & \rev{$\pm.0070$} & \rev{$\pm.0078$} & \rev{$\pm.0100$}\\
+\rev{White GLS (B3)}   & \rev{0.9802} & \rev{0.5274} & \rev{0.3863} & \rev{0.2886} & \rev{0.2107}\\
+\rev{}                 & \rev{$\pm.0002$} & \rev{$\pm.0080$} & \rev{$\pm.0076$} & \rev{$\pm.0092$} & \rev{$\pm.0102$}\\
+\rev{Phase-binned (B2)}& \rev{0.9361} & \rev{0.6097} & \rev{0.4479} & \rev{0.3175} & \rev{0.2028}\\
+\rev{}                 & \rev{$\pm.0001$} & \rev{$\pm.0079$} & \rev{$\pm.0115$} & \rev{$\pm.0150$} & \rev{$\pm.0149$}\\
+\rev{Phase-blind (B1)} & \rev{0.1155} & \rev{0.0782} & \rev{0.0567} & \rev{0.0417} & \rev{0.0328}\\
+\rev{B2, 8 bins}       & \rev{0.0700} & \rev{0.0136} & \rev{$-$0.0140} & \rev{$-$0.0309} & \rev{$-$0.0416}\\
 \midrule
-\multicolumn{6}{c}{SSIM}\\
-TDI (this work)        & 0.918 & 0.281 & 0.172 & 0.109 & 0.065 \\
-White GLS (B3)         & 0.930 & 0.272 & 0.165 & 0.102 & 0.060 \\
-Phase-binned (B2)      & 0.311 & 0.132 & 0.081 & 0.045 & 0.011 \\
+\multicolumn{6}{c}{\rev{SSIM}}\\
+\rev{TDI (profiled)}   & \rev{0.8482} & \rev{0.2876} & \rev{0.1748} & \rev{0.1060} & \rev{0.0606}\\
+\rev{White GLS (B3)}   & \rev{0.8568} & \rev{0.2492} & \rev{0.1447} & \rev{0.0853} & \rev{0.0472}\\
+\rev{Phase-binned (B2)}& \rev{0.7947} & \rev{0.3515} & \rev{0.2223} & \rev{0.1307} & \rev{0.0627}\\
+\rev{Phase-blind (B1)} & \rev{0.0831} & \rev{0.0376} & \rev{0.0143} & \rev{0.0028} & \rev{$-$0.0011}\\
+\midrule
+\multicolumn{6}{c}{\rev{albedo bias / contrast ratio}}\\
+\rev{TDI (profiled)}   & \rev{$-$0.001/1.056} & \rev{$-$0.017/1.103} & \rev{$-$0.009/1.107} & \rev{$+$0.004/1.071} & \rev{$+$0.019/1.024}\\
+\rev{Phase-binned (B2)}& \rev{$-$0.048/0.844} & \rev{$-$0.057/0.862} & \rev{$-$0.034/0.851} & \rev{$+$0.003/0.826} & \rev{$+$0.065/0.786}\\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/fig_ssim_fc.pdf}
-\caption{Reconstruction fidelity vs.\ mean cloud cover fraction $f_c$
-across 10 paired seeds with 95\% bootstrap confidence intervals.
-Clouds control image quality at fixed observing resources.}
+\caption{\rev{Reconstruction fidelity vs.\ realized cloud cover across 10
+paired seeds; bars are $\pm1$ standard error. The $16$-bin phase-binned
+coadd is competitive below $\sim40\%$ cover and falls behind as weather
+dominates (Table~\ref{tab:clouds}). Clouds, not rotation, control image
+quality at fixed observing resources.}}
 \label{fig:ssimfc}
 \end{figure*}
 
-To quantify what surface information remains recoverable, we evaluate:
-(i) {\it Scale-dependent correlation $r(\ell)$:} decomposing maps into spherical
-harmonic degrees $\ell\in[1,20]$ (Fig.~\ref{fig:robust}c). For cloud-free data,
-$r(\ell)\ge0.5$ extends past $\ell=20$. Under 55\% clouds, $r(\ell)$ crosses
-$0.5$ at degree $\ell_{\rm eff}\approx4$--5 (spatial scales $\gtrsim4000$~km),
-confirming that single-campaign imaging under clouds recovers hemispheric
-dichotomies but not fine features.
-(ii) {\it Land--ocean dichotomy detection:} computing separation $d'=(\mu_{\rm land}-\mu_{\rm ocean})/\sigma_{\rm pooled}$.
-True map separation is $d'=3.97$; cloud-free TDI yields $d'=3.74$; and cloudy
-TDI ($f_c=0.55$) achieves $d'=0.64$. Evaluated against an ensemble of 100
-phase-scrambled spatial surrogate nulls ($\bar{d}'_{\rm null}=0.00$, 95th
-percentile 0.46), cloudy TDI detects the land--ocean dichotomy at $p<0.02$.
+\subsection{\rev{Effective spatial resolution and the land--ocean test}}
+\label{sec:res}
+\rev{Scale-dependent correlation.} Decomposing the maps in real spherical harmonics
+with $\cos\vartheta$ quadrature weights over degrees $\ell\in[1,20]$
+(Fig.~\ref{fig:robust}c) gives, over 10 seeds:
+\rev{$r(\ell)=1.000\pm0.001$ averaged over $\ell=1$--$4$,
+$0.9995$ over $5$--$8$, $0.9988$ over $9$--$12$, $0.9942$ over $13$--$16$ and
+$0.9924$ over $17$--$20$ for the cloud-free campaign; the cloudy campaign
+($55.8\%$ realized cover) gives $0.700$, $0.594$, $0.418$, $0.244$ and $0.263$
+in the same bands.}
+\rev{The v2 statement that the cloud-free curve ``extends past $\ell=20$''
+cannot be tested on this grid: $36\times72$ pixels cannot represent degrees
+above $\ell\approx18$, and the discrete-basis orthonormality error of the
+quadrature itself is $0.018$ at $\ell=20$, so we quote $\ell\le20$ as the
+measurement ceiling and report the ceiling error alongside. The cloud-free
+result should therefore be read as ``no rotational band within the supported
+range is lost,'' not as a resolution claim.}
+\rev{For the cloudy case the curve is not monotone at the seed level (the
+per-degree scatter is $0.05$--$0.12$), so a single crossing degree
+$\ell_{\rm eff}$ is fragile: the raw curve dips below $0.5$ at
+$\ell=8$ for some seeds and $\ell\in\{1,9\}$ for others. The defensible
+statement is a banded one: a five-point running mean of $r(\ell)$ crosses
+$0.5$ at $\ell\simeq9$ (half-wavelength $\pi R_\oplus/\ell\approx2200$~km for
+an Earth-radius planet), only $50\%$ of seeds have $r(\ell)\ge0.5$ at
+$\ell\ge7$, and no degree $\ell\ge15$ reaches $0.5$ in more than $10\%$ of
+seeds. Clouds thus leave the hemispheric dichotomy and the largest
+continents recoverable, and nothing at scales below $\sim2000$~km.}
 
-\subsection{Component-wise ablation of the inversion pipeline}
-\label{sec:ablation}
-Table~\ref{tab:ablation} presents a component-wise ablation across 10 paired
-seeds at $f_c=0.55$, separating the gains from time-dependent forward modeling,
-slot deflation, and temporal covariance whitening.
+\rev{Land--ocean detection.} We compute
+$d'=(\mu_{\rm land}-\mu_{\rm ocean})/\sigma_{\rm pooled}$ within
+$|\vartheta|\le60^\circ$, using the true land labels. The truth field itself
+gives $d'=3.97$. Cloud-free TDI gives $d'=3.58\pm0.03$, the white GLS fit
+$3.61\pm0.02$, and B2 $3.04\pm0.005$; at $55.8\%$ realized cover TDI gives
+$d'=0.732\pm0.081$ and B2 $0.674\pm0.131$. Significance is bounded by the
+physical cloud-only null --- 40 realizations in which the surface is replaced
+by its mean and only weather is retained --- which has
+$\bar{d}'=0.001$, $\mathrm{sd}=0.090$ and 95th percentile $0.114$; the cloudy
+TDI value exceeds every null member, but a 40-member ensemble cannot
+support a $p$ value below $1/(N_{\rm null}+1)=0.024$. \rev{We therefore report
+$p\le0.024$ (rank-based, one-sided) for the cloudy detection rather than the
+v2 ``$p<0.02$ against 100 surrogate nulls,'' whose surrogate was a
+phase-scrambled equirectangular array --- a geometry transform, not a
+photometric null. A label-permutation null on the same reconstructions is
+reported with the robustness suite in Section~\ref{sec:robust}.}
+
+\rev{Quality is also a function of latitude, and the two effects do not point
+the same way. Scoring the archived fiducial reconstructions band by band over
+$|\vartheta|$ in $30^{\circ}$ steps (archive {\tt latband.npz}, 10 seeds) pairs
+each band with the illumination it actually receives --- the campaign-mean
+Lambert factor over its disk pixels, and the campaign-mean column energy
+$\Vert F_{:,i}\Vert^{2}$, which is the information the operator delivers there.}
 
 \begin{table}[t]
 \centering
-\caption{Component-wise ablation at $f_c=0.55$ (10 paired seeds).}
-\label{tab:ablation}
+\caption{\rev{Latitude- and illumination-resolved quality for the fiducial
+campaigns (10 seeds, $\pm1$~SE). ``Dayside'' is the campaign-mean Lambert
+factor over the band's disk pixels; ``col.\ energy'' is the campaign-mean column
+energy $\Vert F_{:,i}\Vert^{2}$ of the operator; ``dead'' is the fraction of the
+band's $432$ grid cells whose column energy is below $10^{-3}$ of the maximum;
+``gain'' is $\mathrm{sd}(\text{recon})/\mathrm{sd}(\text{truth})$ in the band,
+which Pearson $r$ is blind to.}}
+\label{tab:lat}
 \footnotesize
-\setlength{\tabcolsep}{2.2pt}
-\begin{tabular}{lcc}
+\setlength{\tabcolsep}{2.6pt}
+\renewcommand{\arraystretch}{1.05}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccccc}
 \toprule
-Pipeline Configuration & Pearson $r$ & SSIM \\
+\rev{Latitude} & \rev{disk pix} & \rev{dayside} & \rev{col.\ energy} &
+\rev{dead} & \rev{$r$ (cloudy)} & \rev{$r$ (cloud-free)} & \rev{gain (cloudy)} \\
 \midrule
-1. Time-dep.\ $\mathsf{F}$ (White, no defl.)     & $0.295\pm0.025$ & $0.097\pm0.012$ \\
-2. Time-dep.\ $\mathsf{F}$ (Whitened, no defl.)  & $0.281\pm0.025$ & $0.088\pm0.012$ \\
-3. Time-dep.\ $\mathsf{F}$ (White, deflated)     & $0.336\pm0.035$ & $0.116\pm0.009$ \\
-4. Full TDI (Whitened, deflated)                 & $0.326\pm0.034$ & $0.108\pm0.011$ \\
-\midrule
-Full TDI $-$ White/NoDefl ($\Delta r$)   & \multicolumn{2}{c}{$+0.031$ [95\% CI: $0.018, 0.045$]} \\
-Deflation Benefit ($\Delta r$)           & \multicolumn{2}{c}{$+0.041$ [95\% CI: $0.027, 0.054$]} \\
+\rev{$-90$--$-60^{\circ}$} & \rev{86}  & \rev{0.258} & \rev{0.33}  & \rev{0.500} & \rev{$0.451\pm0.038$} & \rev{$0.9335\pm0.0027$} & \rev{1.95} \\
+\rev{$-60$--$-30^{\circ}$} & \rev{546} & \rev{0.524} & \rev{6.61}  & \rev{0}     & \rev{$0.300\pm0.020$} & \rev{$0.9655\pm0.0008$} & \rev{3.89} \\
+\rev{$-30$--$0^{\circ}$}   & \rev{982} & \rev{0.691} & \rev{21.43} & \rev{0}     & \rev{$0.353\pm0.015$} & \rev{$0.9814\pm0.0002$} & \rev{3.49} \\
+\rev{$0$--$30^{\circ}$}    & \rev{982} & \rev{0.691} & \rev{21.43} & \rev{0}     & \rev{$0.390\pm0.025$} & \rev{$0.9863\pm0.0001$} & \rev{2.77} \\
+\rev{$30$--$60^{\circ}$}   & \rev{546} & \rev{0.524} & \rev{6.60}  & \rev{0}     & \rev{$0.335\pm0.022$} & \rev{$0.9742\pm0.0006$} & \rev{2.89} \\
+\rev{$60$--$90^{\circ}$}   & \rev{86}  & \rev{0.258} & \rev{0.33}  & \rev{0.486} & \rev{$0.547\pm0.038$} & \rev{$0.9358\pm0.0025$} & \rev{1.68} \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
-The ablation clarifies the architectural credit:
-(i) Time-dependent forward modeling alone provides the foundation ($r\approx0.30$).
-(ii) Slot deflation provides the dominant algorithmic improvement ($\Delta r=+0.041$,
-$p<10^{-3}$), because subtracting dwell-slot means eliminates disk-integrated
-cloud fluctuations across the 16 simultaneous spacecraft.
-(iii) Temporal whitening without deflation slightly reduces effective sample
-weighting because adjacent revisits at 5.6~d are weakly correlated ($\tau_c=4$~d).
-The term ``time-domain inversion'' correctly credits time registration and
-deflation rather than temporal covariance alone.
+\rev{Table~\ref{tab:lat} shows the ordering the referee expected and the one
+they did not. Expected: band quality is monotone in the information the operator
+actually delivers there. Across the well-sampled globe the two bands carrying
+$21.4$ of column energy and $982$ disk pixels each score $0.353$ and $0.390$
+(cloudy) and $0.9814$ and $0.9863$ (cloud-free), while the two bands carrying
+$6.6$ score $0.300$ and $0.335$, and $0.9655$ and $0.9742$ --- the same ordering
+in both campaigns, with no band out of place. Unexpected: the two polar bands score
+\emph{highest} in the cloudy case ($0.451$ and $0.547$). That is an artefact of
+the metric, not a recovery claim, and the table gives the two diagnostics that
+expose it. The polar bands contain a half-illuminated ice cap against a dark
+ocean, so their truth standard deviation is the largest of any band
+($0.148$--$0.160$ against $0.097$--$0.137$ mid-latitude) while their structure is
+almost entirely the low-degree cap edge: $65\%$ and $71\%$ of the two polar
+bands' variance survives $1.5$-pixel smoothing, against $71$--$82\%$ for the
+four well-sampled bands. A reconstruction that
+gets nothing but the smooth cap still correlates well with truth. The amplitude
+column confirms it --- the polar gain is $1.68$--$1.95$ whereas the
+mid-latitude bands are inflated $2.8$--$3.9\times$ --- and restricting the polar
+correlation to the cells the operator actually samples raises it further, to
+$0.518$ and $0.652$. Half of each polar band is dead: the circular $n=64$
+raster never samples $|\vartheta|\gtrsim85^{\circ}$ (the
+$144$ exactly-zero basis columns of Section~\ref{sec:infaudit}), so those cells
+are set by the regularizer alone and contribute truth-like structure to nothing
+but the denominator of $r$. Cloud-free the same geometry gives the clean
+illumination monotonic trend, $0.9863$ at the equator to $0.934$ at the poles,
+with the polar deficit already concentrated in the dead cells
+($0.978$--$0.974$ restricted to sampled cells). The band offsets are
+symmetric-to-within-noise --- $|\overline{\Delta a}| \le 0.019$ cloudy and
+$\le0.005$ cloud-free --- so the latitude dependence is a dependence of
+\emph{correlation}, not a latitudinal albedo bias. We quote the band-resolved
+$r$ as a coverage diagnostic and explicitly not as a claim of polar imaging.}
+\subsection{Component-wise ablation of the inversion pipeline}
+\label{sec:ablation}
+\rev{Table~\ref{tab:ablation} ablates the estimator itself across 10 paired
+seeds at nominal $f_c=0.55$ ($0.558$ realized cover), holding the data, the
+operator, the grid and the regularizer fixed and changing only how the
+dwell-slot nuisance and the temporal covariance are handled. The v2 ``ablation''
+varied forward-model choices and deflation heuristics together, so it could not
+assign credit; the four v2 rows also do not correspond to any subset of these
+six configurations.}
+
+\begin{table}[t]
+\centering
+\caption{\rev{Estimator-component ablation at $f_c=0.55$ (10 paired seeds;
+means $\pm$ standard error). ``Profiling'' is the exact anchored nuisance
+elimination of Section~\ref{sec:profiling}; ``deflation'' is the v2
+approximation to it; ``whitening'' is the OU temporal covariance.}}
+\label{tab:ablation}
+\footnotesize
+\setlength{\tabcolsep}{2.0pt}
+\resizebox{\columnwidth}{!}{%%
+\begin{tabular}{lccc}
+\toprule
+\rev{Configuration} & \rev{Pearson $r$} & \rev{SSIM} & \rev{NRMSE}\\
+\midrule
+\rev{A: white, no slot handling}   & \rev{$0.2886\pm0.0097$} & \rev{$0.0853\pm0.0031$} & \rev{$0.966$}\\
+\rev{B: OU whitened, no slot handling} & \rev{$0.2863\pm0.0090$} & \rev{$0.0825\pm0.0031$} & \rev{$0.974$}\\
+\rev{C: v2 approximate deflation, OU} & \rev{$0.3422\pm0.0082$} & \rev{$0.1058\pm0.0055$} & \rev{$0.814$}\\
+\rev{D: exact profiling, white, anchored} & \rev{$0.3454\pm0.0082$} & \rev{$0.1095\pm0.0051$} & \rev{$0.809$}\\
+\rev{E: exact profiling, white, free} & \rev{$0.3453\pm0.0082$} & \rev{$0.1093\pm0.0054$} & \rev{$0.809$}\\
+\rev{F: full TDI (exact profiling + OU)} & \rev{$0.3422\pm0.0082$} & \rev{$0.1060\pm0.0053$} & \rev{$0.814$}\\
+\midrule
+\rev{F$-$A ($\Delta r$)} & \multicolumn{2}{c}{\rev{$+0.0536\pm0.0061$ ($t=8.8$, 10/10)}} & \rev{$p=1.1\times10^{-5}$}\\
+\rev{D$-$A ($\Delta r$)} & \multicolumn{2}{c}{\rev{$+0.0568\pm0.0046$ ($t=12.4$, 10/10)}} & \rev{$p=5.9\times10^{-7}$}\\
+\rev{D$-$C ($\Delta r$)} & \multicolumn{2}{c}{\rev{$+0.0032\pm0.0019$ ($t=1.7$, 6/10)}} & \rev{$p=0.13$}\\
+\rev{F$-$D ($\Delta r$)} & \multicolumn{2}{c}{\rev{$-0.0032\pm0.0019$ ($t=-1.7$, 4/10)}} & \rev{$p=0.13$}\\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\rev{Three conclusions follow, and they differ from v2.}
+
+\rev{(i) The gain is nuisance handling, and it is real. Exact profiling lifts
+$r$ by $+0.054$ to $+0.059$ over the no-slot-handling fits (10/10 seeds), with
+$\Delta$SSIM $=+0.021\pm0.004$ ($t=5.6$). The v2 attribution of the same effect
+to ``slot deflation'' with $\Delta r=+0.041$ and $p<10^{-3}$ mixed two things:
+the correct idea (eliminate the per-slot mean) with an approximation that also
+rescales the marginal noise by $\sqrt{1-1/N_{\rm sc}}$.}
+
+\rev{(ii) Exact profiling is not the same map as the approximation, but the
+fidelity difference is not resolved at 10 seeds. The relative $L_2$ difference
+between C and D is $9.3\%\pm0.1\%$ of the map norm, i.e.\ the approximation
+changes the reconstruction materially, yet its effect on $r$
+($+0.0032\pm0.0019$, $p=0.13$) is within our power. With 10 paired seeds the
+distribution-free sign-test floor is $p=2/2^{10}=2\times10^{-3}$, so ``not
+resolved'' here means $|{\Delta r}|\lesssim0.007$ at 95\% confidence, not
+``equivalent''. We report the exact treatment because it is exact, not because
+it demonstrably images better.}
+
+\rev{(iii) Temporal whitening contributes essentially nothing at the fiducial
+cadence. F$-$D $=-0.0032\pm0.0019$ and B$-$A $=-0.0023$: with 16 revisits
+spaced $5.47$~d and $\tau_{\rm cloud}=4$~d, consecutive passes are already
+nearly independent ($\rho_1=0.255$; Table~\ref{tab:neff}), so the whitening
+gains little correlation and pays a small variance penalty. The term ``time-domain
+inversion'' therefore credits time registration and nuisance elimination; the OU
+covariance is defensible as a principled weighting, not as the source of the gain.}
+
+\rev{Finally, the anchored (D) and free (E) profiles give maps differing by
+$0.98\%\pm0.27\%$ in norm and identical $r$ to four decimals, while their
+zero-mode conditioning differs by a factor of 41
+(Section~\ref{sec:infaudit}). The anchor is what makes the \emph{absolute} albedo
+scale identifiable; it does not improve correlation. Any claim about retrieved
+albedo without the anchor is unsupported.}
 
 \subsection{Isolating the causal mechanism of the cadence law}
 \label{sec:cadence}
-Figure~\ref{fig:cadence} and Table~\ref{tab:cadence_ablation} present the
-factorial cadence ablation trading dwell duration against revisit count
-at fixed photons ($M_pt_s=8$~h) and 90-day wall-clock time.
+\rev{Figure~\ref{fig:cadence} and Table~\ref{tab:cadence_ablation} report the
+cadence law under the two resource ledgers of Section~\ref{sec:ledger}, at
+nominal $f_c=0.55$. Each cell is a mean $\pm$ standard error over the six
+paired seeds of the campaign study; the four estimator columns are the
+profiled TDI, the white-noise GLS fit, the 16-bin phase-binned coadd, and the
+phase-blind coadd. The v2 table quoted $r_{\rm inst}$, $r_{\rm smear}$,
+$r_{\rm cf}$ and $r_{\rm iid}$ columns that the shipped pipeline never
+produced; they have been replaced by controls that are in the archive
+(Section~\ref{sec:cadctl}).}
 
 \begin{table}[t]
 \centering
-\caption{Factorial cadence mechanism ablation ($f_c=0.55$).}
+\caption{\rev{Cadence law per resource arm (nominal $f_c=0.55$, 6 paired
+seeds). Arm A holds $M_pt_s=8$~h and lets the wall clock exceed 90~d;
+arm B holds 89.87~d and lets $t_s$ fall. $\eta$ is the duty cycle under
+45~s/dwell overhead.}}
 \label{tab:cadence_ablation}
 \footnotesize
-\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{ccccccc}
+\setlength{\tabcolsep}{2.6pt}
+\resizebox{\columnwidth}{!}{%%
+\begin{tabular}{ccccccccc}
 \toprule
-$M_p$ & $t_s$ (s) & Duty $\eta$ & $r_{\rm inst}$ & $r_{\rm smear}$ & $r_{\rm cf}$ & $r_{\rm iid}$ \\
+\rev{Arm} & \rev{$M_p$} & \rev{$t_s$} & \rev{$\eta$} & \rev{wall} & \rev{$r_{\rm TDI}$} & \rev{$r_{\rm white}$} & \rev{$r_{\rm B2}$} & \rev{$r_{\rm B1}$}\\
 \midrule
-4  & 7200 & 0.99 & 0.139 & 0.094 & 0.914 & 0.119 \\
-8  & 3600 & 0.99 & 0.186 & 0.147 & 0.964 & 0.177 \\
-16 & 1800 & 0.98 & 0.329 & 0.320 & 0.991 & 0.301 \\
-32 & 900  & 0.95 & 0.382 & 0.382 & 0.989 & 0.382 \\
-64 & 450  & 0.91 & 0.544 & 0.544 & 0.988 & 0.568 \\
+\rev{A} & \rev{4} & \rev{7200} & \rev{0.994} & \rev{85.73} & \rev{$0.049\pm0.005$} & \rev{$0.024\pm0.003$} & \rev{$0.063\pm0.011$} & \rev{$0.003\pm0.020$}\\
+\rev{A} & \rev{8} & \rev{3600} & \rev{0.988} & \rev{86.27} & \rev{$0.173\pm0.013$} & \rev{$0.144\pm0.011$} & \rev{$0.068\pm0.011$} & \rev{$0.063\pm0.019$}\\
+\rev{A} & \rev{16} & \rev{1800} & \rev{0.976} & \rev{87.33} & \rev{$0.346\pm0.010$} & \rev{$0.291\pm0.009$} & \rev{$0.321\pm0.019$} & \rev{$0.031\pm0.010$}\\
+\rev{A} & \rev{32} & \rev{900} & \rev{0.952} & \rev{89.47} & \rev{$0.497\pm0.014$} & \rev{$0.475\pm0.012$} & \rev{$0.074\pm0.004$} & \rev{$-0.019\pm0.003$}\\
+\rev{A} & \rev{64} & \rev{450} & \rev{0.909} & \rev{\bfseries 93.73} & \rev{$0.571\pm0.010$} & \rev{$0.573\pm0.013$} & \rev{$0.503\pm0.013$} & \rev{$0.179\pm0.002$}\\
+\midrule
+\rev{B} & \rev{4} & \rev{7548.8} & \rev{0.994} & \rev{89.87} & \rev{$0.049\pm0.006$} & \rev{$0.031\pm0.005$} & \rev{$-0.130\pm0.005$} & \rev{$-0.064\pm0.017$}\\
+\rev{B} & \rev{8} & \rev{3751.9} & \rev{0.988} & \rev{89.87} & \rev{$0.164\pm0.014$} & \rev{$0.140\pm0.013$} & \rev{$-0.134\pm0.021$} & \rev{$-0.024\pm0.019$}\\
+\rev{B} & \rev{16} & \rev{1853.4} & \rev{0.976} & \rev{89.87} & \rev{$0.325\pm0.017$} & \rev{$0.267\pm0.015$} & \rev{$-0.231\pm0.022$} & \rev{$0.015\pm0.014$}\\
+\rev{B} & \rev{32} & \rev{904.2} & \rev{0.953} & \rev{89.87} & \rev{$0.498\pm0.008$} & \rev{$0.489\pm0.010$} & \rev{$-0.140\pm0.058$} & \rev{$-0.025\pm0.006$}\\
+\rev{B} & \rev{64} & \rev{429.6} & \rev{0.905} & \rev{89.87} & \rev{$0.576\pm0.012$} & \rev{$0.624\pm0.008$} & \rev{$0.454\pm0.018$} & \rev{$0.076\pm0.002$}\\
 \bottomrule
 \end{tabular}
+}
 \end{table}
+
+\rev{\subsection{What the cadence law does and does not say}
+\label{sec:cadctl}
+\emph{The trend is monotone, and it is dominated by weather sampling rather
+than by conditioning.} In arm A, $r$ rises $0.049\to0.571$ as $M_p$ goes $4\to64$, and every
+step is unanimous across the six paired seeds ($t=8.7$ to $21.9$; marginal
+gaps $+0.124,+0.173,+0.151,+0.075$). The gain saturates: the last doubling buys
+less than half of the previous one. The cloud-free control of
+Section~\ref{sec:rotation} shows that the collapse from $0.979$ to $0.346$ at the
+fiducial cadence is entirely the weather term, and more passes help because each
+pass is a fresh draw of it.}
+
+\rev{\emph{The two controls, now actually measured.} The cloud-free and
+per-pass-independent controls are computed on the same campaign objects, seeds
+and estimator as the main sweep (six paired seeds, both arms). Cloud-free $r$:
+$0.773\pm0.008$, $0.934\pm0.001$, and then $0.979$, $0.984$, $0.987$ to within
+$\pm0.0002$ for $M_p=16,32,64$ in arm A, with arm B within $0.04$ of each.
+Per-pass independent weather: $0.051$, $0.165$, $0.342$, $0.494$, $0.583$,
+against the correlated-OU values $0.049$, $0.173$, $0.346$, $0.497$, $0.571$ in
+the same order. Two conclusions follow, and they point in opposite directions.
+(i) \emph{Conditioning contributes, but it saturates}: the cloud-free curve
+still rises with $M_p$, by $0.214$ over $4\to64$, so part of the v2-era trend is
+coverage and not weather averaging. It is, however, a minority of the effect and
+it is front-loaded: it gains $0.16$ in the first doubling ($M_p=4\to8$, where a
+raster position receives only four dwells) and only $0.008$ from $M_p=16\to64$,
+while the cloudy curve is still climbing steeply there ($0.346\to0.571$,
+$+0.225$). (ii) \emph{The law does not need OU structure}: the iid and OU
+reconstructions agree at every cadence --- paired differences $+0.002$, $-0.008$,
+$-0.004$, $-0.003$, $+0.012$ in arm A and $+0.001$, $-0.010$, $+0.014$, $-0.026$,
+$+0.002$ in arm B, every $p_t\ge0.14$, none approaching the exact sign-flip
+floor of $0.031$ attainable with six pairs. What revisits buy is independent
+samples of the atmosphere, whatever its temporal correlation function turns out
+to be; the OU model determines \emph{how many} of the $M_p$ looks are effectively
+independent (Table~\ref{tab:neff}), it is not the reason that more looks help.
+The absolute cost of weather at fixed cadence, $\Delta r_{\rm cf-OU}$, falls
+monotonically from $+0.724\pm0.010$ at $M_p=4$ to $+0.416\pm0.011$ at $M_p=64$
+(arm A; both arms significant at $p_t<4\times10^{-7}$), which is the same
+statement in the other direction: the cadence law is about averaging the weather
+down, not about the weather getting worse.}
+
+\rev{\emph{The two arms are statistically indistinguishable.} Pairing arm A
+against arm B at matched $M_p$ gives $\Delta r$ of $-0.001,+0.008,+0.021,
+-0.002,-0.005$ with paired standard errors $0.005$--$0.018$ and $p\ge0.058$ in
+every case. The wall-clock cost of doubling the revisit count is therefore paid
+out of the photon budget with no measurable loss over the range studied: the
+law is about \emph{independent looks}, not about integration time per look, so
+long as the dwell stays long enough to beat the overhead (duty cycle
+$0.994\to0.905$ across the arms).}
+
+\rev{\emph{Whitening loses its edge at the fastest cadence.} The profiled
+estimator beats the white fit at every $M_p\le32$ ($+0.025$ to $+0.058$) but at
+$M_p=64$ the ordering reverses in both arms: $-0.002\pm0.009$ in arm A and
+$-0.047\pm0.009$ (0/6 seeds) in arm B. At 1.47~d spacing the OU correlation
+$\rho_1=0.69$ (Table~\ref{tab:neff}) is real, but the estimator's assumed
+$\sigma_{\rm cl}$ is calibrated at $t_s=1800$~s, and the whitening then
+over-weights the residual structure. The safe reading is that temporal
+whitening pays between roughly 8 and 32 revisits, and the fiducial 16 is not
+the optimum of the whitened fit.}
+
+\rev{\emph{The phase-binned baseline is partly a coverage artifact, and we can
+show it.} B2 does not merely degrade in arm B, it goes strongly
+\emph{negative} ($-0.23$ at $M_p=16$), which is not a statement about TDI. The
+cause is geometric. Registering samples into 16 rotational phase bins does not
+leave each bin with a full raster: counting, per bin, how many of the 4096
+image-plane pixels receive no sample at all gives an average of 256 empty
+pixels per bin at the fiducial configuration (arm A, $M_p=16$), but 2048 at
+$M_p=16$ in arm B and 3584 at $M_p=4$ --- the phase pattern of a
+boustrophedon raster does not tile the bins uniformly, and the two arms place
+different dwells at different phases. \texttt{reconstruct\_phasebin} fills an
+empty pixel with the bin's raster mean and then back-projects, so a
+coverage-starved bin contributes a smoothed, self-referential map, exactly the
+artifact flagged for the 8-bin variant in Section~\ref{sec:baselines} but an
+order of magnitude worse. The B2 column is therefore reported for
+completeness and is \emph{not} used to argue the cadence law; the comparison we
+stand behind is TDI against the white-noise GLS fit, which shares the operator
+and has no rasterization step.}
+
+\rev{\emph{Overheads bound the law from below, not above.} With
+$T_{\rm oh}=45$~s fixed, $\eta$ falls from $0.994$ to $0.905$; extrapolating
+the same ledger to $t_s=100$~s costs 31\% of the photons and to $t_s=45$~s
+costs half of them, so the ``ultrafast cadence'' limit is where overheads bite.
+The v2 sentence claiming overhead losses ``offset statistical gains'' at
+$t_s\lesssim100$~s was not measured --- no configuration below 429.6~s is in
+the archive --- and is deleted.}
+
+\rev{\begin{table}[t]
+\centering
+\caption{\rev{Effective number of independent looks,
+$N_{\rm eff}=M_p^2/(M_p+2\sum_{k\ge1}(M_p-k)\rho_k)$ with
+$\rho_k=e^{-k\Delta t/\tau_{\rm cloud}}$ and inter-pass spacing
+$\Delta t=86{,}400/(M_p/90)$~s. Values are identical for both arms to the
+third digit because spacing is set by the wall clock.}}
+\label{tab:neff}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\resizebox{\columnwidth}{!}{%%
+\begin{tabular}{lccccc}
+\toprule
+\rev{$\tau_{\rm cloud}$} & \rev{$M_p=4$} & \rev{8} & \rev{16} & \rev{32} & \rev{64}\\
+\midrule
+\rev{spacing (d)}          & \rev{21.47} & \rev{10.80} & \rev{5.47} & \rev{2.80} & \rev{1.47}\\
+\rev{$\rho_1$ (lag-1)}     & \rev{0.005} & \rev{0.067} & \rev{0.255} & \rev{0.497} & \rev{0.693}\\
+\rev{$N_{\rm eff}$, $\tau=1$~d}  & \rev{4.00} & \rev{8.00} & \rev{15.87} & \rev{28.44} & \rev{40.31}\\
+\rev{$N_{\rm eff}$, $\tau=2$~d}  & \rev{4.00} & \rev{7.94} & \rev{14.16} & \rev{19.66} & \rev{22.92}\\
+\rev{$N_{\rm eff}$, $\tau=4$~d}  & \rev{3.97} & \rev{7.11} & \rev{9.83}  & \rev{11.23} & \rev{12.11}\\
+\bottomrule
+\end{tabular}
+}
+\end{table}}
+
+\rev{Table~\ref{tab:neff} makes the cadence law quantitative in the only unit
+that matters, the number of \emph{statistically independent} weather samples.
+At the fiducial $\tau_{\rm cloud}=4$~d, $M_p=64$ buys $12.1$ effective looks,
+not 64 --- a 5.3-fold saturation that is invisible in $M_p$ alone. If the
+extrapolated weather decorrelation time is shorter ($\tau=1$~d), the same
+hardware buys 40.3 looks and the cadence law steepens; if it is longer, the law
+is nearly flat beyond $M_p=16$. The cadence requirement of Section~\ref{sec:mission}
+should therefore be quoted jointly with the assumed $\tau_{\rm cloud}$: as a
+number of revisits alone it is not a mission specification.}
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/fig_cadence.pdf}
-\caption{Factorial cadence ablation at $f_c\simeq0.55$. (a) Pearson $r$ vs.\
-revisits $M_p$ at fixed photons: cloud-free control ($r_{\rm cf}\ge0.91$)
-proves conditioning does not drive the gain; exposure-integrated modeling
-($r_{\rm smear}$) confirms long dwells genuinely blur features; and independent
-clouds ($r_{\rm iid}$) track OU clouds, proving independent weather sampling
-drives the law. (b) Duty cycle $\eta$ under 45~s slew/settle overhead.}
+\caption{\rev{Cadence law under the two resource ledgers, all values read
+directly from the shipped archives. (a) Pearson $r$ vs.\ registered revisits
+$M_p$ for the profiled TDI, the white-noise GLS and the two coadd baselines;
+solid lines are arm A ($M_pt_s=8$~h, 6 paired seeds) and faded lines arm B
+(89.87~d wall clock). The trend is monotone and saturating, and the two arms
+agree within the paired standard error at every $M_p$. (b) The quantity that
+actually saturates: the effective independent look count $N_{\rm eff}$ at
+$\tau_{\rm cloud}=1,2,4$~d against the $N_{\rm eff}=M_p$ line of perfectly
+decorrelated weather (Table~\ref{tab:neff}), with the arm-A duty cycle under
+the 45~s/dwell overhead ledger on the right axis.}}
 \label{fig:cadence}
 \end{figure*}
-
-The factorial controls isolate the causal mechanisms:
-1. {\it Cloud-free control ($r_{\rm cf}$):} achieves $r\ge0.914$ across all
-configurations ($r=0.988$ at $M_p=64$). Rotational conditioning, phase
-sampling, and regularization do not cause the cadence trend.
-2. {\it Exposure smear ($r_{\rm smear}$ vs.\ $r_{\rm inst}$):} modeling intra-dwell
-rotational smear in $\mathsf{F}$ yields $r=0.094$ at $M_p=4$ vs.\ $0.139$
-instantaneous. Long dwells blur rotational sectors irreversibly; exposure
-smear is not the reason short revisits win.
-3. {\it Statistical cloud independence ($r_{\rm iid}$ vs.\ $r_{\rm inst}$):}
-temporally independent clouds track OU clouds almost identically
-($r_{\rm iid}=0.119\to0.568$ vs.\ $r_{\rm inst}=0.139\to0.544$).
-{\it Frequent revisits succeed because each pass samples an independent
-realization of the weather}, averaging out uncorrelated cloud noise against
-the phase-locked surface albedo.
-4. {\it Observational overheads:} incorporating slew (30~s), settling (10~s),
-and inter-spacecraft laser synchronization (5~s) yields duty cycle
-$\eta=t_s/(t_s+45\,{\rm s})$. Duty cycle falls from 99\% at 7200~s to
-91\% at 450~s (Fig.~\ref{fig:cadence}b). For ultrafast cadences ($t_s\lesssim100$~s),
-overhead losses offset statistical gains.
 
 \subsection{Broader robustness: spin geometry, clouds, and systematics}
 \label{sec:robust}
@@ -575,112 +1315,594 @@ overhead losses offset statistical gains.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/fig_robust.pdf}
-\caption{Extended robustness suite. (a) Sensitivity to spin pole orientation
-tilt $\Delta\theta_{\rm pole}$ and initial phase $\Delta\phi_0$. (b) Profile
-likelihood $\chi^2$ landscape over period error and phase offset, showing a
-sharp global minimum at truth $(0,0)$. (c) Scale-dependent correlation $r(\ell)$
-resolving spherical harmonic features to $\ell_{\rm eff}\approx20$ (cloud-free)
-and $\ell_{\rm eff}\approx4$--5 (cloudy).}
+\caption{\rev{Robustness suite. (a) Correlation vs.\ spin-pole tilt and assumed
+initial-phase error (10 paired seeds; the zero-error point is the fiducial
+fit). (b) Whitened $\chi^2$, re-referenced to its own value at zero phase, as a
+function of assumed phase offset for every trial period on the grid: the
+relative variation is $\le10^{-11}$, i.e.\ the objective is exactly flat in
+phase, while the reconstruction quality $r$ (right axis, green) peaks at the
+truth --- the phase error is observable through image quality, not through the
+likelihood (Section~\ref{sec:proflike}). (c) Scale-dependent correlation
+$r(\ell)$ for the cloud-free and cloudy campaigns (10 seeds, $\pm1$ SE), with
+the $\ell\le20$ grid ceiling marked.}}
 \label{fig:robust}
 \end{figure*}
 
-\noindent{\bf Spin-axis pole tilt and phase ephemeris:} Figure~\ref{fig:robust}a
-tests geometric errors: spin pole tilt $\Delta\theta_{\rm pole}\le5^\circ$
-leaves correlation virtually intact ($r=0.317$ vs.\ $0.319$), but $20^\circ$
-tilt degrades $r$ to 0.155. Initial rotational phase error $\Delta\phi_0\le5^\circ$
-is tolerated ($r=0.291$), while $30^\circ$ drops $r$ to 0.064.
-The full precursor requirement is: {\it pole tilt $\lesssim5^\circ$, initial
-phase $\lesssim5^\circ$, and period to $\sim10^{-4}$}.
-Figure~\ref{fig:robust}b maps the 2D profile likelihood $\chi^2=\|\mathbf{y}-\mathsf{F}(\theta,\phi)\hat{\mathbf{s}}\|^2$:
-a steep, convex global minimum coincides with the true spin state, demonstrating
-that residual misalignments are refinable in-flight via profile grid search.
+\rev{\subsection{Spin-geometry ephemeris requirements}
+\label{sec:geom}
+Table~\ref{tab:geom} replaces the v2 numbers with 10 paired seeds and the
+corrected operator. The tolerance is asymmetric and steeper than v2 claimed:
+a $5^\circ$ pole tilt costs $0.057$ in $r$ ($0.3422\to0.2856$, i.e.\ a 17\%
+relative loss, not ``virtually intact''), and $20^\circ$ costs $0.172$ (50\%).
+Phase error is worse still per degree: $5^\circ$ costs $0.047$, $15^\circ$
+costs $0.155$, $30^\circ$ leaves $r=0.072$, and at $60^\circ$ the reconstruction
+is uncorrelated with the truth ($r=-0.027\pm0.014$), i.e.\ the map is not
+degraded, it is about the wrong hemisphere. The land--ocean contrast ratio
+tracks this collapse monotonically ($1.07\to0.90\to0.57\to0.25\to-0.07$).}
 
-\vspace{1mm}
-\noindent{\bf Affine cloud parameter errors:} Perturbing assumed mean cover
-$\Delta f_c\in[-0.15,+0.15]$ or albedo $\Delta A_{\rm cl}\in[-0.15,+0.15]$
-leaves Pearson $r=0.319$ exactly unchanged, because $r$ is invariant under
-affine scalings. However, affine errors introduce a global surface albedo bias
-$\Delta\bar{s}\approx0.08$. Absolute albedo retrieval requires mean cloud
-climatology to $\sim$10--20\%.
+\begin{table}[t]
+\centering
+\caption{\rev{Spin-geometry mis-specification, nominal $f_c=0.55$, 10 paired
+seeds $\pm$ standard error.}}
+\label{tab:geom}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\resizebox{\columnwidth}{!}{%%
+\begin{tabular}{lccc}
+\toprule
+\rev{Mis-specification} & \rev{Pearson $r$} & \rev{SSIM} & \rev{contrast}\\
+\midrule
+\rev{none (fiducial)}          & \rev{$0.3422\pm0.0082$} & \rev{$0.1060$} & \rev{$1.071$}\\
+\rev{pole tilt $5^\circ$}      & \rev{$0.2856\pm0.0138$} & \rev{$0.0828$} & \rev{$0.895$}\\
+\rev{pole tilt $20^\circ$}     & \rev{$0.1699\pm0.0177$} & \rev{$0.0350$} & \rev{$0.569$}\\
+\rev{phase error $5^\circ$}    & \rev{$0.2949\pm0.0083$} & \rev{$0.0811$} & \rev{$0.929$}\\
+\rev{phase error $15^\circ$}   & \rev{$0.1874\pm0.0085$} & \rev{$0.0324$} & \rev{$0.596$}\\
+\rev{phase error $30^\circ$}   & \rev{$0.0719\pm0.0102$} & \rev{$-0.0027$} & \rev{$0.250$}\\
+\rev{phase error $60^\circ$}   & \rev{$-0.0269\pm0.0138$} & \rev{$-0.0064$} & \rev{$-0.066$}\\
+\bottomrule
+\end{tabular}
+}
+\end{table}
 
-\vspace{1mm}
-\noindent{\bf Structured clouds:} Under realistic latitudinal ITCZ banding,
-fidelity is fully preserved ($r=0.321$, $\mathrm{SSIM}=0.101$). However, when
-clouds are surface-correlated ($\beta_{\rm surf}=0.25$), correlation drops to
-$r=0.138$ ($\mathrm{SSIM}=0.061$), because persistent cloud patterns mimic
-surface topography.
+\rev{The precursor requirement that follows is stated as a budget, not as a
+threshold: at $5^\circ$ in either angle the campaign loses about one sixth of
+its correlation, so \emph{both} must be held well inside $5^\circ$ for the
+cloud-limited number of Section~\ref{sec:clouds} to be the relevant one. v2's
+``pole tilt $\lesssim5^\circ$, initial phase $\lesssim5^\circ$, period to
+$\sim10^{-4}$'' was numerically close but was never a measured tolerance; the
+measured one is in Table~\ref{tab:geom}.}
 
-\vspace{1mm}
-\noindent{\bf Coronal and instrumental systematic drift:} Injecting a $10^{-4}$
-low-rank instrumental gain drift and slowly varying coronal streamer residuals
-into the data reveals that frequent revisits prevent coherent systematic accumulation
-by interleaving measurements across distinct orbital and rotational epochs.
+\rev{\subsection{Is the spin state refinable in flight?}
+\label{sec:proflike}
+\emph{No, and v2's claim that it was is withdrawn.} Figure~\ref{fig:robust}b is
+a $5\times5$ grid over assumed period error
+$\Delta P/P\in\{-2,-1,0,+1,+2\}\times10^{-4}$ and assumed initial phase error
+$\Delta\phi_0\in\{-10,-5,0,+5,+10\}^\circ$, with the whitened $\chi^2$ of the
+anchored and free profiles and the resulting $r$, on four seeds.}
 
-\vspace{1mm}
-\noindent{\bf Surface morphology and regularization:} Testing diverse planetary
-geographies (supercontinents, island archipelagos) confirms that TDI recovers
-the continental dichotomy across distinct landmass topologies. Regularization
-scans show $\lambda\in[10^{-3},10^{-2}]$ provides stable, flat reconstruction
-performance.
+\rev{The objective contains no information about the phase. At fixed period,
+the whitened $\chi^2$ changes by less than $10^{-11}$ in relative value across
+the whole $\pm10^\circ$ phase range --- not small, but numerically identical.
+The reason is structural: the surface basis is complete in longitude, so shifting
+the assumed initial phase is a relabeling of $\phi$, and the minimizer follows
+it. A $\chi^2$ landscape cannot refine a quantity that leaves $\chi^2$
+invariant, so the v2 sentence ``residual misalignments are refinable in-flight
+via profile grid search'' is false as written and has been deleted.}
+
+\rev{The period direction is monotone across the grid, not convex with a
+minimum at truth: $\bar\chi^2$ decreases from $42{,}747$ at $\Delta P/P=-2\times10^{-4}$
+to $42{,}493$ at $+2\times10^{-4}$ for every seed, so the grid minimum sits on
+the boundary and no curvature estimate exists; a parabolic fit per seed returns
+vertices scattered over $(-3\times10^{-3},+5\times10^{-4})$. Over this grid the
+anchored and free profiles differ by a constant $19.5$ in $\chi^2$ and agree on
+every argmin, so the flatness is not an artifact of the anchor.}
+
+\rev{What \emph{is} informative is reconstruction quality: $r$ peaks at
+$\Delta\phi_0=0$ and $\Delta P/P=0$ for 4/4 seeds, and a $10^\circ$ phase error
+costs $0.12$ in $r$ while a $2\times10^{-4}$ period error costs $0.03$. That is
+the right statement for a mission design: the spin state is
+\emph{observable through image quality}, so it can be validated by checking
+that a map looks like a planet, but it is not recoverable by minimizing the
+photometric residuals, and the range over which period error is benign
+($\lesssim10^{-4}$, $\sim1$~s over 86{,}400~s) is far narrower than the phase
+tolerance in relative terms. A full two-dimensional spin-state solution from
+these data alone is not supported by this experiment and is left open.}
+
+\rev{\subsection{Cloud-climatology mis-specification}
+\label{sec:climrobust}
+\emph{Correlation is affine-blind, albedo is not.} Sweeping the assumed mean
+cover by $\Delta f_c\in[-0.15,+0.15]$ and the assumed cloud albedo by
+$\Delta A_{\rm cl}\in[-0.15,+0.15]$ leaves Pearson $r$ \emph{exactly} constant
+at $0.3422$ over the entire $5\times5$ grid, and SSIM, NRMSE and contrast are
+likewise functions of $\Delta f_c$ alone. This is not a numerical accident to be
+quoted as robustness --- it is the definition of $r$ being invariant to affine
+transforms of its argument --- and v2's phrasing invited exactly that reading.
+The quantities that do move are the absolute ones: mean albedo bias runs from
+$+0.206$ at $(\Delta f_c,\Delta A_{\rm cl})=(-0.15,-0.15)$ to $-0.551$ at
+$(+0.15,+0.15)$, RMSE is minimized on the $\Delta A_{\rm cl}>0$ side of the
+grid (best value $0.616$, worst $1.813$), and the land--ocean contrast ratio is
+set by $\Delta f_c$ alone, from $0.80$ to $1.61$. The honest requirement is
+therefore: cloud climatology to $\sim$10\% in cover for absolute albedo at the
+$0.1$ level, and any \emph{feature-detection} claim must not be quoted with an
+albedo scale it cannot support.}
+
+\rev{\emph{Structured weather.} Three climatologies beyond the homogeneous OU
+field, each scored with the $\sigma_{\rm cl}$ calibrated for the homogeneous
+case, at matched realized cover ($0.549$--$0.558$): latitudinal ITCZ banding
+gives $r=0.3240\pm0.0126$, a three-timescale field ($\tau=1,10$~d, weight 0.7)
+$0.3174\pm0.0088$, and per-pass independent clouds $0.3151\pm0.0093$. Against
+the homogeneous fiducial $0.3422\pm0.0082$ on the \emph{same} seeds the paired
+degradations are $-0.018\pm0.019$ (ITCZ, $t=-1.0$), $-0.025\pm0.009$
+(multi-$\tau$, $t=-2.8$) and $-0.027\pm0.016$ (iid, $t=-1.7$): at this seed
+count none of the three is more than a modest, marginally resolved penalty, so
+the fiducial number is not an artifact of an over-smooth weather model. Note in
+passing that per-pass independent weather scores slightly \emph{lower}, not
+higher, than correlated weather under the OU-modelled estimator --- the cadence
+gain of Section~\ref{sec:cadence} is about the number of looks, not about
+whether the field is formally decorrelated. Surface-coupled clouds
+($\beta_{\rm surf}=0.25$: cloudiness enhanced over the dark ocean) are the
+exception, with $r=0.1444\pm0.0124$, a paired loss of $-0.198\pm0.017$
+($t=-11.3$, 0/10 seeds), and a contrast ratio of only $0.379$. The failure mode
+is physical and important: a cloud pattern locked to the surface does not
+average out with revisits, because it is phase-correlated with the very signal
+it is meant to contaminate. This is the one climatological structure the cadence
+law cannot buy off, and it is the strongest argument in the paper for treating
+surface--cloud coupling as a systematic rather than as noise.}
+
+\rev{\subsection{Surface morphology: fragmentation is free, concentration is not}
+\label{sec:morph}
+The referee asked whether the result depends on ``substantially different
+surface-map morphologies.'' v2 asserted robustness to morphology; that scan was
+produced with the superseded quadrature and the approximate deflation estimator,
+so it is re-measured here rather than inherited. Three truth fields are built
+from the same seed and the same quantile land fraction --- $30\%$ of the fine
+grid above the albedo threshold, giving mean albedo $0.235$--$0.237$ and
+standard deviation within $2\%$ across the three --- differing only in how the
+land is \emph{arranged}: the fiducial \emph{earthlike} field (fragmented
+continents), a \emph{supercontinent} field whose power is pushed to the largest
+scales (a Pangaea-like single mass, $48\%$ of coarse pixels land-bearing against
+the fiducial $51\%$), and an \emph{archipelago} field whose power is pushed to
+the smallest scales ($50\%$). Each gets its own weather realization on the same
+cloud seeds and its own calibrated $\sigma_{\rm cl}$, because the cloud-induced
+variance depends on the albedo pattern it modulates: $\sigma_{\rm cl}=0.4406$
+(earthlike), $0.4870$ (supercontinent), $0.4426$ (archipelago).}
+
+\begin{table}[t]
+\centering
+\caption{\rev{Surface-morphology sensitivity, 10 seeds each, paired against the
+earthlike reconstruction on the same seeds. The cloud-free columns separate a
+resolution effect from a weather effect: all three morphologies are recovered to
+$r\ge0.974$ without clouds, so the cloudy spread is a weather--surface coupling,
+not an information loss.}}
+\label{tab:morph}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.05}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\rev{Truth field} & \rev{$\sigma_{\rm cl}$} & \rev{$r$, $f_c=0$} &
+\rev{$r$, $f_c=0.55$} & \rev{paired $\Delta r$ vs.\ earthlike} &
+\rev{$d'$ (cloudy)} \\
+\midrule
+\rev{earthlike (fiducial)} & \rev{0.4406} & \rev{$0.9786\pm0.0002$} &
+\rev{$0.3422\pm0.0082$} & \rev{---} & \rev{$0.732\pm0.081$} \\
+\rev{supercontinent} & \rev{0.4870} & \rev{$0.9844\pm0.0002$} &
+\rev{$0.3026\pm0.0111$} & \rev{$-0.0396\pm0.0090$} & \rev{$0.725\pm0.036$} \\
+\rev{archipelago} & \rev{0.4426} & \rev{$0.9738\pm0.0002$} &
+\rev{$0.3393\pm0.0078$} & \rev{$-0.0030\pm0.0056$} & \rev{$0.728\pm0.019$} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\rev{Table~\ref{tab:morph} answers the question in two parts, and the honest
+answer is that the v2 claim was half right. Breaking the continents into island
+chains costs essentially nothing: $0.3393\pm0.0078$ against the fiducial
+$0.3422\pm0.0082$, a paired difference of $-0.0030\pm0.0056$, smaller than one
+standard error and with the sign split $4/10$ seeds. Fragmentation at
+$\ell\gtrsim9$ is a scale the cloudy campaign has already lost
+(Section~\ref{sec:res}), so a finer truth map is not a harder inverse problem.
+Concentrating the same land into one large mass does cost something:
+$-0.0396\pm0.0090$ ($p_t=0.0017$, though the sign is negative in $8/10$ seeds and
+the exact sign-flip $p$ is $0.088$). That is $12\%$ of the fiducial value: one
+fifth of the surface-coupling penalty of Section~\ref{sec:climrobust}, and half
+again the multi-timescale effect, so it belongs in the same tier of
+mis-specification costs rather than in the benign one.
+The mechanism is the one Section~\ref{sec:climrobust} identifies rather than a
+loss of information: the supercontinent's $\sigma_{\rm cl}$ is $10.5\%$ larger
+than the fiducial's, because a single wide landmass presents long, coherent
+albedo edges for the weather to modulate, and its contrast collapses from
+$1.071$ to $0.983$ --- the smoothed solution fills in the ocean around the
+continent instead of sharpening its coast. Cloud-free the same three fields
+score $0.9738$--$0.9844$, all within $0.006$ of each other and with the
+\emph{supercontinent highest} ($+0.0058$, 10/10 seeds), which is what one
+expects when there is no weather and the large-scale structure is easy: the
+morphology penalty exists only in the presence of clouds.}
+
+\rev{We therefore replace the v2 blanket assertion with a bounded one: the
+pipeline is insensitive to surface \emph{granularity} at fixed land fraction,
+and mildly sensitive to surface \emph{coherence} at fixed land fraction, through
+the cloud amplitude the surface generates rather than through the inversion
+itself. A single-continent planet is a $\sim0.04$ problem in $r$, not a
+qualitative failure, and the direction of the effect --- concentrated land is
+worse, because it makes the weather more visible --- is a prediction the
+surface--cloud coupling section makes and this table tests.}
+
+\rev{\subsection{Weather parameters, and the amplitude the estimator never uses}
+\label{sec:wxsens}
+The referee asked for robustness to ``at least two additional spatial
+correlation lengths, advection rates and decorrelation times.'' Table~\ref{tab:wx}
+gives six such fields --- correlation length $8^\circ$ and $20^\circ$ (fiducial
+$12^\circ$), advection $3^\circ$~day$^{-1}$ and $12^\circ$~day$^{-1}$ (fiducial
+$6^\circ$), and decorrelation time $2$~d and $8$~d (fiducial $4$~d) --- each a
+different true cloud field at matched realized cover, reconstructed on the same
+10 seeds and scored two ways: \emph{misspecified} keeps the fiducial OU $\tau$
+and the $\sigma_{\rm cl}$ calibrated for it, \emph{recalibrated} substitutes the
+variant's own $\tau$ and $\sigma_{\rm cl}$.}
+
+\begin{table}[t]
+\centering
+\caption{\rev{Weather-parameter mis-specification. The true field is varied in
+correlation length, advection rate and decorrelation time at matched realized
+cover; $\sigma_{\rm cl}^{\rm var}$ is the cloud amplitude calibrated for that
+field (fiducial $0.4406$). ``Recalibrated $-$ misspecified'' is the paired
+difference over the 10 seeds with its standard error and exact sign-flip $p$.}}
+\label{tab:wx}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.05}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\rev{True field} & \rev{$\sigma_{\rm cl}^{\rm var}$} & \rev{$r$, misspec.} &
+\rev{$r$, recal.} & \rev{paired $\Delta r$} & \rev{$p_{\rm sign}$} \\
+\midrule
+\rev{corr.\ $8^\circ$}   & \rev{0.4158} & \rev{$0.3163\pm0.0101$} & \rev{$0.3163\pm0.0101$} & \rev{$+1.3\times10^{-6}$} & \rev{0.088}\\
+\rev{corr.\ $20^\circ$}  & \rev{0.4897} & \rev{$0.3269\pm0.0142$} & \rev{$0.3269\pm0.0142$} & \rev{$-2.0\times10^{-6}$} & \rev{0.088}\\
+\rev{adv.\ $3^\circ$/d}  & \rev{0.4475} & \rev{$0.3133\pm0.0097$} & \rev{$0.3133\pm0.0097$} & \rev{$-3.2\times10^{-7}$} & \rev{0.088}\\
+\rev{adv.\ $12^\circ$/d} & \rev{0.4389} & \rev{$0.3237\pm0.0130$} & \rev{$0.3237\pm0.0130$} & \rev{$+8.1\times10^{-8}$} & \rev{0.088}\\
+\rev{$\tau=2$~d}         & \rev{0.4416} & \rev{$0.3160\pm0.0074$} & \rev{$0.3176\pm0.0072$} & \rev{$+0.0017\pm0.0008$} & \rev{0.088}\\
+\rev{$\tau=8$~d}         & \rev{0.4387} & \rev{$0.3259\pm0.0133$} & \rev{$0.3188\pm0.0136$} & \rev{$-0.0072\pm0.0016$} & \rev{0.020}\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\rev{Two things stand out, and the second was not expected. Across the four
+fields that change the spatial or temporal \emph{structure} of the weather, $r$
+moves by $0.313$--$0.327$ --- within one another's error bars, and within
+$\sim0.02$ of the fiducial $0.3422\pm0.0082$ --- and changing the assumed
+climatology to the true one buys nothing at all: the paired differences are at
+the $10^{-6}$ level, far below the resolution of 10 seeds but also far below
+anything worth a mission requirement. The reason is the second finding, which we
+tested directly. Figure~\ref{fig:lam}c scores the fiducial cloudy reconstruction
+as a function of the \emph{assumed} $\sigma_{\rm cl}$, from $0$ (weather treated
+as uncorrelated) to $16\times$ the calibrated value: the mean paired change in
+$r$ never exceeds $2.6\times10^{-4}$ anywhere between $0.25\times$ and $16\times$
+(no individual seed moves by more than $5.2\times10^{-4}$), and
+even with the cloud term removed entirely it is $3.2\times10^{-3}\pm1.9\times10^{-3}$
+($0.3454$ versus $0.3422$, only 6/10 seeds) --- while the whitened objective over
+the same range spans a factor of $8\times10^{4}$, from $3.2\times10^{2}\times$
+the fiducial value at $\sigma_{\rm cl}=0$ to $3.9\times10^{-3}\times$ at
+$16\times$. \emph{The reconstruction is essentially insensitive to the cloud
+amplitude it is told to expect, and the $\chi^2$ is essentially only a function
+of it.} The insensitivity is not an artefact of the anchoring: running the same
+sweep on the two estimators this paper compares TDI against --- the free,
+un-anchored profiler and v2's approximate deflation --- gives per-seed spreads
+across $0.25\times$--$16\times$ of $2.74\times10^{-4}\pm0.63\times10^{-4}$ for the
+anchored profiler, $2.72\times10^{-4}\pm0.63\times10^{-4}$ for the free profiler and
+$2.56\times10^{-4}\pm0.59\times10^{-4}$ for v2 deflation (archives {\tt
+sigma\_sensitivity\_free}, {\tt sigma\_sensitivity\_v2}); all three are flat at the
+$10^{-4}$ level against a seed-to-seed scatter of $0.026$. This is why ``recalibrated'' and
+``misspecified'' are indistinguishable in Table~\ref{tab:wx}, and it sharpens
+rather than softens the referee's concern: $\sigma_{\rm cl}$ enters the pipeline
+through the whitening and the slot-covariance blocks, whose contribution to the
+solution is dominated by the operator's own time-domain structure, so an
+atmospheric climatology that is wrong by a factor of four is not a fidelity
+hazard, whereas surface--cloud coupling (Section~\ref{sec:climrobust}) --- which
+changes the \emph{structure}, not the amplitude --- costs $0.198$. The practical
+consequence for mission design is that the pre-flight requirement is on weather
+\emph{correlation structure}, and $\sigma_{\rm cl}$ itself can be fit in flight
+from the residuals even crudely, since $\chi^2$ does respond to it steeply even
+though $r$ does not.}
+
+\rev{\subsection{Regularization: the frozen weight is not optimal, and the
+objective cannot choose it}
+\label{sec:lamsens}
+The v2 pipeline fixed $\lambda=3\times10^{-3}$ on a held-out calibration seed
+and never swept it (minor comment 3). Fig.~\ref{fig:lam}a,b is that sweep, over
+six decades ($10^{-5}$--$10$) on 10 seeds, for the cloud-free and fiducial
+cloudy campaigns, scored by paired difference against the frozen value and by
+the whitened objective.}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/fig_lamsigma.pdf}
+\caption{\rev{Regularization and assumed-cloud-amplitude sensitivity (10 seeds).
+(a) Paired $\Delta r$ against the frozen $\lambda=3\times10^{-3}$: cloud-free
+quality peaks near $\lambda=0.3$ and then declines, while cloudy quality keeps
+rising to the largest weight tested ($+0.178$ at $\lambda=10$). Bars are
+$\pm1$~SE. (b) The whitened objective $\chi^2/\chi^2(3\times10^{-3})$ cannot make
+the same choice: it is flat to $\sim0.1\%$ over five decades in the cloudy case
+and rises only past $\lambda\sim0.1$ in the cloud-free case. (c) The \emph{assumed}
+cloud amplitude: the mean paired change in $r$ is $\le2.6\times10^{-4}$ from $0.25\times$ to
+$16\times$ the calibrated $\sigma_{\rm cl}$ (and within $0.003$ even at zero),
+while $\chi^2$ spans a factor $8\times10^{4}$.}}
+\label{fig:lam}
+\end{figure*}
+
+\rev{The answer to the referee's question is that the reconstruction is
+\emph{not} insensitive to $\lambda$, and the frozen value is not the optimum.
+Cloud-free, $r$ rises monotonically from $0.9752$ at $\lambda=10^{-5}$ to a
+maximum of $0.9916$ at $\lambda=0.3$ ($+0.0130$, 10/10 seeds, $t=66.9$), turns
+over, and falls to $0.9639$ by $\lambda=10$; SSIM traces the same curve
+($0.839\to0.945\to0.891$). Cloudy, $r$ rises \emph{monotonically across the
+entire tested range}, $0.3378\to0.5200$, a paired gain of $+0.178\pm0.007$ at
+$\lambda=10$ (10/10 seeds), which is more than three times the entire
+algorithmic gain of the pipeline (Section~\ref{sec:ablation}). Meanwhile the
+objective is useless as a selector: in the cloudy case $\chi^2$ varies by less
+than $0.1\%$ from $\lambda=10^{-5}$ to $0.3$ --- within $\pm54$ absolute,
+against an expected sampling width of $\sqrt{2N}=362$ for $N=65{,}536$ samples
+--- and only at $\lambda\ge1$ does it begin to rise ($+193$, $+648$, $+1394$).
+There is no discrepancy-principle minimum in the cloudy objective at all.}
+
+\rev{Because a monotone $r(\lambda)$ under a smoothing prior invites exactly the
+wrong reading --- that more regularization is ``better imaging'' --- we scored
+what the large-$\lambda$ gain is made of. At four weights
+($\lambda=3\times10^{-3}$, $0.1$, $1$, $10$) we recomputed the scale-dependent
+correlation of Section~\ref{sec:res}, the land--ocean $d'$ and the contrast
+(4 seeds, archive {\tt lambda\_resolution.npz}). Cloudy: the harmonic bands are
+\emph{unchanged} within the error --- $\overline{r(\ell)}$ over $\ell=1$--$4$
+stays at $0.72$--$0.74$ and over $\ell\ge13$ at $0.26$--$0.29$ as
+$\lambda$ goes $3\times10^{-3}\to10$ --- while $d'$ rises from
+$0.749\pm0.114$ to $1.219\pm0.191$ and the contrast falls from
+$1.071\pm0.121$ to $0.929\pm0.116$. The $\ell=9$--$12$ band in fact slips
+slightly ($0.446\to0.381$), which is what smoothing a signal-starved band looks
+like. So the cloudy gain is real large-scale signal recovery, not a blur that
+trades resolution for correlation: clouds have already removed the
+$\ell\gtrsim9$ information (Section~\ref{sec:res}) and $\lambda$ cannot put it
+back, but at $\ell\le4$ --- the hemisphere-scale land--ocean dichotomy the paper
+actually claims --- extra smoothing recovers correlation. Cloud-free the
+control behaves as expected for a resolution claim: the $\ell\ge13$ band
+degrades from $0.992$ to $0.850$, the $\ell=9$--$12$ band from $0.998$ to
+$0.854$, and $r$ turns over ($0.9787\to0.9906\to0.9639$) exactly where that
+loss overtakes the noise suppression.}
+
+\rev{This is a result we report rather than adopt. The headline numbers of this
+paper keep $\lambda=3\times10^{-3}$, for three reasons: our scoring metric is
+correlation with a \emph{known} truth map, so $r(\lambda)$ is available here and
+not in flight; the cloudy gain is a gain in a metric evaluated against a map
+whose power at $\ell\gtrsim9$ is already gone, so it cannot be read as improved
+surface imaging; and the objective gives no independent way to select the weight
+from data alone, which is precisely the situation in which a frozen,
+truth-blind constant is defensible. What we no longer claim is that the choice
+is unimportant. A regularisation criterion that operates without truth ---
+discrepancy principle, GCV, or a validated prior over surface models --- is the
+one methodological gap this sweep exposes, and it is stated as such in
+Section~\ref{sec:discussion}.}
+
+\rev{\subsection{Nulls, and what ``significance'' means here}
+\label{sec:nulls}
+For each of the 10 paired seeds the cloudy reconstruction gives
+$d'=0.732\pm0.026$ against the true land labels. The label-permutation null
+(2000 permutations of the labels on the same map) gives $p=5.0\times10^{-4}$
+for every seed, which is its own floor ($1/(2000+1)$); the physical cloud-only
+null of Section~\ref{sec:res} gives $p=0.024$ for every seed, which is also its
+floor ($1/(40+1)$). Both are saturation statements, not measurements: what they
+show is that the observed separation exceeds every null draw, and the ensemble
+sizes bound the number we can honestly print. With 10 paired seeds the smallest
+attainable two-sided sign-test $p$ is $2/2^{10}=1.95\times10^{-3}$; no
+comparison in this paper is quoted below that value, and the v2 ``$p<10^{-3}$''
+has been replaced by exact per-comparison values throughout.}
+
+\rev{\subsection{Coronal and instrumental systematics: what the noise model
+actually tolerates}
+\label{sec:sys}
+The reconstruction pipeline above assumes the corona contributes only Gaussian
+shot noise with a known mean. The referee asked whether that assumption is
+load-bearing, and v2 answered it by assertion. Here it is measured: the two
+non-Gaussian terms the referee names are injected into the fiducial cloudy
+campaign ($f_c=0.558$, profiled estimator, GL-16 covariance) and the map is
+re-solved on each of the 10 seeds, whose unperturbed score is
+$r=0.3422\pm0.0082$.
+
+The units convention carries the entire result, so it is stated once, explicitly.
+The data vector is the normalized planet photocentre signal, hence a fractional
+residual $\epsilon$ of the \emph{coronal} background enters the light curve as
+$\Delta y = \epsilon\,Q_{\rm cor}/Q_{\rm exo} = 7.74\times10^{4}\,\epsilon$ in
+planet-reference units. The v2 injection applied its $\sim10^{-4}$ amplitudes
+directly to $y$ --- a fractional error of the \emph{planet} --- which is
+$\sim7.7\times10^{4}$ times too benign to constitute a test of a coronal
+residual at all. Two templates are swept separately and jointly: a coherent
+multiplicative gain ramp across the campaign,
+$1+\epsilon\,(2u-1+\tfrac{1}{2}(2u-1)^{2})$ with $u=t/t_{\rm end}$, and a
+low-spatial-frequency streamer field of $\sim$8-cell transverse scale whose
+modes random-walk with correlation times of $15$--$60$~d.
+
+Table~\ref{tab:sys} is the answer. The tolerance is set near
+$\epsilon\sim10^{-6}$ of the coronal background: at $10^{-6}$ the paired loss is
+$-0.0023\pm0.0006$ (drift, $t=-3.6$, $p=6\times10^{-3}$),
+$-0.0015\pm0.0002$ (streamer, $t=-6.3$, $p=1.4\times10^{-4}$) and
+$-0.0037\pm0.0006$ (both, $t=-5.9$, $p=2\times10^{-4}$) --- $0.4$--$1.1\%$ of $r$,
+resolved as a real effect and negligible for every science claim in the paper.
+One decade later the field has lost $21\%$ (drift), $23\%$ (streamer) and $32\%$
+(both) of its correlation, and by $\epsilon=10^{-4}$ it has collapsed:
+$r=0.084$, $0.036$ and $0.057$, with SSIM down to
+$1.3\times10^{-3}$, $7\times10^{-4}$ and $7\times10^{-4}$, and the gain ramp
+driving the mean-albedo bias to $+1.29$ where the streamer drives it to $-0.21$.
+The two terms do not add. The joint loss at $10^{-5}$ is $-0.110$ against a
+sum-of-parts $-0.151$ ($73\%$), and at $10^{-4}$ $-0.285$ against $-0.565$
+($50\%$); a coherent ramp is not decorrelated by revisits while the streamer
+partly is, so the joint curve is sub-additive without being milder in absolute
+terms, and it is the joint curve that a budget should be taken from.
+
+\begin{table}[t]
+\centering
+\caption{\rev{Measured effect of injected systematics on the fiducial cloudy
+reconstruction ($f_c=0.558$, profiled estimator), averaged over the 10 seeds; the
+unperturbed value is $r=0.3422\pm0.0082$. $\Delta r$ is the paired difference
+against the same seed's unperturbed fit, with $t$ from a two-sided paired
+$t$-test ($n=10$, so the sign-test floor is $1.95\times10^{-3}$). ``Coronal
+units'': the residual is a fraction $\epsilon$ of the \emph{coronal background},
+so $\Delta y = 7.74\times10^{4}\,\epsilon$ in planet units. The
+$\epsilon=3\times10^{-7}$ row is marked because it is exactly $1\sigma$ of
+single-dwell photon noise expressed in the same units.}}
+\label{tab:sys}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcccccccc}
+\hline\hline
+& \multicolumn{3}{c}{\rev{Gain drift}} & \multicolumn{3}{c}{\rev{Streamer}} &
+\multicolumn{2}{c}{\rev{Both}} \\
+\rev{$\epsilon$} & \rev{$r$} & \rev{$\Delta r$} & \rev{$t$} & \rev{$r$} &
+\rev{$\Delta r$} & \rev{$t$} & \rev{$r$} & \rev{$\Delta r$} \\
+\hline
+\rev{$0$}          & \rev{$0.3422$} & \rev{---} & \rev{---} & \rev{$0.3422$} & \rev{---} & \rev{---} & \rev{$0.3422$} & \rev{---} \\
+\rev{$10^{-8}$}    & \rev{$0.3422$} & \rev{$-0.0000$} & \rev{$-1.8$} & \rev{$0.3422$} & \rev{$-0.0000$} & \rev{$-1.9$} & \rev{$0.3422$} & \rev{$-0.0000$} \\
+\rev{$10^{-7}$}    & \rev{$0.3421$} & \rev{$-0.0001$} & \rev{$-2.0$} & \rev{$0.3422$} & \rev{$-0.0001$} & \rev{$-2.3$} & \rev{$0.3421$} & \rev{$-0.0002$} \\
+\rev{$3\times10^{-7}$\,$(1\sigma)$} & \rev{$0.3418$} & \rev{$-0.0005$} & \rev{$-2.3$} & \rev{$0.3420$} & \rev{$-0.0002$} & \rev{$-3.3$} & \rev{$0.3416$} & \rev{$-0.0007$} \\
+\rev{$10^{-6}$}    & \rev{$0.3400$} & \rev{$-0.0023$} & \rev{$-3.6$} & \rev{$0.3408$} & \rev{$-0.0015$} & \rev{$-6.3$} & \rev{$0.3385$} & \rev{$-0.0037$} \\
+\rev{$10^{-5}$}    & \rev{$0.2700$} & \rev{$-0.0723$} & \rev{$-16.5$} & \rev{$0.2640$} & \rev{$-0.0782$} & \rev{$-26.7$} & \rev{$0.2319$} & \rev{$-0.1103$} \\
+\rev{$10^{-4}$}    & \rev{$0.0842$} & \rev{$-0.2581$} & \rev{$-32.9$} & \rev{$0.0355$} & \rev{$-0.3067$} & \rev{$-41.3$} & \rev{$0.0568$} & \rev{$-0.2854$} \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+What makes the tolerance a requirement rather than a number is the comparison
+scale. The single-dwell photon fluctuation, expressed in the same coronal units,
+is $2.99\times10^{-7}$: the $\epsilon=3\times10^{-7}$ row of Table~\ref{tab:sys}
+is therefore exactly one photon-$\sigma$ of one dwell, and the reconstruction
+loses $\le0.15\%$ of $r$ at it. The knee of the curve sits at $3$--$4\sigma$ of
+that same quantity, not at some unmeasurably tiny fraction of the corona.
+Conversely, an independent background reference observing for one dwell
+($t_b=\tau_{\rm int}=7200$~s) adds
+$\sqrt{Q_{\rm cor}/(Q_{\rm exo}^{2}t_b)}=0.02317$ of noise --- equal to the photon
+$\sigma$ to within $7\times10^{-6}$ relative, as Section~\ref{sec:precisionnum}
+derives --- so a dedicated differencing pass buys the coronal \emph{mean} and
+buys it at full photon cost, while leaving the low-order spatio-temporal
+\emph{structure} that Table~\ref{tab:sys} prices entirely untouched. The
+mission requirement this section leaves behind is accordingly on the corona, not
+the planet: calibrate or model the low-order spatio-temporal modes of the
+background to the sub-$10^{-6}$-of-background level, and carry a coherent gain
+ramp as a systematic with its own nuisance block rather than as noise.}
+
+\rev{\emph{The robustness claims of v2 are resolved here in three ways:
+restated with numbers, measured with a qualification, or withdrawn.}
+The claim that cloud-induced noise inflation is
+``$\sim$14--23$\times$'' becomes the measured $12.8$--$21.0\times$ in $\sigma$,
+$163$--$440\times$ in variance, with the per-cover $\sigma_{\rm cl}$ values
+quoted outright (Section~\ref{sec:res}). The v2 assertion that the reconstruction
+is robust to surface morphology is now \emph{measured} rather than inherited, and
+the honest answer is qualified: granularity costs nothing, coherence costs
+$0.040$ in $r$ (Section~\ref{sec:morph}). The v2 frozen regularizer is likewise
+no longer asserted to be unimportant --- a six-decade sweep shows the fiducial
+$\lambda$ is far from optimal and that the objective cannot select it
+(Section~\ref{sec:lamsens}), and the assumed cloud amplitude turns out to be one
+the estimator barely uses at all (Section~\ref{sec:wxsens}). What \emph{is}
+withdrawn without replacement is the v2 latitude-averaged ``resolution'' figure
+and the v2 surrogate-null $p$ value, both re-derived in Section~\ref{sec:res}.
+Sensitivities re-measured with the corrected pipeline are reported in
+Sections~\ref{sec:geom}, \ref{sec:proflike}, \ref{sec:climrobust},
+\ref{sec:morph}, \ref{sec:wxsens} and \ref{sec:lamsens}. Where a v2 claim has not
+been re-run, this paper no longer makes it.}
 
 \section{From Algorithm to Mission}
 \label{sec:mission}
 
-\subsection{Target selection with propagated physical uncertainties}
+\subsection{Target selection: a nominal-proxy table, not an uncertainty budget}
 \label{sec:targets}
 
-Table~\ref{tab:targets} evaluates the five nearest confirmed potentially
-habitable planets plus solar-type candidate $\tau$~Cet~e.
-Because these planets do not transit, planetary radii are estimated from
-$M\sin i$ using Chen \& Kipping (2017) rocky relation $R\propto M^{0.28}$
-with an intrinsic 15\% empirical dispersion. Propagating random inclination
-($\langle\sin i\rangle\approx0.785$) and albedo uncertainty $A\in[0.15,0.45]$
-yields explicit physical error bounds on image size $D_{\rm img}$, photon rate
-$Q_{\rm exo}$, per-dwell $\mathrm{SNR_C}$, and orbital tracking cost $\Delta v_{90}$.
+\rev{Table~\ref{tab:targets} lists the five nearest confirmed temperate planets
+around M dwarfs plus the solar-type radial-velocity candidate $\tau$~Cet~e as
+SGL imaging targets. It is generated by {\tt src/targets.py} and is explicitly a
+\emph{nominal-proxy} table. The v2 version was labelled ``propagated physical
+uncertainties'' and quoted $\pm$ values and confidence-style brackets; that
+wording is withdrawn, for three reasons, and what the table actually contains is
+stated below.}
 
-\begin{table*}[t]
-\centering
-\caption{The five nearest confirmed potentially habitable planets (and
-solar-type candidate $\tau$~Cet~e) as SGL imaging targets. Propagated physical
-uncertainties ($\pm1\sigma$ radius dispersion, albedo $A\in[0.15,0.45]$, and orbital eccentricity)
-are explicitly quoted. Observing geometry at $z=650$~AU, $d=1$~m, $\lambda=1\,\mu$m.}
-\label{tab:targets}
-\footnotesize
-\setlength{\tabcolsep}{2.2pt}
-\begin{tabular}{lccccccccccc}
-\toprule
-Planet & Host (SpT) & $z_0$ & $M\sin i$ & $R_p^{\,a}$ & $S$ & $P$ &
-$D_{\rm img}^{\,b}$ & $\mathrm{SNR_C}^{\,c}$ & Focal direction$^{\,d}$ &
-$\beta_{\rm ecl}$ & $\Delta v_{90}^{\,e}$ \\
- & & (pc) & ($M_\oplus$) & ($R_\oplus$) & ($S_\oplus$) & (d) & (km) &
-(1800 s) & (J2000) & (deg) & (km s$^{-1}$) \\
-\midrule
-Proxima Cen b & Proxima (M5.5V) & 1.30 & 1.07 & $1.02\pm0.15$ & 0.65 & 11.19 &
-$31.5\pm4.7$ & 659 [280--1237] & $02^{\rm h}30^{\rm m}$, $+62^\circ41'$ & $+44.8$ & $5.78\pm1.27$ \\
-Ross 128 b & Ross 128 (M4V) & 3.38 & 1.35 & $1.09\pm0.16$ & 1.38 & 9.87 &
-$12.9\pm1.9$ & 576 [245--1080] & $23^{\rm h}48^{\rm m}$, $-00^\circ48'$ & $+0.5$ & $2.92\pm0.70$ \\
-GJ 1061 d & GJ 1061 (M5.5V) & 3.67 & 1.64 & $1.15\pm0.17$ & 0.69 & 13.03 &
-$12.6\pm1.9$ & 280 [119--524] & $15^{\rm h}36^{\rm m}$, $+44^\circ31'$ & $+60.8$ & $1.68\pm0.20$ \\
-Teegarden c & Teegarden's Star (M7V) & 3.83 & 1.11 & $1.03\pm0.15$ & 0.37 & 11.41 &
-$10.8\pm1.6$ & 129 [55--242] & $14^{\rm h}53^{\rm m}$, $-16^\circ53'$ & $-0.3$ & $1.72\pm0.14$ \\
-GJ 273 b & Luyten's Star (M3.5V) & 3.80 & 2.89 & $1.35\pm0.20$ & 1.06 & 18.65 &
-$14.2\pm2.1$ & 486 [207--912] & $19^{\rm h}27^{\rm m}$, $-05^\circ14'$ & $+16.5$ & $1.34\pm0.27$ \\
-\midrule
-$\tau$ Cet e$^{\,f}$ & $\tau$ Ceti (G8.5V) & 3.60 & 3.93 & $1.47\pm0.22$ &
-1.71 & 162.9 & $16.3\pm2.5$ & 901 [383--1691] & $13^{\rm h}44^{\rm m}$, $+15^\circ56'$ &
-$+24.8$ & $0.11\pm0.04$ \\
-\bottomrule
-\end{tabular}
+\rev{\emph{Radii.} None of these planets transits, so the observed quantity is
+$M\sin i$, not $M$ and not $R_p$. We use the Chen \& Kipping (2017) \emph{Terran}
+branch}
+\begin{equation}
+\rev{R_p = 1.01\left(\frac{M\sin i}{M_\oplus}\right)^{0.279}R_\oplus\,,}
+\label{eq:ck}
+\end{equation}
+\rev{whose intrinsic dispersion is $4.03\%$, not the $15\%$ quoted in v2 --- $14.6\%$
+is the dispersion of the \emph{Neptunian} branch, and 15\% was attached to the
+wrong population. The $\pm$ column now carries the correct $4.03\%$, while the
+brackets use a deliberately generous $\pm15\%$ radius allowance that is labelled
+as an assumption. The branch \emph{transition} is at
+$2.04^{+0.66}_{-0.59}\,M_\oplus$; two rows (GJ~273~b, $\tau$~Cet~e) lie above it
+and are flagged, because applying the rocky branch there is an extrapolation of
+the published relation rather than its stated domain of validity.}
 
-\vspace{1.5mm}
-\parbox{0.96\textwidth}{\footnotesize
-$^{a}$Empirical mass--radius estimate with 15\% $1\sigma$ scatter \citep{chenkipping17}. None transit.
-$^{b}$Projected image-cylinder diameter at $z=650$~AU.
-$^{c}$Nominal $\mathrm{SNR_C}$ at $A=0.30$; brackets denote range for $A\in[0.15,0.45]$ and $R_p$ uncertainty.
-$^{d}$Antipodal coordinate of host star. $\beta_{\rm ecl}$ is ecliptic latitude.
-$^{e}$Continuous 90-day tracking $\Delta v_{90}$; uncertainty reflects orbital eccentricity modulation.
-$^{f}$Radial-velocity candidate; parameters from \citet{anglada16,bonfils18,dreizler20,dreizler24,astudillo17,feng17}.}
-\end{table*}
+\rev{\emph{Inclination.} v2 folded a mean de-inclination correction into the
+quoted radius, which is not the correct operation: the radius is a nonlinear
+function of the true mass, so the mean of the ratio differs from the ratio of the
+means. With $\cos i$ uniform on $[0,1]$ and eq.~\ref{eq:ck}, the conditional
+factor $R_p/R_p(M\sin i)=(\sin i)^{-0.279}$ has mean}
+\begin{equation}
+\rev{\left\langle(\sin i)^{-\alpha}\right\rangle
+=\int_0^1(1-u^2)^{-\alpha/2}\,du
+=\frac{\sqrt{\pi}\,\Gamma(1-\alpha/2)}{2\,\Gamma(3/2-\alpha/2)}\,,}
+\label{eq:deincl}
+\end{equation}
+\rev{which for $\alpha=0.279$ is $1.0978$ (the referee's $1.0982$ corresponds to
+$\alpha=0.28$), with median $1.0409$, 95th percentile $1.3837$ and 99th
+percentile $1.7271$.}
+\rev{The often-quoted $\left(\langle\sin i\rangle\right)^{-\alpha}
+=(\pi/4)^{-\alpha}=1.0697$ is a different number (ratio of means vs.\ mean of
+ratio) and is not used. These are geometric ratios conditional on a fixed
+minimum mass and a single power-law branch --- \emph{not} a posterior: a
+radial-velocity mass prior, detection biases and branch transitions all change
+them. Accordingly the nominal $R_p$ in Table~\ref{tab:targets} carries no
+inclination correction at all, and the factors above are quoted separately.}
+
+\rev{\emph{Signal strength.} The scalar proxy recommended by the referee is:}
+\begin{equation}
+\rev{\mathrm{SNR}_{\rm C}(1800\,\mathrm{s})
+=43.16\left(\frac{A}{0.30}\right)
+\left(\frac{S}{S_\oplus}\right)
+\left(\frac{R_p}{R_\oplus}\right)
+\left(\frac{30\,\mathrm{pc}}{z_0}\right),}
+\label{eq:snrrule}
+\end{equation}
+\rev{which we state explicitly rather than leave as an implied scaling. It is a
+\emph{bolometric scalar rule of thumb}, not a wavelength-integrated photon
+forecast; the latter requires the spectral SGL treatment
+\citep{tt22spec,tt23ext}. Eq.~\ref{eq:snrrule} reproduces the referee's check
+values to the last quoted digit for every row, and is compared there against the
+full optical calculation ($\mathrm{SNR}_{\rm C}$ from the actual
+$\mathsf{F}^{\sf T}\mathsf{C}^{-1}\mathsf{F}$ diagonal): Proxima Cen~b
+$665.8$ vs.\ $665.7$, $\tau$~Cet~e $909.2$ vs.\ $909.1$. Because
+eq.~\ref{eq:snrrule} is linear in $A$ and $R_p$, the bracket in the table is the
+bounded product of $A\in[0.15,0.45]$ with the $\pm15\%$ radius allowance; it is
+an assumption range, not a confidence interval.}
+
+\rev{\emph{Tracking cost.} The image cylinder must be steered to follow the
+planet's projected transverse acceleration. For a Keplerian orbit that quantity
+is not the commonly used circular estimate but}
+\begin{equation}
+\rev{\Delta v(T)=\oint \left|\mathbf{a}_\perp(t)\right|\,dt\,,}
+\label{eq:dvrule}
+\end{equation}
+\rev{with the projected transverse acceleration of a Keplerian orbit,
+$\mathbf{a}_\perp=-(GM_\star/r^2)(\cos E-e,\ \sin E\sqrt{1-e^2}\cos i)$,}
+\rev{integrated in \emph{time} over the window (the eccentric-anomaly measure
+$dM=(1-e\cos E)\,dE$ supplies the weighting; averaging it away biases low-$e$
+rows and high-$e$ rows differently). v2 quoted a $\pm\,$``eccentricity modulation''
+error bar on $\Delta v_{90}$ that could not be reproduced; it is replaced by the
+explicit range over the starting mean anomaly within the 90-day window and by the
+corresponding edge-on value. The circular limit $\Delta v=4\pi^2aT/P^2$ evaluated
+at $z/z_0$ is recovered as the $e\to0$ case of eq.~\ref{eq:dvrule} to the quoted
+precision, and the edge-on/face-on ratio converges to the analytic $2/\pi=0.6366$
+(referee eq.~R29); $\tau$~Cet~e, with $P=162.9$~d, needs only
+$0.11\,\mathrm{km\,s^{-1}}$ over 90~d, while the short-period Proxima~b needs
+$5.81\,\mathrm{km\,s^{-1}}$ --- a factor 53 spread that the v2 table compressed
+into an apparent $\sim$10\% uncertainty.}
+
+\input{targets_table}
 
 \begin{figure*}[t]
 \centering
@@ -719,17 +1941,29 @@ integrating $^{238}$Pu with thermoelectrics and solid-state batteries
 delivering $\ge$1.2~W$_e$ and 5~Wh storage per tile \citep{apple22}---scales
 to $\sim$10$^2$~W$_e$ at masses compatible with sailcraft.
 
-Photometric science data volume is modest: 65,536 samples at 32~bytes total
-$\sim$2~MB (or $\sim$2~GB for megapixel maps). Total mission telemetry
-(navigation, star trackers, health, inter-craft ranging) will dominate the
-downlink, but laser relays hopping along the string-of-pearls swarm easily
-support tens to hundreds of kb\,s$^{-1}$ \citep{helvajian23}.
+\rev{Photometric science data volume is modest, and v2 overstated it by three
+orders of magnitude: the fiducial campaign is 65{,}536 samples $\times$ 32~bytes
+$=2.10$~MB (the 32~bytes being time tag, value, uncertainty and bookkeeping),
+and the reconstructed surface at the paper's own $36\times72$ resolution is
+10.4~kB in float32. Even a $1024\times1024$ albedo map with per-pixel uncertainty
+is 8.4~MB, not ``$\sim$2~GB for megapixel maps'' --- the v2 figure is off by
+$\sim250\times$ and appears to have assumed an uncompressed float64 stack of
+every harmonic band. Total mission telemetry (navigation, star trackers,
+health, inter-craft ranging) will dominate the downlink by orders of magnitude,
+but laser relays hopping along the string-of-pearls swarm easily support tens
+to hundreds of kb\,s$^{-1}$ \citep{helvajian23}, so science return is not
+bandwidth-limited.}
 
-\noindent{\bf Re-evaluating swarm extrapolations:} Our cadence law proves that
-revisits improve fidelity by sampling independent cloud states. However,
-extrapolating the measured trend through 64 revisits to suggest that
-``several hundred visits yield $r\ge0.8$'' must be qualified as an
-{\it asymptotic architectural scenario} rather than a proven requirement.
+\noindent{\bf \rev{Re-evaluating swarm extrapolations:}} \rev{The cadence law
+supports revisits improving fidelity, but the saturation is now measured rather
+than assumed: in arm A the four doublings from $M_p=4$ to $64$ buy
+$+0.124,+0.173,+0.151,+0.075$ in $r$, and at the assumed
+$\tau_{\rm cloud}=4$~d the effective-look count is $12.1$ at $M_p=64$
+(Table~\ref{tab:neff}), so the curve is already bending before the measured
+range ends. Extrapolating through several hundred visits to claim
+$r\ge0.8$ is therefore an {\it asymptotic architectural scenario}, not a
+requirement, and it is now quantitatively bounded by $N_{\rm eff}$: if the real
+weather decorrelation time is longer than 4~d, $M_p>32$ buys almost nothing.}
 In reality, slew/settle overheads, non-Lambertian scattering, correlated
 coronal systematics, and spatial cloud correlations impose diminishing returns.
 Furthermore, the distinction between {\it registered visits per pixel} and
@@ -740,54 +1974,187 @@ or by a 64-craft swarm in a single 90-day window.
 \section{Discussion and Limitations}
 \label{sec:discussion}
 
-Several simplifications bound this study:
+\rev{Several simplifications bound this study.}
 (i) We adopt the monopole, aperture-averaged SGL response; the solar
 quadrupole ($J_2=2\times10^{-7}$) creates astigmatic caustics that demand
 a $J_2$-dependent deconvolution library \citep{tt21quad}.
-(ii) Solar coronal background is modeled as Gaussian shot noise with mean
-subtracted; unmodeled coronal streamers, low-rank drifts, and instrumental
-flat-field systematics require sub-ppm calibration \citep{tur26bench}.
+(ii) \rev{Solar coronal background is modeled as Gaussian shot noise with mean
+subtracted, and Section~\ref{sec:sys} now measures rather than asserts the
+consequences of violating that. Coherent low-rank drift and streamer residuals
+are tolerated up to $\epsilon\simeq10^{-6}$ of the \emph{coronal background},
+which in planet-reference units is $\Delta y\simeq0.08$ --- comparable to the
+planet signal itself, since $Q_{\rm cor}/Q_{\rm exo}=7.74\times10^{4}$ --- and
+the tolerance knee sits at $3$--$4\sigma$ of single-dwell photon noise expressed
+in the same units ($1\sigma\simeq3\times10^{-7}$). Calibration of the low-order
+spatio-temporal modes of the corona at the ppm-of-background level --- not of the
+planet --- is the requirement this places on the instrument, and a dedicated
+background differencing pass does not meet it: it costs a full photon-$\sigma$
+and removes only the mean \citep{tur26bench}.}
 (iii) Clouds are modeled as 2D single-layer screens without 3D vertical
 structure, scattering phase functions, or specular ocean glint.
+\rev{The weather model is also homogeneous in the fiducial runs;
+Section~\ref{sec:climrobust} shows that the two structures which matter are
+surface coupling (a $-0.198$ paired loss that the cadence law cannot fix) and
+multi-timescale decorrelation (a marginal $-0.025$). The model is also not
+exhaustive in the surface it is tested against: Section~\ref{sec:morph} measures
+the morphology dependence at fixed land fraction and finds the pipeline
+insensitive to how finely the land is broken up but mildly sensitive --- $-0.040$
+in $r$, $\sim12\%$ --- to how coherently it is concentrated, because a single
+large continent generates a $10.5\%$ larger cloud amplitude. A patchy
+high-albedo cloud field, a heterogeneous climatology, or a venus-bright ocean
+world remain outside the tested set.}
 (iv) Image-plane navigation is assumed known; uncompensated pointing jitter
 and ephemeris drift will act as an additional blur kernel.
 
-These limitations do not diminish our core findings: that rotation-aware
-inversion eliminates temporal aliasing penalties under characterized geometry,
-and that observing cadence is the primary design lever against planetary weather.
+\rev{(v) A limitation v2 did not acknowledge: the reconstruction grid. The
+surface is parameterized on $36\times72$ cells, whose spherical-harmonic
+support ends near $\ell\approx18$ and whose solid-angle quadrature carries an
+orthonormality error of $0.018$ at $\ell=20$ (Section~\ref{sec:res}). Any
+statement about recovered resolution is therefore bounded by the grid, not by
+the optics, and the cloud-free $r(\ell)\ge0.99$ result is a statement about the
+absence of rotational loss inside the supported range.}
 
+\rev{(vi) Statistical power. The headline ensembles are 10 paired seeds (6 for
+the campaign study), which sets a hard floor on paired significance of
+$1.95\times10^{-3}$ and leaves several of the comparisons in this paper --- the
+exact-versus-approximate deflation, the three benign climatologies, the arm A
+versus arm B difference --- formally unresolved rather than resolved as equal.
+Where a difference is not resolved we now say so and give its confidence width
+instead of dropping the comparison. The physical cloud-only null has 40 members
+($p\ge0.024$ floor), and the profile-likelihood grid has 4 seeds, which is why
+its conclusion is a refutation (an exact invariance) rather than a fit.}
+
+\rev{(vii) Estimand discipline. Pearson $r$ is exactly invariant to affine
+transforms of the retrieved map (Section~\ref{sec:climrobust}), so it cannot
+support any statement about absolute albedo; SSIM and contrast are sensitive to
+different failure modes again. We report all three, and no single-metric claim
+about ``reconstruction quality'' should be read as an albedo claim.}
+
+\rev{(viii) Regularization selection. The one methodological gap
+Section~\ref{sec:lamsens} exposes is that this paper has no truth-blind rule for
+the smoothing weight. The fiducial $\lambda=3\times10^{-3}$ is frozen and
+defensible --- the cloudy objective is flat to $\sim0.1\%$ over five decades of
+it, so nothing in the data argues against it --- but it is demonstrably not
+optimal: cloudy $r$ keeps rising to $+0.178$ at $\lambda=10$, and the control in
+Section~\ref{sec:lamsens} shows that gain is genuine $\ell\le4$ recovery rather
+than blur. A held-out campaign cannot resolve this, because correlation with a
+truth map is exactly what is unavailable in flight; a discrepancy-principle or
+GCV criterion, or a validated prior over surface models, is the missing piece and
+is stated as future work rather than implemented. The same section adds a
+constraint the opposite way: the assumed cloud amplitude $\sigma_{\rm cl}$ is a
+quantity the reconstruction barely uses (mean paired change in $r$
+$\le2.6\times10^{-4}$ over a $64\times$ range, and the same to $10^{-4}$ for the free
+profiler and v2 deflation) while $\chi^2$ uses steeply, so it is a parameter that can be
+fit from residuals in flight without risking the map.}
+
+\rev{(ix) Coverage, not resolution, at high latitude. The raster supports
+$|\vartheta|\lesssim85^{\circ}$, leaving the $144$ exactly-zero basis columns of
+Section~\ref{sec:infaudit}; Section~\ref{sec:res} shows that roughly half of each
+polar latitude band is therefore set by the regularizer alone, and that the
+higher band correlation there is a low-contrast ice-cap artefact, not imaging.
+Polar structure is out of scope for this campaign design.}
+
+\rev{These limitations narrow, but do not remove, the core findings: rotation is
+tractable under characterized geometry and costs no measurable information
+inside the supported harmonic range; weather, not photon noise, sets the image
+quality by more than two orders of magnitude in variance; the cadence gain is an
+independent-looks effect whose size is set by the assumed weather decorrelation
+time; and the algorithmic gain comes from eliminating the per-dwell-slot nuisance
+rather than from modeling the covariance of the weather.}
 \section{Conclusions}
 \label{sec:conclusions}
 
-1. Regularized generalized least squares on time-tagged samples (TDI) recovers
-a rotating, cloud-free exoplanet with $r=0.990\pm0.001$ ($\mathrm{SSIM}=0.918\pm0.002$),
-demonstrating that planetary rotation is tractable under accurately characterized
-spin and viewing geometry.
+\rev{1. Regularized generalized least squares on time-tagged samples (TDI), with
+exact anchored profiling of the per-dwell-slot cloud nuisance, recovers a
+rotating, cloud-free exoplanet with $r=0.9786\pm0.0002$
+($\mathrm{SSIM}=0.848\pm0.001$, 10 paired seeds). Within the harmonic range the
+$36\times72$ grid supports ($\ell\le20$) no rotational band is lost; what remains
+is regularization and aperture. The v2 formulation ``rotation introduces
+virtually zero information loss'' is replaced by the measured statement: the
+phase-blind treatment of the same photons gives $r=0.116$, so the time-registered
+operator is worth $+0.86$ in correlation, while temporal whitening itself is
+worth nothing at this cadence. A frozen-planet reference at the identical photon
+budget is not the other side of that comparison: it gives $r=0.4074\pm0.0254$,
+\emph{below} the rotating cloud-free result, because identical pose-passes make
+the time-domain design degenerate.}
 
-2. Clouds dominate the error budget, exceeding coronal shot noise by factors
-of 14--23 per sample. At fixed single-campaign resources, fidelity collapses to
-$r\simeq0.26$ under Earth-like clouds.
+\rev{2. Clouds dominate the error budget. Per-sample cloud-induced variance
+exceeds coronal shot noise by $163$--$440$ ($12.8$--$21.0$ in standard
+deviation) over $23.7$--$71.0\%$ realized cover at $t_s=1800$~s; fidelity
+collapses to $r=0.249\pm0.010$ at the top of that range. The v2 ``factors of
+14--23'' was a standard-deviation ratio produced by the rejected 3-node exposure
+quadrature and was described as though it were a variance ratio.}
 
-3. Factorial ablation isolates the causal driver of the cadence law: frequent
-revisits improve correlation ($r=0.14\to0.54$) because revisits sample
-independent weather states ($r_{\rm iid}$ tracks $r_{\rm inst}$), while
-exposure smear and conditioning are secondary. Slew overheads set a practical
-duty cycle limit ($\eta\simeq91\%$ at 450~s).
+\rev{3. The cadence law is an independent-looks effect, and it is now measured
+under two declared resource ledgers. At fixed 8~h per raster position,
+$M_p:4\to64$ takes $r$ from $0.049$ to $0.571$ with every step unanimous across
+six paired seeds; forcing the same study into 89.87~d of wall clock changes the
+answer by less than the paired standard error at every $M_p$. What saturates is
+not $r$ but $N_{\rm eff}$: at $\tau_{\rm cloud}=4$~d, 64 revisits are worth
+$12.1$ independent looks, so the cadence requirement must be quoted together
+with the assumed weather decorrelation time. Duty cycle falls from 99.4\% to
+90.5\% over the tested range under the 45~s/dwell ledger; no configuration below
+$t_s=429.6$~s was simulated, so the v2 claim about ultrafast overheads is
+deleted.}
 
-4. Component-wise ablation proves slot deflation supplies the primary gain
-($\Delta r=+0.041$, $p<10^{-3}$), removing disk-integrated cloud modes.
+\rev{4. Ablating the estimator, not the pipeline, locates the algorithmic gain
+in nuisance elimination: exact profiling beats a fit that ignores the slot means
+by $\Delta r=+0.054\pm0.006$ (10/10 seeds, $p=1.1\times10^{-5}$), while the
+difference between the exact treatment and v2's approximate deflation, though
+material to the map ($9.3\%$ in norm), is not resolved by 10 seeds
+($+0.003\pm0.002$, $p=0.13$). The v2 claim that ``slot deflation supplies the
+primary gain ($\Delta r=+0.041$, $p<10^{-3}$)'' attributed the effect to the
+approximation and quoted a $p$ value below the $1.95\times10^{-3}$ floor of a
+10-seed sign test.}
 
-5. Precursor ephemerides require spin pole tilt to $\lesssim5^\circ$, initial
-phase to $\lesssim5^\circ$, and period to $\sim10^{-4}$, refinable in-flight
-via profile likelihood. Scale correlation resolves features to $\ell_{\rm eff}\approx20$
-(cloud-free) and $\ell_{\rm eff}\approx4$--5 (cloudy), detecting the land--ocean
-dichotomy at $p<0.02$.
+\rev{5. Spin-ephemeris tolerances are measured: $5^\circ$ of pole tilt costs
+$0.057$ in $r$, $5^\circ$ of assumed initial phase $0.047$, $30^\circ$ of phase
+leaves $r=0.072$ and $60^\circ$ leaves the map uncorrelated with the truth. We
+withdraw the claim that residual misalignments are refinable in flight via
+profile likelihood: the whitened $\chi^2$ is numerically invariant ($<10^{-11}$
+relative) to assumed initial phase over $\pm10^\circ$ and monotone in assumed
+period across the grid tested, because a phase shift is a relabeling of a
+complete longitudinal basis. The spin state is observable through image quality,
+which peaks at truth on 4/4 seeds, but it is not recoverable from photometric
+residuals by grid search.}
 
-6. Physical uncertainties are propagated for the five nearest confirmed targets:
-Ross 128~b offers the best compromise with an in-ecliptic focal line; candidate
-$\tau$~Cet~e would provide 50-times gentler image-plane dynamics. Multi-spacecraft
-swarms are motivated as an asymptotic architectural path to mitigate weather noise.
+\rev{6. Resolution and detection are stated with their instrument limits.
+Cloud-free $r(\ell)\ge0.99$ for all $\ell\le20$, the ceiling imposed by the
+reconstruction grid (quadrature orthonormality error $0.018$ at $\ell=20$); under
+$55.8\%$ clouds a five-point running mean of $r(\ell)$ crosses $0.5$ at
+$\ell\simeq9$ ($\sim2200$~km at one Earth radius), so no per-seed
+$\ell_{\rm eff}\approx4$--5 crossing is quoted. Land--ocean separation at that
+cover, $d'=0.732\pm0.081$, exceeds all 40 members of the physical cloud-only
+null, giving $p\le0.024$ --- the ensemble floor.}
 
+\rev{7. Mission mapping. Targets are a reproducible nominal-proxy table (Chen \&
+Kipping radius relation with $4.0\%$ dispersion on the terran branch, a $2.04$
+$M_\oplus$ terran/neptunian transition, an inclination de-projection factor of
+$1.098$, and an along-track velocity requirement of $0.11$--$5.8$~km\,s$^{-1}$
+per 90~d, Proxima Centauri b being the most demanding), not an uncertainty
+propagation; $\tau$~Cet~e is the dynamically gentle case at $\sim53\times$ lower
+$\Delta v$. Science data volume is 2.10~MB per campaign and 10.4~kB per map,
+three orders of magnitude below the v2 claim, so downlink is not the binding
+constraint. Swarms remain an asymptotic architectural scenario.}
+
+\rev{8. Robustness is now measured rather than asserted, with two results that
+change how the pipeline should be used. Varying the weather parameters ---
+correlation length $8^\circ$--$20^\circ$, advection $3^\circ$--$12^\circ$\,day$^{-1}$,
+decorrelation time $2$--$8$~d --- moves $r$ by less than the seed-to-seed error,
+and the reason is that the reconstruction is nearly blind to the \emph{assumed}
+cloud amplitude: over a $64\times$ range of $\sigma_{\rm cl}$ the mean paired change
+in $r$ is $\le2.6\times10^{-4}$ --- for the anchored profiler, the free profiler and
+v2 deflation alike --- while the whitened objective changes by a factor
+$8\times10^{4}$. The pre-flight requirement is therefore on weather
+\emph{structure}, and $\sigma_{\rm cl}$ is fittable in flight. Second, the
+smoothing weight is far from optimal and the objective cannot say so: cloudy $r$
+rises monotonically to $+0.178\pm0.007$ at $\lambda=10$, a gain shown by a
+harmonic-band control to be genuine $\ell\le4$ recovery and not blur, while
+cloud-free $r$ peaks at $\lambda=0.3$ and turns over. The headline numbers keep
+the frozen weight, and the missing truth-blind selection criterion is stated as
+the open methodological problem. Surface morphology is bounded the same way:
+fragmenting the continents costs nothing measurable, concentrating them into one
+mass costs $0.040$ in $r$.}
 \acknowledgments
 This work used open-source software (NumPy, SciPy, Matplotlib, scikit-image).
 The author thanks the editor and referees for constructive reviews that
@@ -839,6 +2206,14 @@ Toth, V.~T., \& Turyshev, S.~G.\ 2021, Phys.\ Rev.\ D, 103, 124038
 
 \bibitem[Toth \& Turyshev(2023)]{toth23}
 Toth, V.~T., \& Turyshev, S.~G.\ 2023, MNRAS, 525, 5846
+
+\bibitem[Turyshev \& Toth(2022c)]{tt22spec}
+Turyshev, S.~G., \& Toth, V.~T.\ 2022c, Phys.\ Rev.\ D, 106, 044059
+(arXiv:2207.06388)
+
+\bibitem[Turyshev \& Toth(2023b)]{tt23ext}
+Turyshev, S.~G., \& Toth, V.~T.\ 2023b, Phys.\ Rev.\ D, 107, 104063
+(arXiv:2302.08102)
 
 \bibitem[Turyshev(2026a)]{tur26direct}
 Turyshev, S.~G.\ 2026a, Phys.\ Rev.\ D, 113, 023034 (arXiv:2506.20236)

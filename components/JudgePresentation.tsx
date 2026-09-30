@@ -190,7 +190,7 @@ const SLIDES: Slide[] = [
           <LatexMath math="\mathbf{P}_\perp = \mathbf{I}_{N_c} - \frac{1}{N_c} \mathbf{1}_{N_c} \mathbf{1}_{N_c}^T" block />
         </div>
       </div>,
-      <span>Deflation provides a statistically verified <LatexMath math="\Delta r = +0.041" /> boost in Pearson correlation [95% CI: 0.027, 0.054] across all weather regimes!</span>,
+      <span>Slot-profiling provides a statistically verified <LatexMath math="\Delta r = +0.054" /> boost in Pearson correlation (±0.006) across all weather regimes!</span>,
     ],
     speakerNotes: "Here is our biggest engineering advantage: rather than 1 monolithic spacecraft, we use a fleet of 16 coordinated microsatellites. When 16 craft measure 16 slots at the same second, they all experience the same global cloud brightness change. By applying a simple orthogonal projection operator P-perp, we wipe out the common-mode cloud fluctuation completely, leaving pure differential continent contrast. It's like active noise-cancelling headphones for planetary weather!",
     judgeFaq: [
@@ -211,7 +211,7 @@ const SLIDES: Slide[] = [
     stats: [
       { label: "Fleet Size", value: "16 Crafts", desc: "Concurrent slot observers" },
       { label: "Deflation Operator", value: <LatexMath math="\mathbf{P}_\perp = \mathbf{I} - \frac{\mathbf{1}\mathbf{1}^T}{16}" />, desc: "Cancels common-mode" },
-      { label: "Deflation Benefit", value: "+0.041 Δr", desc: "95% CI: [0.027, 0.054]" },
+      { label: "Slot-Profiling Benefit", value: "+0.054 Δr", desc: "±0.006 (paired ablation)" },
       { label: "Redundancy", value: "100%", desc: "No single point of failure" },
     ],
   },
@@ -223,10 +223,10 @@ const SLIDES: Slide[] = [
     takeaways: [
       "Classic astronomy intuition suggests: 'Stare as long as possible at each pixel to collect photons.'",
       "We performed a rigorous factorial ablation holding the total photon count strictly constant at 7,200 seconds.",
-      "Result: 1 long dwell yields poor fidelity (r = 0.139). But dividing the exact same time into 8 quick revisits of 900s quadruples fidelity to r = 0.485!",
+      "Result: M_p=4 (7200s dwells) yields r = 0.049 ± 0.005. M_p=32 (900s) reaches r = 0.497 ± 0.014. M_p=64 (450s) achieves r = 0.571 ± 0.010. The rise is monotone and unanimous across 6 paired seeds.",
       "The Mechanism: Each quick pass catches an independent realization of the weather. Uncorrelated cloud noise averages to zero, while the phase-locked continents reinforce.",
     ],
-    speakerNotes: "This was our biggest discovery. Traditional astronomers think: 'Stare at one spot as long as possible.' But in our factorial ablation, we held the total exposure time constant and varied the cadence. Taking 1 long 2-hour exposure gave a dismal correlation of 0.139. But taking 8 quick 15-minute snapshots boosted correlation to nearly 0.50! The reason is statistical: each snapshot captures a brand new weather pattern. Random clouds average away to zero, while the continents stay in the same spot and pop out with high contrast.",
+    speakerNotes: "This was our biggest discovery. Traditional astronomers think: 'Stare at one spot as long as possible.' But in our factorial ablation, we held the photons per raster position strictly constant and varied the cadence. Four long 2-hour dwells gave a dismal correlation of 0.049. But spending the exact same photons on 32 quick 15-minute snapshots pushed correlation to 0.497, and 64 dwells of 450 s reached 0.571. The reason is statistical: each snapshot captures a brand new weather pattern. Random clouds average away to zero, while the continents stay in the same spot and pop out with high contrast.",
     judgeFaq: [
       {
         q: "Is there a limit to how fast the spacecraft can revisit?",
@@ -239,10 +239,10 @@ const SLIDES: Slide[] = [
     ],
     interactiveComponent: "cadence",
     stats: [
-      { label: "1 Long Dwell (7200s)", value: "r = 0.139", desc: "Severe weather aliasing" },
-      { label: "8 Short Revisits (900s)", value: "r = 0.485", desc: "+248% fidelity gain" },
-      { label: "Optimal Sweet Spot", value: "K = 8 - 16", desc: "Balanced vs overhead" },
-      { label: "Duty Cycle η", value: "91 - 95%", desc: "45s slew & settle loss" },
+      { label: "M_p=4 (7200s)", value: "r = 0.049", desc: "Single long dwell" },
+      { label: "M_p=32 (900s)", value: "r = 0.497", desc: "32 revisits" },
+      { label: "M_p=64 (450s)", value: "r = 0.571", desc: "Fastest tested" },
+      { label: "Duty Cycle η", value: "90.9%", desc: "45s slew & settle loss" },
     ],
   },
   {
@@ -283,11 +283,11 @@ const SLIDES: Slide[] = [
     id: 8,
     badge: "Mission Roadmap",
     title: "Deep Space Swarm Dynamics & Flight Feasibility",
-    subtitle: "Cooperative 16-spacecraft formation flying and in-flight ephemeris self-calibration.",
+    subtitle: "Cooperative 16-spacecraft formation flying with ephemeris from external precursor observations.",
     takeaways: [
       "Autonomous formation flying: The 16 microsatellites maintain 1.3-km coordinated formation via laser cross-links.",
       "With high-efficiency ion propulsion (Isp ~ 3000s), each spacecraft requires less than 2.5 kg of propellant for the entire survey.",
-      "Self-calibrating: Unknown planetary rotation periods and phase ephemerides can be solved in-flight via profile likelihood minimization.",
+      "Ephemeris required: The whitened chi^2 is phase-invariant to <=1e-11, so spin/phase cannot be solved in-flight; the ephemeris must come from external precursor observations. Reconstruction quality r peaks at the truth.",
       "The result: In our lifetimes, a 16-microsatellite SGL mission can deliver a 64×64 surface map of continents, oceans, and life on an exo-Earth.",
     ],
     speakerNotes: "In conclusion: the Solar Gravitational Lens is the only technology known to physics that can resolve continents on an exo-Earth. Prior to our work, dynamic weather and planetary rotation were seen as an insurmountable roadblock. Our Time-Domain Inversion framework with 16-craft slot deflation solves this problem rigorously. The code is open-source, benchmarked to NASA NIAC standards, and proves that we can photograph continents on another world in our lifetimes.",

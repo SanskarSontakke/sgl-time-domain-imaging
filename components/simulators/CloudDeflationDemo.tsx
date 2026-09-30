@@ -205,12 +205,12 @@ export default function CloudDeflationDemo() {
                 <span className={`w-3 h-3 rounded-full ${showDeflated ? "bg-emerald-500" : "bg-rose-400"}`} />
                 <span className="font-semibold text-slate-700">
                   {showDeflated
-                    ? "Deflated: Surface albedo signal recovered (Pearson r boosted by +0.041)"
+                    ? "Deflated: Surface albedo signal recovered (Pearson r boosted by +0.054)"
                     : "Raw: Surface obscured by global cloud shifts"}
                 </span>
               </div>
               <span className="font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">
-                Deflation Benefit: Δr = +0.041 [95% CI: 0.027, 0.054]
+                Slot-Profiling Benefit: Δr = +0.054 ± 0.006
               </span>
             </div>
           </div>

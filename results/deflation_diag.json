@@ -1,9 +1,73 @@
 {
-  "cond_undef": Infinity,
-  "cond_defl": Infinity,
-  "info_retained": 0.7565299121696962,
-  "nsc": 16,
-  "theoretical_retention": 0.9375,
-  "max_rel_diff": 2.9204818412427625e-07,
-  "rms_rel_diff": 3.4320767928932767e-07
+  "slot_deflation_white": {
+    "removed_directions": 4096,
+    "nsc": 16,
+    "ns": 2592,
+    "nsamp": 65536,
+    "constant_mode_survival": 0.14601709876280752,
+    "rank_undef": 2304,
+    "rank_defl": 2304,
+    "frobenius_ratio": 0.6622864811445767,
+    "ev_defl_top5": [
+      64.42463283741174,
+      64.29042995018074,
+      63.542852845141155,
+      63.447447830457115,
+      63.29108234564306
+    ],
+    "ev_defl_smallest_nonzero": 6.278360439371715e-06
+  },
+  "slot_deflation_ou": {
+    "removed_directions": 4096,
+    "nsc": 16,
+    "ns": 2592,
+    "nsamp": 65536,
+    "constant_mode_survival": 0.14601709876280752,
+    "rank_undef": 2304,
+    "rank_defl": 2304,
+    "frobenius_ratio": 0.6622864811445767,
+    "ev_defl_top5": [
+      64.42463283741174,
+      64.29042995018074,
+      63.542852845141155,
+      63.447447830457115,
+      63.29108234564306
+    ],
+    "ev_defl_smallest_nonzero": 6.278360439371715e-06
+  },
+  "profiling": {
+    "unprofiled": {
+      "nullity": 288,
+      "eig_min": -5.168884859519656e-13,
+      "eig_max": 2940.4327645661842,
+      "constant_mode_gain": 913.6765984791115,
+      "null_const_overlap": 0.236456842050963,
+      "lam_eff": 0.008423354856643766
+    },
+    "free": {
+      "nullity": 288,
+      "eig_min": -9.688817703973824e-14,
+      "eig_max": 429.886147123091,
+      "constant_mode_gain": 18.79025109229415,
+      "null_const_overlap": 0.2364568420814808,
+      "lam_eff": 0.005578292086713764
+    },
+    "anchored": {
+      "nullity": 288,
+      "eig_min": -1.1399834256861453e-13,
+      "eig_max": 1030.229226140768,
+      "constant_mode_gain": 774.0507554145429,
+      "null_const_overlap": 0.23645684207929085,
+      "lam_eff": 0.005637814941948257
+    },
+    "retained_fraction_free": 0.020565538313635306,
+    "retained_fraction_anchored": 0.8471824239594326,
+    "zero_columns": 144,
+    "zero_column_lat_rows": [
+      0,
+      35
+    ],
+    "nullity_note": "the un-profiled null space is a property of the grid and the circular raster, not of the nuisance profiling; profiling adds no null directions"
+  },
+  "note": "rank/93.75% framing replaced by (i) rank, which profiling does not change, and (ii) the constant-mode gain ratio, which is what profiling actually removes"
 }

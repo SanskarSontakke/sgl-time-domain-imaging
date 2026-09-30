@@ -1,0 +1,42 @@
+{
+  "16": {
+    "pitch": 83.65359064694813,
+    "K00_point": 1.0,
+    "K00_cellmean": 0.010535992301146936,
+    "K00_ref": 0.010337267076398145,
+    "cellmean_formula": 0.010535992301146936,
+    "offdiag_rel_err_point": 0.036558407111781044,
+    "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "point_over_cellmean": 94.91274968862128
+  },
+  "32": {
+    "pitch": 41.826795323474066,
+    "K00_point": 1.0,
+    "K00_cellmean": 0.021071984602293873,
+    "K00_ref": 0.02067453415279629,
+    "cellmean_formula": 0.021071984602293873,
+    "offdiag_rel_err_point": 0.036558407111781044,
+    "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "point_over_cellmean": 47.45637484431064
+  },
+  "64": {
+    "pitch": 20.913397661737033,
+    "K00_point": 1.0,
+    "K00_cellmean": 0.042143969204587746,
+    "K00_ref": 0.04134906830559258,
+    "cellmean_formula": 0.042143969204587746,
+    "offdiag_rel_err_point": 0.036558407111781044,
+    "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "point_over_cellmean": 23.72818742215532
+  },
+  "128": {
+    "pitch": 10.456698830868516,
+    "K00_point": 1.0,
+    "K00_cellmean": 0.08428793840917549,
+    "K00_ref": 0.08269813661118516,
+    "cellmean_formula": 0.08428793840917549,
+    "offdiag_rel_err_point": 0.036558407111781044,
+    "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "point_over_cellmean": 11.86409371107766
+  }
+}

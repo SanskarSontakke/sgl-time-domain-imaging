@@ -200,14 +200,14 @@ export default function TechnicalDocumentation() {
                     <td className="p-2.5 sm:p-3 font-semibold text-slate-800">Phase-Binned Coaddition</td>
                     <td className="p-2.5 sm:p-3 text-slate-600">Rotates (binned)</td>
                     <td className="p-2.5 sm:p-3 text-amber-600">Averaged as white noise</td>
-                    <td className="p-2.5 sm:p-3 font-mono text-slate-600">r = 0.088 ± 0.012</td>
-                    <td className="p-2.5 sm:p-3"><span className="badge badge-accent text-[9px]">Severe Smear</span></td>
+                    <td className="p-2.5 sm:p-3 font-mono text-slate-600">r = 0.318 ± 0.016</td>
+                    <td className="p-2.5 sm:p-3"><span className="badge badge-accent text-[9px]">Competitive at Low Cover</span></td>
                   </tr>
                   <tr className="hover:bg-slate-50 bg-blue-50/50">
                     <td className="p-2.5 sm:p-3 font-semibold text-blue-900">Our Time-Domain Inversion (TDI)</td>
                     <td className="p-2.5 sm:p-3 text-blue-900">Full diurnal spin + tilt</td>
                     <td className="p-2.5 sm:p-3 text-emerald-700 font-medium">Spatio-temporal OU + 16-Craft Deflation</td>
-                    <td className="p-2.5 sm:p-3 font-mono font-bold text-emerald-700">r = 0.326 ± 0.034</td>
+                    <td className="p-2.5 sm:p-3 font-mono font-bold text-emerald-700">r = 0.342 ± 0.008</td>
                     <td className="p-2.5 sm:p-3"><span className="badge badge-success text-[9px]">Continent Recovery</span></td>
                   </tr>
                 </tbody>
@@ -370,7 +370,7 @@ export default function TechnicalDocumentation() {
                   <LatexMath math="\mathbf{P}_\perp = \mathbf{I}_{N_c} - \frac{1}{N_c} \mathbf{1}_{N_c} \mathbf{1}_{N_c}^T" block />
                 </div>
                 <p className="text-xs text-emerald-800 leading-relaxed">
-                  Pre-multiplying the measurement vector by <LatexMath math="\mathbf{P}_\perp" /> eliminates common-mode cloud variance, yielding a paired <LatexMath math="\Delta r = +0.041" /> [95% CI: 0.027, 0.054] improvement in surface reconstruction!
+                  Pre-multiplying the measurement vector by <LatexMath math="\mathbf{P}_\perp" /> eliminates common-mode cloud variance, yielding a paired slot-profiling gain of <LatexMath math="\Delta r = +0.054 \pm 0.006" /> in surface reconstruction!
                 </p>
               </div>
 
@@ -395,7 +395,7 @@ export default function TechnicalDocumentation() {
 
             <div className="space-y-4">
               <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                We evaluated 5 cadence configurations holding the total dwell budget per slot strictly constant at 7,200 seconds:
+                We evaluated five cadence configurations (resource arm A) holding the photon budget per raster position strictly constant at 8 hours (<LatexMath math="M_p\,t_s = 28{,}800\ \rm s" />) while the wall clock grows from 85.7 to 93.7 days, at nominal <LatexMath math="f_c = 0.55" /> on 6 paired seeds:
               </p>
 
               {/* Cadence Table */}
@@ -405,52 +405,52 @@ export default function TechnicalDocumentation() {
                     <tr>
                       <th className="p-2.5 sm:p-3">Configuration</th>
                       <th className="p-2.5 sm:p-3">Dwell Time (<LatexMath math="t_s" />)</th>
-                      <th className="p-2.5 sm:p-3">Revisits (<LatexMath math="K" />)</th>
+                      <th className="p-2.5 sm:p-3">Revisits (<LatexMath math="M_p" />)</th>
                       <th className="p-2.5 sm:p-3">Duty Cycle (<LatexMath math="\eta" />)</th>
                       <th className="p-2.5 sm:p-3">Fidelity (<LatexMath math="r" />)</th>
-                      <th className="p-2.5 sm:p-3">SSIM</th>
+                      <th className="p-2.5 sm:p-3">White-Noise GLS (<LatexMath math="r" />)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 sm:p-3 font-semibold text-slate-800">Single Dwell Baseline</td>
+                      <td className="p-2.5 sm:p-3 font-semibold text-slate-800">Longest dwell</td>
                       <td className="p-2.5 sm:p-3 font-mono">7,200 s</td>
-                      <td className="p-2.5 sm:p-3 font-mono">1 pass</td>
+                      <td className="p-2.5 sm:p-3 font-mono">4 revisits</td>
                       <td className="p-2.5 sm:p-3 font-mono">99.4%</td>
-                      <td className="p-2.5 sm:p-3 font-mono text-rose-600">0.139 ± 0.021</td>
-                      <td className="p-2.5 sm:p-3 font-mono">0.052 ± 0.008</td>
+                      <td className="p-2.5 sm:p-3 font-mono text-rose-600">0.049 ± 0.005</td>
+                      <td className="p-2.5 sm:p-3 font-mono">0.024 ± 0.003</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 sm:p-3 font-semibold text-slate-800">2 Passes</td>
+                      <td className="p-2.5 sm:p-3 font-semibold text-slate-800">Halved dwell</td>
                       <td className="p-2.5 sm:p-3 font-mono">3,600 s</td>
-                      <td className="p-2.5 sm:p-3 font-mono">2 passes</td>
+                      <td className="p-2.5 sm:p-3 font-mono">8 revisits</td>
                       <td className="p-2.5 sm:p-3 font-mono">98.8%</td>
-                      <td className="p-2.5 sm:p-3 font-mono text-slate-700">0.245 ± 0.028</td>
-                      <td className="p-2.5 sm:p-3 font-mono">0.078 ± 0.010</td>
+                      <td className="p-2.5 sm:p-3 font-mono text-slate-700">0.173 ± 0.013</td>
+                      <td className="p-2.5 sm:p-3 font-mono">0.144 ± 0.011</td>
                     </tr>
                     <tr className="hover:bg-slate-50 bg-blue-50/40">
-                      <td className="p-2.5 sm:p-3 font-semibold text-blue-900">4 Passes (Turyshev Standard)</td>
+                      <td className="p-2.5 sm:p-3 font-semibold text-blue-900">Nominal (TDI baseline)</td>
                       <td className="p-2.5 sm:p-3 font-mono">1,800 s</td>
-                      <td className="p-2.5 sm:p-3 font-mono">4 passes</td>
+                      <td className="p-2.5 sm:p-3 font-mono">16 revisits</td>
                       <td className="p-2.5 sm:p-3 font-mono">97.6%</td>
-                      <td className="p-2.5 sm:p-3 font-mono text-blue-800 font-bold">0.336 ± 0.035</td>
-                      <td className="p-2.5 sm:p-3 font-mono">0.116 ± 0.009</td>
-                    </tr>
-                    <tr className="hover:bg-slate-50 bg-emerald-50/50">
-                      <td className="p-2.5 sm:p-3 font-semibold text-emerald-900">8 Passes (Recommended Sweet Spot)</td>
-                      <td className="p-2.5 sm:p-3 font-mono">900 s</td>
-                      <td className="p-2.5 sm:p-3 font-mono">8 passes</td>
-                      <td className="p-2.5 sm:p-3 font-mono">95.2%</td>
-                      <td className="p-2.5 sm:p-3 font-mono text-emerald-700 font-bold">0.485 ± 0.038</td>
-                      <td className="p-2.5 sm:p-3 font-mono font-bold">0.165 ± 0.014</td>
+                      <td className="p-2.5 sm:p-3 font-mono text-blue-800 font-bold">0.346 ± 0.010</td>
+                      <td className="p-2.5 sm:p-3 font-mono">0.291 ± 0.009</td>
                     </tr>
                     <tr className="hover:bg-slate-50">
-                      <td className="p-2.5 sm:p-3 font-semibold text-slate-800">16 Passes (Fast Revisit)</td>
+                      <td className="p-2.5 sm:p-3 font-semibold text-slate-800">Fast revisit</td>
+                      <td className="p-2.5 sm:p-3 font-mono">900 s</td>
+                      <td className="p-2.5 sm:p-3 font-mono">32 revisits</td>
+                      <td className="p-2.5 sm:p-3 font-mono">95.2%</td>
+                      <td className="p-2.5 sm:p-3 font-mono text-emerald-700 font-bold">0.497 ± 0.014</td>
+                      <td className="p-2.5 sm:p-3 font-mono">0.475 ± 0.012</td>
+                    </tr>
+                    <tr className="hover:bg-slate-50 bg-emerald-50/50">
+                      <td className="p-2.5 sm:p-3 font-semibold text-emerald-900">Fastest tested (90-d budget exceeded)</td>
                       <td className="p-2.5 sm:p-3 font-mono">450 s</td>
-                      <td className="p-2.5 sm:p-3 font-mono">16 passes</td>
+                      <td className="p-2.5 sm:p-3 font-mono">64 revisits</td>
                       <td className="p-2.5 sm:p-3 font-mono">90.9%</td>
-                      <td className="p-2.5 sm:p-3 font-mono text-emerald-700 font-bold">0.544 ± 0.041</td>
-                      <td className="p-2.5 sm:p-3 font-mono">0.188 ± 0.017</td>
+                      <td className="p-2.5 sm:p-3 font-mono text-emerald-700 font-bold">0.571 ± 0.010</td>
+                      <td className="p-2.5 sm:p-3 font-mono">0.573 ± 0.013</td>
                     </tr>
                   </tbody>
                 </table>
@@ -466,7 +466,7 @@ export default function TechnicalDocumentation() {
                 Spin Ephemeris & Robustness Suite
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                Sensitivity to unknown spin pole orientation, initial phase offset, and in-flight self-calibration.
+                Sensitivity to unknown spin pole orientation and initial phase offset.
               </p>
             </div>
 
@@ -474,21 +474,21 @@ export default function TechnicalDocumentation() {
               <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
                 <div className="font-bold text-slate-800 text-xs">Spin Pole Tilt Tolerance</div>
                 <p className="text-xs text-slate-600 leading-snug">
-                  Tilt errors <LatexMath math="\Delta\theta_{\rm pole} \le 5^\circ" /> preserve recovery (<LatexMath math="r = 0.317" /> vs 0.319). Precursor astrometry must constrain pole tilt to <LatexMath math="\le 5^\circ" />.
+                  Tilt errors <LatexMath math="\Delta\theta_{\rm pole} \le 5^\circ" /> reduce recovery from <LatexMath math="r = 0.342" /> to <LatexMath math="0.286 \pm 0.014" /> (17% loss). Tilt 20° gives <LatexMath math="0.170 \pm 0.018" />. Precursor astrometry must constrain pole tilt to <LatexMath math="\le 5^\circ" />.
                 </p>
               </div>
 
               <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
                 <div className="font-bold text-slate-800 text-xs">Phase Ephemeris Window</div>
                 <p className="text-xs text-slate-600 leading-snug">
-                  Phase errors <LatexMath math="\Delta\phi_0 \le 5^\circ" /> are fully tolerated (<LatexMath math="r = 0.291" />). Errors beyond 30° cause desynchronization.
+                  Phase errors <LatexMath math="\Delta\phi_0 \le 5^\circ" /> give <LatexMath math="r = 0.295 \pm 0.008" />. At 15°: <LatexMath math="0.187 \pm 0.009" />. At 30°: <LatexMath math="0.072 \pm 0.010" />. At 60°: <LatexMath math="-0.027 \pm 0.014" /> (map destroyed).
                 </p>
               </div>
 
               <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
-                <div className="font-bold text-slate-800 text-xs">In-Flight Optimization</div>
+                <div className="font-bold text-slate-800 text-xs">Spin State Observability</div>
                 <p className="text-xs text-slate-600 leading-snug">
-                  The profile likelihood <LatexMath math="\chi^2 = \|\mathbf{y} - \mathbf{F}(\theta,\phi)\hat{\mathbf{s}}\|^2" /> exhibits a sharp convex minimum at <LatexMath math="(0,0)" />, enabling in-flight parameter refinement.
+                  The whitened <LatexMath math="\chi^2" /> is numerically invariant to assumed initial phase (&lt;1e-11 relative) and monotone in assumed period across the tested grid. The spin state is observable through reconstruction quality (<LatexMath math="r" /> peaks at truth for 4/4 seeds) but NOT recoverable by minimizing photometric residuals; the ephemeris must come from external precursor astrometry.
                 </p>
               </div>
             </div>
