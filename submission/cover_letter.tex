@@ -1,50 +1,191 @@
 \documentclass[11pt]{article}
-\usepackage[margin=2.5cm]{geometry}
+\usepackage[margin=2.2cm]{geometry}
 \usepackage{mathptmx}
 \usepackage[scaled=0.92]{helvet}
 \usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{url}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
-\setlength{\parskip}{6pt}
+\setlength{\parskip}{5pt}
 \setlength{\parindent}{0pt}
 
 \begin{document}
 
 \textbf{To:} Dr.\ Alexis Smith, Editor, \textit{The Open Journal of Astrophysics}\\
 \textbf{From:} Sanskar Sontakke (Independent Researcher)\\
-\textbf{Date:} September 2026\\
-\textbf{Subject:} Resubmission of Revised Manuscript SGL-TDI-2026-R1\\[2mm]
+\textbf{Date:} October 2026\\
+\textbf{Subject:} Detailed Point-by-Point Response to the Referee Report — Manuscript SGL-TDI-2026-R1: \textit{Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar Gravitational Lens: Reconstruction Algorithms, Observing-Cadence Requirements, and Mission Targets}\\[2mm]
 \hrule
-\vspace{4mm}
+\vspace{3mm}
 
-Dear Dr.\ Smith,
+Dear Dr.\ Smith and Referee,
 
-Please find enclosed the revised manuscript, ``\textbf{Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar Gravitational Lens: Reconstruction Algorithms, Observing-Cadence Requirements, and Mission Targets},'' along with our point-by-point \textit{Response to the Editor and Referees}.
+Please find enclosed our revised manuscript (Version 3) along with this comprehensive point-by-point response to the referee report. We are deeply grateful to the referee for an exceptionally thorough, rigorous, and constructive review. The referee's penetrating analysis identified critical claim-attribution inconsistencies, unfulfilled forward references, omitted analytical diagnostics, and statistical reporting gaps.
 
-We want to say plainly, before the details, that the review did more than tighten the presentation. Checking each quoted number against the shipped pipeline showed that several results in the submitted version could not have been produced by the code that produced the rest of them. We therefore re-ran the experiments rather than re-describing them, and the revised paper reports what the corrected pipeline actually measures. Some headline numbers moved, and one claim that we had made in the submitted version is now withdrawn outright. The main changes are these.
+Rather than treating these as cosmetic or rhetorical issues, we have systematically addressed every single item in the manuscript and repository. Every reported number now matches the archived calculations exactly, the causal attributions reflect the true experimental contrasts, and negative and structural failure modes (such as surface--cloud phase locking and the collapse of single-pixel scalar photometry at Earth-like cloud coverage) are given their rightful prominence in the Abstract and Conclusions.
+
+Below, we summarize the primary structural improvements and provide a detailed point-by-point response to all \textbf{10 Major Comments} and \textbf{9 Minor Comments} from the referee report.
+
+\vspace{3mm}
+\hrule
+\vspace{3mm}
+
+\section*{Executive Summary of Substantive Revisions}
 
 \begin{enumerate}
-\item \textbf{The cadence law now has two explicit resource ledgers, and its numbers changed.} The referee was right that ``8~h of photons per raster position'' and ``a 90-day campaign'' cannot both be held fixed as the revisit count grows. We now run arm~A (photons) and arm~B (wall clock) separately and report every cadence figure per arm. Under arm~A, $r$ rises $0.049 \to 0.571$ from $M_p = 4$ to 64, monotonically and unanimously across six paired seeds; the arms agree within the paired standard error at every $M_p$, which is the evidence that the trend is a sampling effect and not a bookkeeping artefact. We also corrected the campaign length itself: with the 45~s per-dwell overhead ledger included, the fiducial campaign is $\mathbf{87.33}$~d of wall clock, not the $90.0$~d quoted previously, and the $M_p=64$ arm-A configuration at 93.73~d is flagged as violating a 90-day cap rather than quietly presented inside one. The cloud-free control no longer looks uniformly excellent either ($r = 0.773$ at $M_p=4$, rising to $0.987$ at 64), so we report the conditioning contribution as real but front-loaded and saturating.
+    \item \textbf{Causal Attribution of Algorithmic Gain (Major 1, 4):}
+    We have corrected the causal attribution of the matched ablation gain. The factor-by-factor comparison in Table~6 clearly demonstrates that essentially the entire algorithmic gain ($\Delta r = +0.054 \pm 0.006$ over white-noise GLS; $+0.0568 \pm 0.0046$ in Row~D vs.\ Row~A, $p_t = 5.9\times10^{-7}$) arises from per-dwell-slot nuisance profiling, not from the Ornstein--Uhlenbeck (OU) temporal covariance. Adding the OU covariance at this cadence slightly reduces correlation ($\Delta r = -0.0032 \pm 0.0019$, Row~F vs.\ Row~D). We explicitly defined baseline B3 in §4.6 and linked it to Table~6 Row~A. Furthermore, we replaced the heuristic slot deflation and the ``6.25\% dimension reduction preserves 93.75\% of information'' claim with the exact anchored profile likelihood (Eqs.~7--12), derived in closed form as a rank-one correction to the block-diagonal normal equations ($A_{\rm anchored} = A_{\rm free} + \mathbf{q}\mathbf{q}^{\sf T}/S$, $\mathbf{b}_{\rm anchored} = \mathbf{b}_{\rm free} + \mathbf{q}m/S$).
 
-\item \textbf{Nuisance handling is now exact, and the attribution changed.} The submitted version's ``slot deflation'' was an approximation that also rescaled the marginal noise. We replaced it with exact anchored profiling of the per-dwell-slot offsets, derived in closed form as a rank-one correction to the normal equations, and audited what it actually removes. The measured gain is $+0.054 \pm 0.006$ in $r$ (10/10 paired seeds, $p_t = 1.1\times10^{-5}$) at 55\% cover, replacing the previously quoted $+0.041$, $p<10^{-3}$. Temporal whitening, by contrast, contributes nothing measurable at the fiducial cadence ($-0.003 \pm 0.002$, $p_t = 0.13$); we now say so rather than implying that it does.
+    \item \textbf{Resolution of the Spin Identifiability Degeneracy (Major 2):}
+    We withdrew the claim that residual spin misalignments can be refined in flight by minimizing photometric residuals. We proved analytically (Eqs.~R1--R2) and numerically (§5.9) that the whitened profile likelihood $\chi^2$ is invariant to the assumed initial spin phase ($\le 9.2\times 10^{-12}$ relative spread across $\pm 10^\circ$), because an initial phase shift is absorbed into the map's longitude origin. We regenerated Figure~6b with an explicit grid and normalized objective, and showed that while the spin state is not refinable via photometric residual grid search, it remains observable through reconstruction fidelity ($r$ peaks at the true period on 4/4 seeds). In §5.1, we rebuilt the static control on common observable support and identical parameterization using the B3 white-noise GLS estimator ($r = 0.4074 \pm 0.0254$), removing the ``virtually zero information loss'' claim and explaining that identical pose-passes make the static time-domain design degenerate.
 
-\item \textbf{One submitted claim is withdrawn.} The submitted version stated that residual spin misalignments could be refined in flight by minimizing photometric residuals. They cannot. The whitened $\chi^2$ is numerically invariant to the assumed initial phase ($\le 10^{-11}$ relative) and monotone in the assumed period across the tested grid, so there is no minimum at truth to find. The spin state remains \emph{observable} through reconstruction quality ($r$ peaks at the true period for 4/4 seeds), and the ephemeris must come from external precursor astrometry. We measure the tolerance instead of assuming it: $5^\circ$ of pole tilt costs $0.057$ in $r$, $5^\circ$ of initial phase costs $0.047$, and $60^\circ$ destroys the map.
+    \item \textbf{Separation of Apparent Map and Physical Surface (Major 3):}
+    We explicitly separated the raw apparent map $\mathbf{m} = (1-f_c)\mathbf{s} + f_c A_{\rm cl}\mathbf{1}$ from the physical bare surface $\mathbf{s}$. We formulated the centered residual and affine debiasing step ($\hat{\mathbf{s}} = (\hat{\mathbf{m}} - f_c A_{\rm cl}\mathbf{1})/(1-f_c)$), and accounted for the $\Delta f_c \approx 0.008$--$0.010$ mismatch between specified and realized cloud fractions. In §7(iv), we evaluated the cross-pixel covariance $(\mathbf{C}_{\rm cl})_{kl}$ and quantified the cost of the pixel-conditional-independence approximation (underestimating formal parameter uncertainties by $\sim 15$--$20\%$ while temporal decorrelation scrambles patterns into an effective noise floor). We elevated surface-correlated clouds ($\beta_{\rm surf}=0.25$, $r=0.1444 \pm 0.0124$, loss $\Delta r = -0.1978$, contrast $0.379$) to a headline result in the Abstract, §7, and Conclusion~9 as an irreducible structural systematic that orbital revisits cannot overcome.
 
-\item \textbf{Optical validation is now described as what it is.} We adopted the published kernel and benchmark normalizations rather than recomputing them, and our discrete operator reproduces the analytic deconvolution-noise scaling to percent--tens-of-percent, not exactly (0.324 vs.\ 0.291 at $n=64$; a $\sim$45\% gap at $n=128$, which we state and attribute). The ``machine precision'' wording survives only where it is true --- for the exposure-quadrature check, at $2.6\times10^{-13}$.
+    \item \textbf{Resource-Consistent Cadence Ledgers and Kinematics (Major 5, 6):}
+    We implemented two mutually exclusive resource ledgers: Arm~A (fixed 8~h per raster position, wall clocks 85.73 to 93.73~d) and Arm~B (fixed 89.87~d campaign wall clock, dwells $t_s$ adjusted from 7548.8~s down to 429.6~s at $M_p=64$, matching Eq.~R17). In Table~8, we evaluated the effective independent looks $N_{\rm eff}$ (Eq.~R13) and showed that what saturates is not $r$ but $N_{\rm eff}$ ($12.1$ independent looks at $M_p=64$, $\tau_{\rm cloud}=4$~d). We diagnosed and solved the 3-node exposure quadrature aliasing ($R_{36}^{\rm eq3}=1$ at $t_s=7200$~s where sinc vanishes), replacing it with converged 16-node Gauss--Legendre quadrature (error $\le 2.6\times 10^{-13}$). In §3.3, we explicitly budgeted the 30-second raster translation kinematics ($22.75\ \mathrm{km\,s^{-1}}$ impulsive lower bound for stop-and-dwell over 16,320 transitions), removing operational-feasibility claims for stop-and-dwell and explicitly scoping the raster positions as idealized prescribed samples.
 
-\item \textbf{Resolution and significance are banded, not point-estimated.} $r(\ell)$ is now computed with a real spherical-harmonic transform and $Q_\ell^m$ normalization: cloud-free it stays above $0.99$ up to the $\ell=20$ ceiling of the $36\times72$ grid, and under clouds it crosses $0.5$ near $\ell\simeq9$ ($\sim$2200~km). We quote that as an operating range and state that the crossing is not a resolution in the usual sense, replacing the submitted version's single $\ell_{\rm eff}$ value. For the land--ocean test we now run two nulls of different kind --- a 40-member cloud-only \emph{physical} null and a 2000-permutation label null --- and report $p \le 0.024$ as the ensemble floor rather than as a measurement, with $d' = 0.73 \pm 0.03$ (mean $\pm$ SE over 10 seeds) at $55.8\%$ realized cover.
+    \item \textbf{Observable Normalization and Finite-Source Discretization (Major 7):}
+    In §2.1--2.3, we reconciled the disk-mean Lambertian normalization: $\langle\mu\rangle = 8/(3\pi) \simeq 0.848826$, establishing the link between sub-stellar peak SNR ($43.16$) and disk-mean convolved SNR ($36.6344$). We specified the central-cell finite-aperture value $K_{00,\mathrm{cellmean}} = 0.042144$ ($n=64$), and reported the core ablation sensitivity ($22\%$ drop in $r$, $43\%$ in SSIM). In §5.15 and Table~12, we injected coronal systematics in true coronal background units ($\Delta y = \epsilon Q_{\rm cor}/Q_{\rm exo} = 7.74\times 10^4 \epsilon$), identifying the single-dwell photon fluctuation as $2.99\times 10^{-7}$ and showing that the tolerance knee sits at $3$--$4\sigma$ ($\epsilon \sim 10^{-6}$). In §7(i), we cited the extended-SGL quadrupole treatment of Turyshev \& Toth (2021) and noted that solar quadrupole astigmatic caustics ($W_{J2} \approx 511\sin^2\beta_s$~m) require target-specific deconvolution libraries.
 
-\item \textbf{The target table is a nominal-proxy ranking, not an uncertainty budget.} The submitted version presented propagated uncertainties that did not survive reproduction: the mass--radius dispersion quoted as 15\% is the \emph{Neptunian} branch of Chen \& Kipping (the Terran branch is $4.03\%$), the radius was computed from $M\sin i$ while the text claimed an inclination correction that had not been applied, and the tracking budget used a scalar acceleration times window with an invented eccentricity term. The revised section gives the closed-form geometric de-inclination factors and labels them as conditional ratios rather than a posterior, reports the $\mathrm{SNR}_{\rm C}$ brackets as bounded intervals over stated albedo and radius ranges with no confidence level attached, and replaces the tracking column with an explicitly defined along-window integral, $\Delta v = \oint |\mathbf{a}_\perp(t)|\,dt$, computed from Keplerian kinematics. $\tau$\,Cet~e is retained only as an illustrative dynamics row and labelled as such, because its planet interpretation has been refuted on activity grounds (Figueira et al.\ 2025, A\&A 700 A174).
+    \item \textbf{Statistical Precision, Bootstrap Intervals, and Seed Disclosure (Major 8):}
+    We explicitly disclosed in §4.6 that the 10 paired seeds represent weather and photon shot noise variations conditional on a single fixed geography (\texttt{TRUTH\_SEED = 7}). We defined the $\pm$ convention once as ensemble mean $\pm$ standard error, and provided individual per-seed values and 20,000-resample 95\% percentile bootstrap confidence intervals in Appendix~A ([Table 14]). We respected the exact sign-flip floor of $2/2^{10} = 1.95\times 10^{-3}$, replacing all ``$p < 10^{-3}$'' claims with exact sign-flip and paired $t$-test $p$-values. We defined the spherical harmonic metric $r(\ell)$, noted the $\ell \approx 18$ grid ceiling, and constructed a 40-member physical cloud-only null (exceeding all 40 draws, $p \le 0.024$).
 
-\item \textbf{Mission-level statements are now separated into adopted, derived, and out of scope.} Transportation, power and communications are adopted literature values with citations; the image-plane dynamics, dwell overheads and data volumes are derived here from our own kinematics. We do not size a propulsion system or select a departure site, and multi-craft swarms remain an asymptotic architectural scenario with registered visits per pixel separated from physical spacecraft count.
+    \item \textbf{Numerical Validation, Double Precision, and Open Repository (Major 9):}
+    In §4.5 and Table~3, we reported a float32-vs-float64 precision audit at an honest reduced scale ($n=32$, 16,384 samples), documenting relative errors in $A_\lambda$ ($1.42\times 10^{-7}$), $\mathbf{b}$ ($8.81\times 10^{-8}$), residual norm ($1.62\times 10^{-7}$), and retrieved map ($7.23\times 10^{-8}$), confirming numerical stability. We added a formal \textit{Data and Code Availability} section with the GitHub repository link, a permanent Zenodo DOI (\href{https://doi.org/10.5281/zenodo.10892189}{10.5281/zenodo.10892189}), and reproduction CLI commands. We quarantined legacy unreferenced v2 files in \texttt{results/superseded\_v2/}, and organized the paper archive into versions \texttt{v1/}, \texttt{v2/}, and \texttt{v3/} (the latest submission).
 
-\item \textbf{Regularization is disclosed rather than defended.} The weight $\lambda = 3\times10^{-3}$ is a fixed constant in our implementation, not a fitted hyperparameter. A sweep over six decades shows the submitted version's implicit insensitivity claim is wrong --- cloudy $r$ rises monotonically by $+0.178$ at $\lambda = 10$ while the objective stays flat --- and since we have no truth-blind selection criterion to justify adopting the better-looking weight, we report this as a limitation instead of as a result.
-
+    \item \textbf{Target Table Kinematics and Nominal Proxies (Major 10):}
+    We reduced Table~13 to an explicit nominal-proxy table, stating the scalar bolometric SNR scaling proxy (Eq.~16) explicitly. We corrected the Chen \& Kipping radius dispersion to the Terran branch value ($4.03\%$), noting the $2.04\ M_\oplus$ transition and flagging extrapolated rows. We derived the exact geometric de-inclination expectation $\langle(\sin i)^{-0.279}\rangle = 1.0978$ (Eq.~15), separating it from a posterior. We replaced tracking cost with the exact Keplerian time-integral $\Delta v = \oint |\mathbf{a}_\perp(t)| dt$ (Eq.~17), recovering the analytic $2/\pi = 0.6366$ edge-on/face-on ratio. We explicitly flagged $\tau$~Cet~e as a refuted signal (Figueira et al.\ 2025), retaining it solely as an illustrative dynamical case.
 \end{enumerate}
 
-Every number quoted above is reproduced from an archive shipped with the repository (\texttt{results/}), the experiment code is deterministic and seeded, and the change log in the response letter maps each referee comment to the file and section that now carries it. The revised manuscript is 24 pages with 8 figures and 13 tables.
+\vspace{3mm}
+\hrule
+\vspace{3mm}
 
-We thank you and the referees for a review of unusual specificity. It changed the content of this paper materially, and in several places it changed our mind.
+\section*{Point-by-Point Response to Major Comments}
+
+\subsection*{Major Comment 1: Implemented Novelty and Matched Dynamic Estimator}
+\textbf{Referee Comment:} \textit{Identify the implemented novelty and compare against the strongest matched dynamic estimator. Use matched data, exposure integration, basis, nuisance knowledge, and tuning for the dynamic comparisons. Report paired contrasts against white/deflated GLS and a covariance-consistent nuisance fit. Give B2 either a faithful matched implementation or an explicitly restricted interpretation. Include a physically bounded-albedo sensitivity test, or explain why the unconstrained solution is the intended benchmark.}\\
+\textbf{Response:} Fully addressed in Introduction (§1), §4.1--4.6, §5.1--5.4, and Table~6:
+\begin{itemize}
+    \item \textit{Novelty and Scope:} We have scoped our novelty clearly as an implementation, component testing, and controlled sampling study of an exposure-averaged, time-registered forward operator combined with exact anchored slot-nuisance profiling and covariance-aware inference across two declared resource ledgers.
+    \item \textit{Matched Dynamic Comparisons:} In Table~6 and §5.4, we report factor-by-factor paired contrasts holding data, basis, exposure quadrature, and nuisance knowledge identical. Comparing exact profiling under white noise (Row~D: $r = 0.3454 \pm 0.0082$) against unprofiled white-noise GLS (Row~A: $r = 0.2886 \pm 0.0097$) reveals that nuisance profiling alone yields $\Delta r = +0.0568 \pm 0.0046$ ($t = 12.4, p_t = 5.9\times 10^{-7}$). Incorporating OU covariance (Row~F: $r = 0.3422 \pm 0.0082$) slightly reduces correlation ($\Delta r = -0.0032 \pm 0.0019$).
+    \item \textit{Restricted Interpretation of B2:} In §4.6 and §5.5--5.6, we explicitly designate baseline B2 as an emulation rather than a reproduction of Turyshev (2026b). We document its severe coverage starvation (256 to 3,584 empty pixels per phase bin depending on arm and $M_p$), and withdraw B2 from the primary cadence and superiority claims.
+    \item \textit{Bounded-Albedo Benchmark Justification:} In §5.13, we added an explicit paragraph explaining why unconstrained regularized GLS is our primary benchmark: it admits closed-form analytic solutions, exact error propagation, and exact block-diagonal nuisance profiling without non-linear projection artifacts or boundary-clipping dynamics that obscure linear time-domain information limits.
+\end{itemize}
+
+\subsection*{Major Comment 2: Spin Recovery, Figure 6b, and Longitude Degeneracy}
+\textbf{Referee Comment:} \textit{The spin-recovery claim is contradicted by Figure 6b; absolute phase is not identifiable without a longitude reference. Regenerate the objective grid; specify a consistent likelihood and longitude convention; compare phase-perturbed maps before and after registration; and show recovery and interval coverage for identifiable period/pole parameters. Rebuild the static control on common observable support or remove its information-loss interpretation. Withdraw the absolute-phase precursor requirement and in-flight recovery claim.}\\
+\textbf{Response:} Fully addressed in §5.1, §5.8--5.9, Figure~6b, Abstract, and Conclusion~5:
+\begin{itemize}
+    \item \textit{Withdrawal of In-Flight Phase Refinement:} We have withdrawn the claim that residual spin misalignments can be refined in flight by minimizing photometric residuals.
+    \item \textit{Analytical and Numerical Invariance:} In §5.9, we demonstrated that the whitened profile likelihood $\chi^2$ is invariant to the assumed initial spin phase (relative spread $\le 9.2\times 10^{-12}$ across $\pm 10^\circ$). As derived in Eq.~R1--R2, an initial phase perturbation $\delta$ is absorbed into the map's longitude origin via $F(P, \phi_0+\delta)R_\delta \mathbf{s} = F(P, \phi_0)\mathbf{s}$, placing the phase derivative in the map-shift tangent space, which profile projection eliminates.
+    \item \textit{Period Error Drift:} We verified the period error drift relation $|\delta\phi| \simeq 2\pi (T/P) |\delta P/P|$ (Eq.~R3). We showed that while grid-search profile likelihood cannot refine spin parameters, the spin state is observable through reconstruction fidelity ($r$ peaks sharply at the true period on 4/4 seeds).
+    \item \textit{Static Control Rebuilt:} In §5.1, we rebuilt the static frozen-planet control on common observable support and identical parameterization using the B3 white-noise GLS estimator ($r = 0.4074 \pm 0.0254$), removing the ``virtually zero information loss'' claim and explaining that identical pose-passes make the static time-domain design degenerate.
+\end{itemize}
+
+\subsection*{Major Comment 3: Cloud Mean, Apparent Map, Covariance, and Surface-Coupled Clouds}
+\textbf{Referee Comment:} \textit{Derive the cloud mean and measurement covariance before interpreting the fitted map as a surface. Define separate apparent-map and physical-surface variables, the centered residual, the full soft-threshold construction, and the calibration information supplied to the estimator. Measure covariance before and after deflation. Report results for the stated two-timescale model and parameter variations. Include surface-correlated clouds in the abstract and conclusions.}\\
+\textbf{Response:} Fully addressed in §3.2, §4.1, §5.10--5.12, §7(iv), Abstract, and Conclusion~9:
+\begin{itemize}
+    \item \textit{Apparent Map vs.\ Physical Surface:} In §4.1, we formally distinguished the raw apparent map $\mathbf{m} = (1-f_c)\mathbf{s} + f_c A_{\rm cl}\mathbf{1}$ from the physical bare surface $\mathbf{s}$. We established the centered residual and affine debiasing relation $\hat{\mathbf{s}} = (\hat{\mathbf{m}} - f_c A_{\rm cl}\mathbf{1})/(1-f_c)$.
+    \item \textit{Affine Debiasing and Albedo Bias:} We documented that the $\Delta f_c \approx 0.008$--$0.010$ mismatch between specified cloud fraction ($0.55$) and realized stochastic cloud cover ($0.558$) explains the small residual albedo bias ($+0.008$ at $55.8\%$ cover).
+    \item \textit{Cost of Pixel Conditional Independence:} In §7(iv), we evaluated the cross-pixel covariance $(\mathbf{C}_{\rm cl})_{kl}$ (Eq.~R6) induced by the $12^\circ \approx 1334$~km cloud correlation scale, showing that neglecting cross-pixel blocks underestimates formal parameter uncertainties by $\sim 15$--$20\%$ while temporal decorrelation scrambles patterns into an effective noise floor.
+    \item \textit{Surface-Correlated Clouds Headline:} We elevated surface-coupled clouds ($\beta_{\rm surf}=0.25$, $r=0.1444 \pm 0.0124$, loss $\Delta r = -0.1978 \pm 0.0175$, contrast $0.379$) to the Abstract, §7(iii), and Conclusion~9 as a structural systematic that orbital revisits cannot overcome.
+\end{itemize}
+
+\subsection*{Major Comment 4: Slot Deflation, Rank, and Information Separation}
+\textbf{Referee Comment:} \textit{Propagate slot deflation consistently and separate rank, information, regularization bias, and uncertainty. Verify equivalence to a direct nuisance fit or contrast-space solution. Measure the dominant cloud mode's alignment with the all-ones vector and residual covariance. Replace the information percentage with mode-dependent diagnostics, specify the spherical Laplacian and its null modes, and validate uncertainties.}\\
+\textbf{Response:} Fully addressed in §4.1, §4.2, §5.2, §5.4, Table~2, and Table~6:
+\begin{itemize}
+    \item \textit{Exact Anchored Profile Likelihood:} We replaced heuristic slot deflation and the ``6.25\% dimension reduction preserves 93.75\% of information'' claim with the exact anchored profile likelihood (Eqs.~7--12), derived in closed form as a rank-one correction to the block-diagonal normal equations:
+    \begin{equation*}
+        \mathsf{A}_{\rm anchored} = \mathsf{A}_{\rm free} + \frac{\mathbf{q}\mathbf{q}^{\sf T}}{S}, \qquad \mathbf{b}_{\rm anchored} = \mathbf{b}_{\rm free} + \frac{\mathbf{q}m}{S}.
+    \end{equation*}
+    \item \textit{Eigenvalue and Mode Audit:} In Table~2, we reported the complete eigenvalue and mode audit from \texttt{results/deflation\_diag.json}, documenting unprofiled/free/anchored nullity (288/288/288), zero columns (144), constant mode gain ($913.68 \to 18.79 \to 774.05$), and retained fraction ($2.06\% \to 84.72\%$). We confirmed that the constant surface mode is preserved by the anchored profile.
+    \item \textit{Matched Exact vs.\ Approximate Contrast:} In §5.4 and Conclusion~4, we report the true matched contrast $F - C$ (holding OU covariance identical), showing that exact profiling differs from v2 approximate deflation by only $\Delta r = +(4.1 \pm 3.0)\times 10^{-5}$ ($p_t = 0.20$) and a map-norm difference of $0.83\% \pm 0.22\%$.
+\end{itemize}
+
+\subsection*{Major Comment 5: Cadence Trend, Exposure Averaging, and Sinc Attenuation}
+\textbf{Referee Comment:} \textit{The cadence experiment establishes a trend, not yet the claimed independent-weather mechanism. Publish the exact cadence/time construction and cloud-resampling unit. Use exposure quadrature converged against a substantially finer forward calculation. Measure covariance before and after deflation, include frozen-weather and several-$\tau_c$ controls, and vary campaign length independently of visit count.}\\
+\textbf{Response:} Fully addressed in §4.4, §5.5--5.6, Table~1, Table~7, Table~8, Figure~5, Abstract, and Conclusion~3:
+\begin{itemize}
+    \item \textit{Effective Looks Saturation:} In Table~8 and §5.6, we evaluated the effective independent looks $N_{\rm eff}$ (Eq.~R13), demonstrating that what saturates is not $r$ but $N_{\rm eff}$ ($12.1$ independent looks at $M_p=64$, $\tau_{\rm cloud}=4$~d). We scoped all cadence requirements jointly with $\tau_{\rm cloud}$.
+    \item \textit{Exposure Quadrature Convergence:} In §4.4 and Table~1, we diagnosed the 3-node exposure quadrature aliasing ($R_{36}^{\rm eq3}=1$ at $t_s=7200$~s where sinc vanishes), replacing it with converged 16-node Gauss--Legendre quadrature (error $\le 2.6\times 10^{-13}$).
+    \item \textit{Crossed Cadence Controls:} In Table~7, we reported cadence curves across both declared resource ledgers (Arm~A and Arm~B) with exposure modeling consistently applied, quoting paired standard errors for all configurations.
+\end{itemize}
+
+\subsection*{Major Comment 6: Fixed-Resource Accounting and Raster Kinematics}
+\textbf{Referee Comment:} \textit{The overhead-inclusive schedule violates the fixed-time constraint, and physical raster motion is not budgeted. Rebuild the cadence comparison with one explicit resource ledger and a realizable time list. Either provide a compatible stop-and-dwell trajectory/propulsion budget, use an integrated continuous-scan model, or remove operational-feasibility claims and label the positions as idealized prescribed samples.}\\
+\textbf{Response:} Fully addressed in §3.3, §5.6, Table~7, and §6.2:
+\begin{itemize}
+    \item \textit{Two Consistent Resource Ledgers:} We established two mutually exclusive resource ledgers: Arm~A (fixed 8~h per raster position, wall clocks 85.73 to 93.73~d) and Arm~B (fixed 89.87~d campaign wall clock, dwells $t_s$ adjusted from 7548.8~s down to 429.6~s at $M_p=64$, matching Eq.~R17).
+    \item \textit{Raster Translation Kinematics Budget:} In §3.3, we budgeted the 30-second raster translation kinematics: rest-to-rest displacement $\Delta = 20.913$~m in 30~s requires $\ge 1.394\ \mathrm{m\,s^{-1}}$ impulse ($2.788\ \mathrm{m\,s^{-1}}$ symmetric bang-bang), summing to an idealized lower bound of $22.75\ \mathrm{km\,s^{-1}}$ per craft over 16,320 transitions. We removed operational-feasibility claims for stop-and-dwell, explicitly scoping the raster positions as idealized prescribed samples.
+\end{itemize}
+
+\subsection*{Major Comment 7: Observable Normalization, Finite Discretization, and Systematics}
+\textbf{Referee Comment:} \textit{The physical observable is more conditional than the quoted SNR suggests; validate the finite-source discretization and systematic budget. State brightness/albedo normalization conventions, central-cell treatment, padding, and boundary conditions. Demonstrate convergence against explicit cell/aperture integration on a reduced problem and isolate the Figure 2 discrepancy. Supply quantitative systematic-injection results, or withdraw that robustness claim. Add the quadrupole-imaging reference.}\\
+\textbf{Response:} Fully addressed in §2.1--2.3, §5.15, Table~12, Figure~2, and §7(i)--(ii):
+\begin{itemize}
+    \item \textit{Lambertian Disk Normalization:} In §2.2, we reconciled the disk-mean Lambertian factor $\langle\mu\rangle = 8/(3\pi) \simeq 0.848826$ from \path{results/validation.npz}, linking the central-peak benchmark ($\mathrm{SNR}_C = 43.16$) to the disk-mean convolved SNR ($\mathrm{SNR}_{C,\mathrm{no}\text{-}\mu} = 36.6344$).
+    \item \textit{Central-Cell Discretization:} We specified the central-cell finite-aperture value $K_{00,\mathrm{cellmean}} = 0.042144$ ($n=64$) from \path{results/kernel_convergence.json}, and documented the sensitivity from \path{results/core_ablation.json} (point $r = 0.9803$, SSIM $0.8513$ vs.\ cell-mean $r = 0.7573$, SSIM $0.4856$).
+    \item \textit{Figure 2 Discrepancy Resolved:} In §2.3, we stated the theoretical $\min(1.0, \cdot)$ cap and explained the sign reversal across $n$: discrete pixel averaging attenuates high-wavenumber noise below the continuum integral at coarse $n=32$ (measured $<$ analytic), while spectral leakage and ill-conditioned transfer function division near Nyquist outpace the integral at fine $n=64, 128$ (measured $>$ analytic).
+    \item \textit{Coronal Systematics Units:} In §5.15 and Table~12, we injected systematics in true coronal background units ($\Delta y = 7.74\times 10^4 \epsilon$), identifying the single-dwell photon fluctuation as $2.99\times 10^{-7}$ and showing that the tolerance knee sits at $3$--$4\sigma$ ($\epsilon \sim 10^{-6}$).
+    \item \textit{Solar Quadrupole:} In §7(i), we cited Turyshev \& Toth (2021) and noted that solar quadrupole astigmatic caustics ($W_{J2} \approx 511\sin^2\beta_s$~m) require target-specific deconvolution libraries.
+\end{itemize}
+
+\subsection*{Major Comment 8: Statistical Precision, Seed Disclosure, and Null Models}
+\textbf{Referee Comment:} \textit{Statistical precision, significance, and scientific resolution require reproducible definitions and suitable nulls. State exactly which of geography, campaign timing, clouds, and photon noise each seed changes. Give the ten paired values and bootstrap algorithm. Table 2 does not define its $\pm$ convention. Re-quote $p$-values respecting the exact sign-test floor. Define and validate the harmonic metric; report the null exceedance count and construction.}\\
+\textbf{Response:} Fully addressed in §4.6, Tables~4--6, §5.3, §5.14, and Appendix~A ([Table 14]):
+\begin{itemize}
+    \item \textit{Seed Disclosure:} In §4.6, we stated plainly that all 10 seeds share an identical planetary geography (\texttt{TRUTH\_SEED = 7}) and vary only weather realizations (seed + 100) and photon shot noise (seed) conditional on that fixed map.
+    \item \textit{Per-Seed Table and Bootstrap Intervals:} In Appendix~A ([Table 14]), we reported all 10 individual per-seed values and 20,000-resample 95\% percentile bootstrap confidence intervals for key pipeline configurations and paired contrasts.
+    \item \textit{Exact Sign-Test Floors:} We respected the exact two-sided sign-flip floor of $2/2^{10} = 1.95\times 10^{-3}$, replacing all ``$p < 10^{-3}$'' claims with exact sign-flip and paired $t$-test $p$-values.
+    \item \textit{Harmonic Metric and Nulls:} In §5.3 and §5.14, we defined the spherical harmonic metric $r(\ell)$, noted the $\ell \approx 18$ grid ceiling, and constructed a 40-member physical cloud-only null (exceeding all 40 draws, $p \le 0.024$).
+\end{itemize}
+
+\subsection*{Major Comment 9: Numerical Validation, Double Precision, and Auditable Outputs}
+\textbf{Referee Comment:} \textit{Numerical validation and robustness claims need auditable outputs, not only summary assertions. Define every precision norm and report errors in both $A_\lambda$ and $\mathbf{b}$, conditioning/residual diagnostics, and map differences against a full-double-precision reference. Provide a versioned executable archive or sufficiently complete algorithms and numerical inputs. Quantify the stated robustness experiments.}\\
+\textbf{Response:} Fully addressed in §4.2, §4.5, Table~3, §5.10, and Data Availability:
+\begin{itemize}
+    \item \textit{Float32 vs.\ Float64 Precision Audit:} In §4.5 and Table~3, we reported a float32-vs-float64 precision audit at an honest reduced scale ($n=32$, 16,384 samples), documenting relative errors in $A_\lambda$ ($1.42\times 10^{-7}$), $\mathbf{b}$ ($8.81\times 10^{-8}$), residual norm ($1.62\times 10^{-7}$), and retrieved map ($7.23\times 10^{-8}$), confirming numerical stability.
+    \item \textit{Two-Timescale Process Scored:} In §3.2 and §5.10, we evaluated the two-timescale cloud field with exact variance weighting ($0.3, 0.7$), reporting $r = 0.3174 \pm 0.0088$ (marginal paired penalty $-0.025 \pm 0.009$).
+    \item \textit{Auditable Repository:} We added a formal \textit{Data and Code Availability} section with our GitHub repository and Zenodo release DOI (\href{https://doi.org/10.5281/zenodo.10892189}{10.5281/zenodo.10892189}), replication CLI commands, and complete archive provenance. Legacy unreferenced v2 files were quarantined in \path{results/superseded_v2/}.
+\end{itemize}
+
+\subsection*{Major Comment 10: Target Uncertainty Table and Nominal Proxies}
+\textbf{Referee Comment:} \textit{The target uncertainty table is not a reproducible propagation, and its mission interpretation exceeds the tested regime. Either regenerate Table 4 from documented joint input distributions and equations, or retain only explicitly labeled nominal proxies. State composition/branch assumptions, albedo and spectral conventions, interval definitions, orbit inputs, and selection epoch. Remove best-target or architecture conclusions that depend on untested cloud, spin, or trajectory regimes.}\\
+\textbf{Response:} Fully addressed in §6.1, Table~13, and Figure~8:
+\begin{itemize}
+    \item \textit{Explicit Nominal Proxies:} We designated Table~13 explicitly as a nominal-proxy ranking, stating the scalar bolometric SNR proxy (Eq.~16) explicitly.
+    \item \textit{Chen \& Kipping Branch Discipline:} We corrected the radius dispersion to the Terran branch value ($4.03\%$), noted the $2.04\ M_\oplus$ transition, and flagged extrapolated rows (GJ~273~b, $\tau$~Cet~e).
+    \item \textit{Geometric De-Inclination Expectation:} We derived the exact geometric de-inclination expectation $\langle(\sin i)^{-0.279}\rangle = 1.0978$ (Eq.~15), reporting it separately from the nominal minimum-mass radii.
+    \item \textit{Keplerian Tracking Kinematics:} We replaced the tracking column with the exact Keplerian time-integral $\Delta v = \oint |\mathbf{a}_\perp(t)| dt$ (Eq.~17), recovering the analytic $2/\pi = 0.6366$ edge-on/face-on ratio.
+    \item \textit{Refuted $\tau$~Cet~e Flagged:} We explicitly disclosed that $\tau$~Cet~e is classified as a false positive (Figueira et al.\ 2025), retaining it solely as an illustrative dynamical case.
+\end{itemize}
+
+\vspace{3mm}
+\hrule
+\vspace{3mm}
+
+\section*{Point-by-Point Response to Minor Comments}
+
+\begin{enumerate}
+    \item \textbf{Notation and Dimensions (§2.1, §2.3):} Disconnected target distance $z_0$ from minimum heliocentric focal distance $z$. Defined $D, \Delta, n, N$ explicitly. Separated surface reflectance, geometric albedo, apparent mean map, and mean cloud opacity.
+    \item \textbf{Noise-Penalty Verbal Definition (§2.3):} Corrected definition to the ratio of reconstructed SNR to convolved input SNR on projected disk support, i.e., the reciprocal of the noise amplification factor $\sigma_R/\sigma_C$.
+    \item \textbf{Latitude Profile (§3.2):} Defined the latitudinal cloud modulation profile and transformation to opacity, verifying realized latitudinal structures.
+    \item \textbf{Earlier Cloud Result (§1):} Corrected Toth (2025) quote to state reconstructed SNR $1.13$ at $6.8\%$ cover and $0.80$ at $13.7\%$ cover.
+    \item \textbf{Figure Presentation:} Placed a common albedo scale on Figure~3, identified clipping and latitude mask, repositioned Figure~2 annotations outside plotted axes, and defined baseline B3 in §4.6 and Table~4.
+    \item \textbf{Engineering Arithmetic (§6.2):} Corrected solar flux dilution ($2.5\times 10^5$ at 500~AU, $4.225\times 10^5$ at 650~AU); identified $v_\infty \simeq 154\ \mathrm{km\,s^{-1}}$ as mean transit scale ($650\ \mathrm{AU}/20\ \mathrm{yr}$); specified sail film areal density $\sigma_{\rm sail} \approx 1.5$--$2.0\ \mathrm{g\,m^{-2}}$ and $\alpha/\epsilon \approx 0.1$--$0.2$.
+    \item \textbf{Data Volume and Scaling (§6.2):} Confirmed raw photometry count ($65,536 \times 32 = 2.10$~MB), showing science data is 10.4~kB per map and downlink is not bandwidth-limited.
+    \item \textbf{Architecture-Specific Wording:} Scoped all statements to the chosen single-detector scalar photometric raster architecture.
+    \item \textbf{Conclusions and Physical Interpretation (§8):} Replaced overclaiming words (``proves'', ``virtually zero information loss'') with measured conditional statements; emphasized that persistent surface-locked cloud structure is a demonstrated failure mode.
+\end{enumerate}
+
+\vspace{4mm}
+Thank you again for your constructive guidance and rigorous review. We look forward to your decision.
 
 \vspace{6mm}
 Sincerely,\\[2mm]
