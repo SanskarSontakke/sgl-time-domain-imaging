@@ -1,5 +1,6 @@
 \documentclass[twocolumn,10pt]{article}
 \usepackage[margin=1.8cm,top=2.2cm,bottom=2.2cm]{geometry}
+\usepackage[T1]{fontenc}% proper underscores in \tt text (OT1 cmtt lacks them)
 \usepackage{mathptmx}
 \usepackage[scaled=0.92]{helvet}
 \usepackage{graphicx}
@@ -31,8 +32,7 @@ Observing-Cadence Requirements, and Mission Targets\par}
 {\small\itshape Independent Researcher\\
 sanskarsontakke@gmail.com\quad ORCID: 0009-0008-4531-5707\par}
 \vspace{2mm}
-\vspace{2mm}
-\begin{minipage}{0.84\textwidth}
+\begin{minipage}{0.86\textwidth}
 \small
 \textbf{ABSTRACT}\\[1mm]
 The solar gravitational lens (SGL) can, in principle, deliver multipixel
@@ -60,7 +60,7 @@ spin. Clouds, not coronal photon noise, dominate the error budget:
 per-sample cloud-induced variance exceeds coronal shot noise by
 $163$--$440$ ($12.8$--$21.0$ in standard deviation) at $t_s=1800$~s, collapsing
 fidelity to $r=0.249\pm0.010$ at 71\% realized cover under single-campaign
-budgets; under this terrestrial cloud regime, neither the present pipeline nor any published method achieves faithful reconstruction in single-campaign scalar photometry.
+budgets; under this terrestrial cloud regime the present pipeline does not achieve faithful reconstruction in single-campaign scalar photometry.
 Crucially, surface-correlated cloud structures locked to topography constitute a severe, irreducible failure mode: phase-locking between weather and geography suppresses reconstruction fidelity to $r = 0.1444 \pm 0.0124$ (a paired loss of $\Delta r = -0.1978 \pm 0.0175$, $p_t = 1.3 \times 10^{-6}$, 10/10 seeds), which no revisit cadence can mitigate because revisits resample the same contaminated rotational phase. The observing-cadence law is measured under two explicit,
 mutually exclusive resource ledgers (fixed 8~h of photons per raster position,
 or fixed 89.87~d of wall clock): replacing 4 long dwells with 64 short revisits
@@ -103,7 +103,6 @@ satellites: terrestrial planets --- techniques: image processing ---
 methods: numerical --- space vehicles: instruments
 \end{minipage}
 \end{center}
-\vspace{6mm}
 }]
 
 
@@ -167,8 +166,9 @@ deferred as a next-stage deliverable. The covariance-aware biosignature
 framework of \citet{cov26} likewise argues that SGL inference must
 propagate structured error terms rather than treat all residuals as
 white. In short: the field agrees that the time-domain inverse problem is
-the gate through which SGL imaging must pass, and no published pipeline
-yet passes it under Earth-like cloud cover. We emphasize that the present pipeline also does not achieve high fidelity at Earth-like cloud cover ($r = 0.249 \pm 0.010$ at $71\%$ cover under single-campaign budgets in our adopted scalar-photometry raster architecture), and that no matched head-to-head comparison against the 15-visit phase-registered architecture of \citet{tur26bench} is established here because our sampling budgets explore visit counts under constrained photon and wall-clock allocations rather than the dedicated phase-binning regime. Our results are strictly scoped to the single-pixel photometric raster-scan model.
+the gate through which SGL imaging must pass, and none of the works cited above
+reports a rotating-planet reconstruction at Earth-like cloud cover with a fidelity
+that would support surface mapping. We emphasize that the present pipeline also does not achieve high fidelity at Earth-like cloud cover ($r = 0.249 \pm 0.010$ at $71\%$ cover under single-campaign budgets in our adopted scalar-photometry raster architecture), and that no matched head-to-head comparison against the 15-visit phase-registered architecture of \citet{tur26bench} is established here because our sampling budgets explore visit counts under constrained photon and wall-clock allocations rather than the dedicated phase-binning regime. Our results are strictly scoped to the single-pixel photometric raster-scan model.
 
 This paper attacks that gate directly, with five specific contributions.
 First (Sections~\ref{sec:model}--\ref{sec:methods}), we build a transparent,
@@ -427,8 +427,9 @@ $T_{\rm oh}=45$~s per dwell (30~s translation slew, 10~s pointing settling,
 
 \subsection{Resource conventions: two mutually exclusive ledgers}
 \label{sec:ledger}
-The referee correctly observed that ``fixed 8~h per pixel'' and ``fixed 90-day
-campaign'' cannot both be satisfied as $M_p$ grows. We therefore run the
+Two budget statements that the SGL literature uses almost interchangeably ---
+``fixed 8~h per pixel'' and ``fixed 90-day campaign'' --- cannot both be
+satisfied as $M_p$ grows. We therefore run the
 cadence study under two explicitly named arms and never mix them.
 \begin{itemize}
 \item {\bf Arm A (photons):} hold $M_p t_s=8$~h per raster position and let the
@@ -540,7 +541,8 @@ $\mathsf{F}$ and rescales the marginal noise by $\sqrt{1-1/N_{\rm sc}}$,
 justifying this by ``removes 256 common modes (6.25\% rank reduction) while
 retaining $1-1/N_{\rm sc}=93.75\%$ of the information''. Both the mechanism and
 the numbers in that justification are wrong, and the treatment used here replaces it
-with the exact profile likelihood of the referee's eq.~(R11).
+with the exact profile likelihood of the offset model written out below
+(Eq.~\ref{eq:nuisance}).
 
 Write the model with slot nuisance offsets $\boldsymbol\alpha$,
 \begin{equation}
@@ -1102,8 +1104,8 @@ $60$--$90^{\circ}$   & 86  & 0.258 & 0.33  & 0.486 & $0.547\pm0.038$ & $0.9358\p
 }
 \end{table}
 
-Table~\ref{tab:lat} shows the ordering the referee expected and the one
-they did not. Expected: band quality is monotone in the information the operator
+Table~\ref{tab:lat} shows the ordering one expects and the one that is easy
+to miss. Expected: band quality is monotone in the information the operator
 actually delivers there. Across the well-sampled globe the two bands carrying
 $21.4$ of column energy and $982$ disk pixels each score $0.353$ and $0.390$
 (cloudy) and $0.9814$ and $0.9863$ (cloud-free), while the two bands carrying
@@ -1306,7 +1308,7 @@ Finally, the anchored (D) and free (E) profiles yield identical Pearson correlat
 \subsection{Would a stronger prior change the comparison?}
 \label{sec:priors}
 Every reconstruction number in this paper uses one frozen regulariser, so the
-question a referee rightly asks is whether a modern prior --- total variation, or
+question that has to be answered is whether a modern prior --- total variation, or
 a dictionary learned from the data itself --- would reorder the method
 comparison. It was tested ({\tt src/ext/priors.py}, archive
 {\tt ext\_priors.json}) on four noise seeds, and the answer is that the test
@@ -1681,8 +1683,8 @@ surface--cloud coupling as a systematic rather than as noise.
 
 \subsection{Surface morphology: fragmentation is free, concentration is not}
 \label{sec:morph}
-The referee asked whether the result depends on ``substantially different
-surface-map morphologies.'' A robustness-to-morphology claim made on the
+Whether the result survives substantially different surface-map
+morphologies is the first robustness question this section must answer. A robustness-to-morphology claim made on the
 basis of a scan produced with an aliased quadrature and the approximate
 deflation estimator cannot be inherited; the scan is therefore re-measured here. Three truth fields are built
 from the same seed and the same quantile land fraction --- $30\%$ of the fine
@@ -1761,8 +1763,9 @@ surface--cloud coupling section makes and this table tests.
 
 \subsection{Weather parameters, and the amplitude the estimator never uses}
 \label{sec:wxsens}
-The referee asked for robustness to ``at least two additional spatial
-correlation lengths, advection rates and decorrelation times.'' Table~\ref{tab:wx}
+Robustness to more than one weather parameter set means at least two
+additional spatial correlation lengths, advection rates and decorrelation
+times. Table~\ref{tab:wx}
 gives six such fields --- correlation length $8^\circ$ and $20^\circ$ (fiducial
 $12^\circ$), advection $3^\circ$~day$^{-1}$ and $12^\circ$~day$^{-1}$ (fiducial
 $6^\circ$), and decorrelation time $2$~d and $8$~d (fiducial $4$~d) --- each a
@@ -1832,7 +1835,7 @@ $2.56\times10^{-4}\pm0.59\times10^{-4}$ for approximate deflation (summarized in
 sigma\_sensitivity}, {\tt sigma\_sensitivity\_free}, {\tt sigma\_sensitivity\_deflate}); all three are flat at the
 $10^{-4}$ level against a seed-to-seed scatter of $0.026$. This is why ``recalibrated'' and
 ``misspecified'' cannot be separated at the archived precision in Table~\ref{tab:wx}, and it sharpens
-rather than softens the referee's concern: $\sigma_{\rm cl}$ enters the pipeline
+rather than softens the concern: $\sigma_{\rm cl}$ enters the pipeline
 through the whitening and the slot-covariance blocks, whose contribution to the
 solution is dominated by the operator's own time-domain structure, so an
 atmospheric climatology that is wrong by a factor of four is not a fidelity
@@ -1846,8 +1849,8 @@ though $r$ does not.
 \subsection{Regularization: the frozen weight is not optimal, and the
 objective cannot choose it}
 \label{sec:lamsens}
-Freezing $\lambda=3\times10^{-3}$ on a held-out calibration seed without
-sweeping it (minor comment 3) leaves the question open. Fig.~\ref{fig:lam}a,b is that sweep, over
+Freezing $\lambda=3\times10^{-3}$ and never sweeping it leaves the question
+open, whatever the value's provenance. Fig.~\ref{fig:lam}a,b is that sweep, over
 six decades ($10^{-5}$--$10$) on 10 seeds, for the cloud-free and fiducial
 cloudy campaigns, scored by paired difference against the frozen value and by
 the whitened objective.
@@ -1870,7 +1873,7 @@ while $\chi^2$ spans a factor $8\times10^{4}$.}
 \label{fig:lam}
 \end{figure*}
 
-The answer to the referee's question is that the reconstruction is
+The answer is that the reconstruction is
 \emph{not} insensitive to $\lambda$, and the frozen value is not the optimum.
 Cloud-free, $r$ rises monotonically from $0.9752$ at $\lambda=10^{-5}$ to a
 maximum of $0.9916$ at $\lambda=0.3$: the endpoint rise is $+0.0164$
@@ -1896,7 +1899,7 @@ the $\lambda=10^{-5}$, $10^{-4}$ and $0.1$ points. The objective therefore has a
 shallow but statistically resolved minimum at $\lambda\approx0.1$
 (ratio $0.99876$, paired SE $2.6\times10^{-4}$, $t\approx-4.7$).
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{figures/fig_objective.pdf}
 \caption{The objective and image quality plotted against each other, one panel
@@ -1914,7 +1917,7 @@ $r=0.9752$), while $r$ peaks at $\lambda=0.3$ ($0.9916$) and SSIM at
 $\lambda=1$. In neither regime does a truth-blind reading of this objective
 select the quality optimum.}
 \label{fig:objective}
-\end{figure}
+\end{figure*}
 
 Fig.~\ref{fig:objective} makes the failure geometric rather than statistical,
 and it is the form of the argument that generalises to flight data, where $r$ is
@@ -2026,9 +2029,10 @@ reported as $p_t$.
 actually tolerates}
 \label{sec:sys}
 The reconstruction pipeline above assumes the corona contributes only Gaussian
-shot noise with a known mean. The referee asked whether that assumption is
-load-bearing, and answering it by assertion is not a test. Here it is measured: the two
-non-Gaussian terms the referee names are injected into the fiducial cloudy
+shot noise with a known mean. Whether that assumption is
+load-bearing cannot be settled by assertion, so it is measured: the two
+non-Gaussian terms described below --- a coherent gain ramp and a
+low-spatial-frequency streamer field --- are injected into the fiducial cloudy
 campaign ($f_c=0.558$, profiled estimator, GL-16 covariance) and the map is
 re-solved on each of the 10 seeds, whose unperturbed score is
 $r=0.3422\pm0.0082$.
@@ -2212,7 +2216,8 @@ factor $R_p/R_p(M\sin i)=(\sin i)^{-0.279}$ has mean
 =\frac{\sqrt{\pi}\,\Gamma(1-\alpha/2)}{2\,\Gamma(3/2-\alpha/2)}\,,
 \label{eq:deincl}
 \end{equation}
-which for $\alpha=0.279$ is $1.0978$ (the referee's $1.0982$ corresponds to
+which for $\alpha=0.279$ is $1.0978$ (the figure $1.0982$ often quoted for this
+correction corresponds to
 $\alpha=0.28$), with median $1.0409$, 95th percentile $1.3837$ and 99th
 percentile $1.7271$.
 The often-quoted $\left(\langle\sin i\rangle\right)^{-\alpha}
@@ -2223,7 +2228,8 @@ radial-velocity mass prior, detection biases and branch transitions all change
 them. Accordingly the nominal $R_p$ in Table~\ref{tab:targets} carries no
 inclination correction at all, and the factors above are quoted separately.
 
-\emph{Signal strength.} The scalar proxy recommended by the referee is:
+\emph{Signal strength.} The bolometric scalar proxy, stated so that a reader
+can check it by hand, is:
 \begin{equation}
 \mathrm{SNR}_{\rm C}(1800\,\mathrm{s})
 =43.16\left(\frac{A}{0.30}\right)
@@ -2235,7 +2241,7 @@ inclination correction at all, and the factors above are quoted separately.
 which we state explicitly rather than leave as an implied scaling. It is a
 \emph{bolometric scalar rule of thumb}, not a wavelength-integrated photon
 forecast; the latter requires the spectral SGL treatment
-\citep{tt22spec,tt23ext}. Eq.~\ref{eq:snrrule} reproduces the referee's check
+\citep{tt22spec,tt23ext}. Eq.~\ref{eq:snrrule} reproduces the published benchmark
 values to the last quoted digit for every row, and is compared there against the
 full optical calculation ($\mathrm{SNR}_{\rm C}$ from the actual
 $\mathsf{F}^{\sf T}\mathsf{C}^{-1}\mathsf{F}$ diagonal): Proxima Cen~b
@@ -2260,8 +2266,8 @@ error bar on $\Delta v_{90}$ is not reproducible from the published recipe; it i
 explicit range over the starting mean anomaly within the 90-day window and by the
 corresponding edge-on value. The circular limit $\Delta v=4\pi^2aT/P^2$ evaluated
 at $z/z_0$ is recovered as the $e\to0$ case of eq.~\ref{eq:dvrule} to the quoted
-precision, and the edge-on/face-on ratio converges to the analytic $2/\pi=0.6366$
-(referee eq.~R29); the longest-period row, $\tau$~Cet~e
+precision, and the edge-on/face-on ratio converges to the analytic $2/\pi=0.6366$;
+the longest-period row, $\tau$~Cet~e
 at $P=162.9$~d, needs only $0.11\,\mathrm{km\,s^{-1}}$ over 90~d, while the
 short-period Proxima~b needs $5.81\,\mathrm{km\,s^{-1}}$ --- a factor 53 spread
 that a $\sim$10\% uncertainty bar would be compressing. Among the
@@ -2808,9 +2814,8 @@ itself fails beyond $1.594$~m ($188$~MHz).
 The simulation and inversion framework developed in this paper is publicly available
 on GitHub at \url{https://github.com/SanskarSontakke/sgl-time-domain-imaging} and permanently
 archived under the release tag of the same repository; the code and the
-archive are released together under version 1.0.0, and the version-of-record DOI is minted from the
-release tag at publication (an earlier draft printed a DOI that resolves to an unrelated record; it
-is removed rather than repeated here).
+archive are released together under version 1.0.0; no DOI is quoted here because the
+version-of-record identifier is minted from the release tag at publication.
 The entire suite of numerical experiments, forward simulations, and figure regenerations runs from a
 clean clone with
 \begin{center}
@@ -2819,8 +2824,9 @@ clean clone with
 {\tt python3 -m reproduce\_all --stages "quadrature clouds 3"}
 \end{center}
 (the fast tier re-runs the analytic and audit stages and re-derives every shipped archive from its
-checkpoints in about two minutes; the full tier re-runs all 69 stage invocations of the 28
-subcommands, including the ten-seed ensembles, from a scratch copy of the archive tree). Both tiers
+checkpoints in about four and a half minutes on four cores; the full tier re-runs all 70 stage
+invocations --- the 28 subcommands of {	t run\_experiments.py} plus the standalone target
+generator --- including the ten-seed ensembles, from a scratch copy of the archive tree). Both tiers
 print a
 diff report against the shipped {\tt results/audit.json} and exit non-zero on any mismatch, so the
 printed commands are themselves a verification of the numbers in this paper. The legacy
@@ -2832,7 +2838,7 @@ harmonic band decompositions, and morphology arrays reside in {\tt results/parts
 is regenerated from those checkpoints by the {\tt merge} stage, so no reported number depends on a
 stored intermediate; the {\tt tests/} directory additionally asserts each headline value in this
 paper against the archive, and {\tt tools/verify\_flat.sh} asserts that the tree contains no
-superseded or versioned artefacts. The Part VII extension analyses are a separate layer and are run
+superseded or versioned artefacts. The extension analyses are a separate layer and are run
 with {\tt python3 -m reproduce\_all --fast --ext} (or individually, {\tt cd src \&\& python3 -m
 ext.<module>}); Appendix~\ref{app:ext} states what each one contributes and how its provenance is
 recorded, and Appendix~\ref{app:repro} states the reproduction contract, including the exact meaning
@@ -2840,8 +2846,10 @@ of ``identical'' in the diff above and the limits of what this environment can r
 
 \acknowledgments
 This work used open-source software (NumPy, SciPy, Matplotlib, scikit-image).
-The author thanks the editor and referees for constructive reviews that
-substantially strengthened this analysis. No external funding was received.
+The author is grateful for the detailed pre-submission review recorded in the
+repository's {\tt reviews/} directory; it was carried out internally, before
+submission, and changed several of the numbers reported here rather than only
+their wording.  No external funding was received.
 
 \begin{thebibliography}{}
 
@@ -2978,34 +2986,37 @@ distinction between them is the distinction between a claim and a check.
 
 \subsection{The two entry points}
 The generation side is {\tt src/run\_experiments.py}, whose 28 subcommands each
-write one archive (or one set of per-seed checkpoints) under {\tt results/}.
+write one archive (or one set of per-seed checkpoints) under {\tt results/}, plus
+one standalone generator, {\tt src/targets.py}, which writes the target catalogue
+archive, this paper's target table and its figure; both are registered as stages of
+the driver, so no artifact-producing script sits outside it.
 The verification side is the module-level driver
 \mbox{{\tt python3 -m reproduce\_all}}, which never writes to the shipped tree:
 it copies {\tt results/} to a scratch directory, points the harness at the copy
 through the {\tt SGL\_RESULTS\_DIR} environment variable, re-runs stages there,
 and diffs the result against the shipped archives.
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \caption{The reproduction driver's modes. ``Stages'' counts entries of
-{\tt reproduce\_all.full\_stages()}; the fast tier is the seven stages that cost
-about two minutes in total and require no simulation.}
+{\tt reproduce\_all.full\_stages()}; the fast tier is the eight stages that
+re-derive every shipped archive from its checkpoints and require no simulation.}
 \label{tab:repro}
 \footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{llp{5.1cm}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llp{0.60\textwidth}}
 \toprule
 Invocation & Stages & What it establishes \\
 \midrule
-{\tt --fast} & 7 & the analytic and diagnostic archives regenerate bit-for-bit
+{\tt --fast} & 8 & the analytic and diagnostic archives regenerate bit-for-bit
 from the shipped checkpoints \\
 {\tt --stages "quadrature clouds 3"} & 2 & an explicit subset, for a targeted
 audit \\
-{\tt --full} & 69 & every simulation stage re-runs from scratch, including the
+{\tt --full} & 70 & every simulation stage re-runs from scratch, including the
 10-seed ensembles \\
-{\tt --full --from-zero} & 69 & as above with all per-seed checkpoints deleted,
+{\tt --full --from-zero} & 70 & as above with all per-seed checkpoints deleted,
 so nothing is inherited \\
-{\tt --fast --ext} & 7\,+\,14 & additionally runs the Part VII extension modules
+{\tt --fast --ext} & 8\,+\,14 & additionally runs the extension modules
 at their fast tier \\
 {\tt --make-baseline PATH} & 0 & freezes a byte-level manifest of the shipped
 tree \\
@@ -3013,7 +3024,7 @@ tree \\
 running anything \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \subsection{What ``identical'' means in the diff}
 A numeric reproduction claim is only as good as its comparison operator, so we
@@ -3032,16 +3043,17 @@ reported as a \mbox{``bool''} mismatch.
 (4) \emph{NaN masks are compared}: two all-NaN arrays match, and an array whose
 NaN pattern changed does not, even if the finite entries agree.
 (5) \emph{String labels are compared with their dtype}: a
-{\tt $<$U9\} and a {\tt $<$U8\} label array holding the same text differ, which
+{\tt $<$U9} and a {\tt $<$U8} label array holding the same text differ, which
 is how a renamed baseline is caught even when the values are untouched.
 
 \subsection{Gates}
 Three independent gates run over the tree. {\tt tools/verify\_flat.sh} enforces
-the single-version consolidation (gates G-1 to G-7): no revision markup or
+the single-version consolidation: no revision markup or
 version narrative in the manuscript, no superseded directories, no
 version-bearing keys or labels inside the archives, version-free prose in the
 README and the demo app, working entry points, the test suite, and the presence
-of all 14 extension archives. The pytest suite (159 test functions) checks
+of all 14 extension archives. The pytest suite (200 test functions, 347 collected
+checks, 326 of them in the default fast tier) checks
 physics and geometry against hand-derived values, checks the shipped archives
 against each other, and --- in its {\tt slow} tier, deselected by default ---
 re-solves the fiducial pipeline and reproduces five metrics for two estimators
@@ -3051,13 +3063,25 @@ behind the last two rows of Table~\ref{tab:repro}. All three are wired into
 push; the simulation tier is deliberately excluded from CI because it costs
 hours on four cores.
 
-\subsection{What is not reproducible in this environment}
-Two limits should be stated rather than discovered by the reader. First, the
-figures are reproducible ({\tt src/make\_figures.py} regenerates all eight panels
-from the shipped archives, and {\tt reproduce\_all --figures} does so inside the
-scratch tree), but compiling {\tt main.tex} requires a \LaTeX{} toolchain that
-the audit environment does not provide: the PDFs accompanying this source are
-therefore \emph{not} rebuilt here and must be recompiled before submission.
+\subsection{Rebuilding the manuscript itself, and what stays outside CI}
+Two limits should be stated rather than discovered by the reader. First, nothing
+in this paper is hand-maintained except the prose. Every figure is regenerated
+from the shipped archives ({\tt src/make\_figures.py}, or {\tt reproduce\_all
+--figures} inside the scratch tree), the target table
+({\tt paper/targets\_table.tex}) is emitted by {\tt src/targets.py} rather than
+edited by hand, and {\tt main.pdf} is rebuilt from {\tt main.tex} in the same
+audit environment used for everything above: a single {\tt latexmk -pdf} pass
+over a standard two-column article, needing no class or style file beyond
+{\tt texlive-latex-base}, {\tt texlive-latex-recommended},
+{\tt texlive-latex-extra} and {\tt texlive-fonts-recommended} (pdfTeX 1.40.22,
+latexmk 4.76). The shipped PDF is that build --- 36 pages, no undefined
+references or citations, no overfull boxes --- and continuous integration now
+compiles it on every push, behind a test that checks the brace balance of every
+generated {\tt .tex} fragment first, because a single stray closing brace in a
+generated caption is enough to abort the build and leave every cross-reference
+in the manuscript unresolved. What CI still does
+\emph{not} run is the simulation tier: it costs hours on four cores, so it is
+left to the {\tt slow} test tier and to {\tt reproduce\_all --full}.
 Second, reproducing the shipped numbers requires the pinned stack
 (Python 3.12.13, NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2, scikit-image
 0.26.0); the comparisons above are exact, so a different BLAS can legitimately
@@ -3066,11 +3090,19 @@ fail them at the $10^{-12}$ level, which is why that tolerance exists.
 \section{Extension Modules and Their Provenance Contract}
 \label{app:ext}
 
-The referee's Part VII asked for sixteen additional analyses. Fourteen are
-implemented as separate modules under {\tt src/ext/}; they are deliberately
+Sixteen additional analyses are needed before the argument closes. Fourteen
+are implemented as separate modules under {\tt src/ext/}; they are deliberately
 \emph{not} merged into the pipeline archives, because several of them answer
 their question with a proxy rather than with the full model, and a reader is
-entitled to know which is which without reading the source.
+entitled to know which is which without reading the source.  The remaining two
+are not analyses at all and produce no archive: one is release engineering (the
+single {\tt reproduce\_all} entry point whose invocations Table~\ref{tab:repro}
+lists, the byte-level manifest behind its last two rows, and the
+continuous-integration job that re-runs the fast tier and compiles this
+manuscript on every push), and the other is a set of small corrections applied
+in place while the files were open --- a wrong arithmetic result here, a
+mis-stated unit there.  Neither is counted among the fourteen in
+Table~\ref{tab:ext}, and neither is claimed as a result.
 
 Each module writes exactly two files, {\tt results/ext\_$<$module$>$.\{npz,json\}},
 and its JSON always contains three blocks. {\tt headline} is a short
@@ -3097,8 +3129,8 @@ its JSON claims a value, if the fiducial block or the constants drift from
 {\tt sglsim}, or if any single-aperture correlation is reported at a value that
 is not the base result to within $2\times10^{-4}$. It also fails if a headline
 reproduces the fiducial cloudy correlation $r=0.3422$ under a name that claims
-to be a different (loss) quantity --- the specific confusion that a
-mislabelled phase-locking baseline produced in an earlier draft.
+to be a different (loss) quantity --- the specific confusion a mislabelled
+static-offset baseline can produce.
 
 Table~\ref{tab:ext} lists the modules and the question each one answers. The
 numbers they produce are used in this paper only where the archive declares its

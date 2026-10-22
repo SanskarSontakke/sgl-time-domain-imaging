@@ -6,7 +6,17 @@ This project previously shipped parallel version trees (`paper/v1/`, `paper/v2/`
 
 ## The Refactor
 
-A referee-verified refactor collapsed the parallel version trees into a single standalone version. The referee report (see the defect register entries F-16, F-17, F-19, F-21 and Part VIII §8.10 Stage 6 of the report) identified that the version proliferation was a reviewability hazard: three manuscripts, two cover letters, two marked PDFs, and 21 MB of prefixed checkpoints in a single repository made it difficult to determine which numbers were live and which were historical.
+A pre-submission review — commissioned by the author and written in the *Open Journal of
+Astrophysics* referee-report format, not a journal referee report — drove the refactor that
+collapsed the parallel version trees into a single standalone version. The longer report that
+scheduled that work is not shipped with the repository; what the record here refers to by ID
+(defect-register entries F-16, F-17, F-19, F-21 and Stage 6 of the consolidation plan) resolves
+into two things that are shipped: the point-by-point responses in
+`reviews/response_to_editor.md`, and a named regression test for each repaired value
+(`tests/README.md`, "Defect Coverage"). That review identified the version proliferation as a
+reviewability hazard: three manuscripts, two cover letters, two marked PDFs, and 21 MB of prefixed
+checkpoints in a single repository made it difficult to determine which numbers were live and
+which were historical.
 
 The refactor deleted all superseded directories and renamed the estimator baseline from `v2` to `deflate` throughout the code, archives, and prose. The renamed baseline `deflate` is the approximate per-slot deflation solver that was previously labelled `v2`; it is now documented as "the approximate-deflation baseline" in the paper and code.
 
@@ -75,4 +85,4 @@ The AASTeX port that used to sit at `paper/main_emulateapj.tex` was still the ea
 
 ## Note on PDF Recompilation
 
-The LaTeX PDFs (`paper/main.pdf`, `paper/sgl_time_domain_imaging.pdf`, `submission/cover_letter.pdf`) must be recompiled by the author after the source edits; no LaTeX toolchain is available in the review sandbox.
+The LaTeX PDFs (`paper/main.pdf`, `paper/sgl_time_domain_imaging.pdf`, `submission/cover_letter.pdf`) are compiled in the audit environment from their own sources (`latexmk -pdf main.tex` in `paper/`, `latexmk -pdf cover_letter.tex` in `submission/`), and the `paper` job of `.github/workflows/verify.yml` re-compiles both on every push and fails the build on unresolved references. `paper/sgl_time_domain_imaging.pdf`, `public/docs/sgl_time_domain_imaging.pdf` and `public/docs/cover_letter.pdf` are byte mirrors of those builds, and `public/docs/response_to_editor.md` is a byte mirror of `reviews/response_to_editor.md`; all of them are written by `python3 src/make_app_docs.py` after each compile, and `tests/test_latex_integrity.py::TestDocumentMirrorsAreFresh` checks they still match. The toolchain is TeX Live (`texlive-latex-base`, `-recommended`, `-extra`, `texlive-fonts-recommended`, `latexmk`, `poppler-utils`); the manuscript needs no class or style file beyond it.

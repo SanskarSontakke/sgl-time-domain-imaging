@@ -1,4 +1,4 @@
-"""Propagated uncertainty budget for the target table (referee Part VII item 12).
+"""Propagated uncertainty budget for the target table.
 
 Replaces bounded [min-max] proxies with posterior-predictive distributions
 for SNR_C and D_img per target, using Monte-Carlo propagation of:

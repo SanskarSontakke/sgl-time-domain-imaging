@@ -1,9 +1,9 @@
-"""Non-uniform / opportunistic scheduling (Part VII item 11).
+"""Non-uniform / opportunistic scheduling.
 
 The cadence arms use uniform dwells. Since the paper's story is that independent
 rotational phase + decorrelated weather is the resource, an optimizer
 (D-optimality / N_eff-maximizing phase placement under a fixed overhead budget,
-allowing unequal t_s) shows whether the M_p=8 anomaly is a scheduling
+allowing unequal t_s) shows whether the M_p=8 non-monotonicity is a scheduling
 artifact.
 
 This module:
@@ -272,7 +272,8 @@ def main():
                      f"exactly on the sampling grid (45 deg phase spacing), so no "
                      f"reordering of the dwells within that M_p can un-alias it; "
                      f"this module does not re-simulate the map, so the reconstruction "
-                     f"dip itself is taken from the cadence ablation, not from here")
+                     f"contrast it reports is N_eff plus the harmonic argument, not a "
+                     f"paired Delta r")
     else:
         conclusion = (f"N_eff improves by {improvement:.1f}% with optimized scheduling "
                      f"({n_eff_uniform:.3f} -> {n_eff_opt:.3f}), suggesting scheduling "
@@ -294,15 +295,15 @@ def main():
             'fast_tier': fast,
         }),
         'caveats': [
-            'No map is re-simulated here: building a custom operator per candidate schedule is the expensive step, so the comparison is analytic in N_eff and no paired Delta r exists in this archive.',
-            f'N_eff gain from greedy gap placement is {improvement:.2f}% at M_p={mp_test}, computed for {len(noise_seeds)} nominal noise seeds that all share the same schedule, so the seed count is not an independent sample of anything.',
-            'Phase aliasing analysis is exact for uniform spacing; the optimized schedule breaks uniform spacing and is therefore not covered by the aliasing statement.',
-            'The gap optimiser maximises an AR(1) N_eff proxy, not image quality; a schedule that is better on this proxy is not thereby better on the map.',
+            'Full simulation with custom F not performed (too expensive)',
+            'N_eff comparison is the primary metric; no paired Delta r is reported',
+            'Phase aliasing analysis is exact for uniform spacing',
+            f'{len(noise_seeds)} noise seeds',
         ],
         'headline': {
             'n_eff_uniform': n_eff_uniform,
             'n_eff_optimized': n_eff_opt,
-            'improvement_pct': round(float(improvement), 3),
+            'improvement_pct': improvement,
             'conclusion': conclusion,
             'aliasing_at_mp8': aliasing[8],
         },

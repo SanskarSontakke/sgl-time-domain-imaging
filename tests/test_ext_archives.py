@@ -1,4 +1,4 @@
-"""Contract tests for the Part VII extension archives (``src/ext/``).
+"""Contract tests for the extension archives (``src/ext/``).
 
 The extension modules are written by hand against the same spine, so the risk is
 not that they crash but that they quietly answer a DIFFERENT question than the
@@ -24,7 +24,7 @@ try:
 except ImportError:                                    # pragma: no cover
     RA = None
 
-#: modules that must exist for the Part VII suite to be complete
+#: modules that must exist for the extension suite to be complete
 try:
     EXT_MODULES = tuple(RA.EXT_MODULES) if RA is not None else ()
 except AttributeError:                                 # pragma: no cover
@@ -153,7 +153,7 @@ class TestArchiveSchema:
 class TestFiducialParity:
     """Every extension must run the SAME fiducial as the spine.
 
-    A referee's cheapest way to kill an add-on result is to notice it used a
+    The cheapest way to kill an add-on result is to notice it used a
     different dwell, grid, cloud fraction or solar constant.  These assertions
     make that impossible to ship silently.
     """
@@ -197,7 +197,7 @@ class TestHeadlineAgreement:
 
     Keys are matched by name so a corrected module is picked up automatically;
     an extension that deliberately reports a DIFFERENT quantity must rename its
-    field (the referee's defect F-01/F-14 class of error is exactly a reused
+    field (defect class F-01/F-14 is exactly a reused
     name carrying a different definition).
     """
 
@@ -361,7 +361,7 @@ class TestHeadlineAgreement:
 
 
 class TestCaveatCoverage:
-    """Every extension must state the thing a referee would ask first."""
+    """Every extension must state the thing a reader would ask first."""
 
     @pytest.mark.parametrize("name", EXT_MODULES or ["__none__"])
     def test_at_least_one_substantive_caveat(self, name):
@@ -544,9 +544,9 @@ def _sci(value, mant_digits):
 
 
 class TestManuscriptQuotesTheArchive:
-    """Every Part VII number that reached the body must still be in the archive.
+    """Every extension number that reached the body must still be in the archive.
 
-    This is the guard against the failure mode the referee round actually
+    This is the guard against the failure mode the revision round actually
     produced: a module is re-run, its physics changes, the archive is updated,
     and the manuscript keeps the old sentence.  Each check formats the archived
     value at the display precision the paper uses and requires that exact

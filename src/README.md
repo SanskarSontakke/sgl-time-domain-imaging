@@ -11,11 +11,11 @@
 | `make_app_data.py` | Rebuilds the downloadable `public/data/project_data.json` blob from `results/audit.json` + `results/clouds.npz` + the standalone JSON artifacts, so the site's machine-readable file cannot keep stale numbers. The per-fc means, ddof=1 SEs and per-method detection d' all come from the archived per-seed matrices. |
 | `make_app_code.py` | Rebuilds `data/codeSnippets.json` -- the text the demo "Source Code" viewer displays -- by reading the live `src/` files verbatim, so that panel cannot show code the archive was not produced by. |
 | `make_app_figures.py` | Mirrors `paper/figures/*.pdf` into `public/figures/` and rasterises a 200 dpi PNG of each (`pdftoppm`), so the demo figure gallery cannot show a figure that differs from the manuscript. Run after `make_figures.py` and `targets.py`. |
-| `ext/` | Part VII extension modules (additive; see below). |
+| `ext/` | Extension modules (additive; see below). |
 
 ## Extension modules (`ext/`)
 
-The `ext/` package contains referee-requested extension modules (Part VII of the referee report). Every module here is additive: it imports the shipped spine (`sglsim`, `expcommon`) and writes its own archive under `results/` named `ext_<module>.npz` / `ext_<module>.json`. No extension module writes into `results/parts/` or touches the fiducial archives, so the headline numbers of the paper cannot be perturbed by an extension.
+The `ext/` package contains the additional analyses that extend the fiducial pipeline. Every module here is additive: it imports the shipped spine (`sglsim`, `expcommon`) and writes its own archive under `results/` named `ext_<module>.npz` / `ext_<module>.json`. No extension module writes into `results/parts/` or touches the fiducial archives, so the headline numbers of the paper cannot be perturbed by an extension.
 
 The `extcommon.py` module provides shared plumbing: seed sets (`FULL_SEEDS` = 11–20, `EXT_SEEDS` = first 4 for CI), truth-map ensemble seeds, atomic archive writers (`save_npz`, `save_json`), and a standard provenance block. Two run tiers are standard: `--fast` uses 4 noise seeds (CI); the default tier uses 10 (manuscript).
 

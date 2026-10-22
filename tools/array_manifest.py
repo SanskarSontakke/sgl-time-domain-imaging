@@ -12,6 +12,12 @@ Usage:
 `--rename` maps an old archive path onto the new one so a de-versioned tree can
 still be compared element-for-element with its prefixed ancestor.
 
+Keys are relative to the scanned root (``audit.json``, ``parts/clouds_f0_s0.npz``),
+never absolute: a frozen baseline has to survive a different checkout path, and
+``reproduce_all --check`` runs in CI, where it does not.  An older manifest
+written with absolute keys is still readable -- each such key is re-anchored
+against the root being scanned, or matched by unique suffix.
+
 Exit code is 0 only when every array in every archive matches.
 """
 from __future__ import annotations
@@ -55,29 +61,67 @@ def manifest_npz(path: Path) -> dict:
     return out
 
 
+def _key(rootp: Path, p: Path) -> str:
+    """Manifest key: the archive path relative to the scanned root.
+
+    Absolute keys made the frozen baseline machine-specific, so the CI drift
+    check could only ever pass in the sandbox where it was written.
+    """
+    try:
+        return p.relative_to(rootp).as_posix()
+    except ValueError:
+        return p.as_posix()
+
+
 def manifest(root: str) -> dict:
     rootp = Path(root)
     m = {}
     for p in sorted(rootp.rglob("*.npz")):
         if "cache" in p.parts:
             continue
-        m[str(p)] = manifest_npz(p)
+        m[_key(rootp, p)] = manifest_npz(p)
     for p in sorted(rootp.rglob("*.json")):
         if "cache" in p.parts:
             continue
-        m[str(p)] = json.loads(p.read_text())
+        m[_key(rootp, p)] = json.loads(p.read_text())
     return m
+
+
+def _anchor(key: str, new_root: Path, m_new: dict) -> str | None:
+    """Resolve a baseline key against the tree being checked.
+
+    Current manifests are root-relative and match verbatim.  Older ones carried
+    the absolute path of the machine that wrote them; re-anchor those against the
+    root now being scanned, and fall back to a unique suffix match so a renamed
+    root directory still resolves.  Returns None when nothing matches.
+    """
+    if key in m_new:
+        return key
+    p = Path(key)
+    if p.is_absolute():
+        try:
+            cand = p.relative_to(new_root).as_posix()
+        except ValueError:
+            cand = None
+        if cand in m_new:
+            return cand
+    name = p.name
+    hits = [k for k in m_new if k == name or k.endswith("/" + name)]
+    return hits[0] if len(hits) == 1 else None
 
 
 def compare(new_root: str, before: dict, rename: dict) -> tuple[list, int]:
     """Return (problems, n_compared_arrays)."""
     m_new = manifest(new_root)
+    rootp = Path(new_root)
     problems, n = [], 0
     for path, old in before.items():
         key = rename.get(path, path)
-        if key not in m_new:
+        found = _anchor(key, rootp, m_new)
+        if found is None:
             problems.append(f"MISSING ARCHIVE {key}")
             continue
+        key = found
         new = m_new[key]
         if path.endswith(".json"):
             if json.dumps(old, sort_keys=True) != json.dumps(new, sort_keys=True):

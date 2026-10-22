@@ -1,6 +1,6 @@
 """Defect regression tests.
 
-Pins the specific defects F-01 through F-22 identified in the referee report.
+Pins the specific defects F-01 through F-22 identified in the revision record.
 """
 import json
 import math

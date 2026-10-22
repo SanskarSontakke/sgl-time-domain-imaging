@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-22T01:14:39Z",
+  "generated_utc": "2026-10-22T08:20:30Z",
   "conventions": {
     "nsub": 16,
     "truth_seed": 7,
@@ -28,7 +28,7 @@
       16
     ],
     "kernel_core": "point",
-    "solver": "solve_gls_profiled (exact anchored R11 profiling)",
+    "solver": "solve_gls_profiled (exact anchored slot-nuisance profiling)",
     "overhead_s": 45.0,
     "snr_c_1800": 43.158875285522335,
     "qcor_over_qexo": 77403.24594257178

@@ -6,8 +6,8 @@ photons + ``E.fit`` + ``S.debias_cloud`` + ``E.evaluate``.  The fast tests verif
 the reductions; this module verifies the SIMULATION half by re-running the
 fiducial estimator on the same cached dataset and comparing against the
 checkpoint that was shipped.  It is the test that fails if ``src/`` and
-``results/`` ever drift apart -- which is precisely the failure the referee found
-in the pre-revision archive.
+``results/`` ever drift apart -- which is precisely the failure found in the
+pre-revision archive.
 
 It is marked ``slow`` because it costs several GLS solves (~8 s each) and maps
 the 0.68 GB float32 forward operator.  Run it with:
@@ -33,7 +33,7 @@ def _shipped_fingerprint():
 
     Scope is the shipped suite -- ``results/parts/**``, the merged top-level
     archives, and the memoised operators/datasets.  ``results/ext_*`` is
-    deliberately excluded: those archives belong to the Part VII extension
+    deliberately excluded: those archives belong to the extension
     modules and are legitimately rewritten by them, possibly while this suite
     runs.  Only metadata, not contents, is recorded: hashing 712 MB of cache per
     session would dominate the runtime of the suite it is guarding.  A rebuild
@@ -120,7 +120,7 @@ class TestFiducialReconstruction:
         assert int(ref["mp"]) == camp.mp
         assert float(ref["ts"]) == camp.ts
         assert np.asarray(ref["mode"]).item() == camp.mode
-        assert np.asarray(ref["solver"]).item() == "profiled(anchored R11)"
+        assert np.asarray(ref["solver"]).item() == "profiled(anchored_slot)"
 
     def test_sigma_cl_is_the_cached_fiducial_value(self, fiducial):
         E, ref = fiducial["E"], fiducial["ref"]

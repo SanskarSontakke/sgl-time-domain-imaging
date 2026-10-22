@@ -1,6 +1,6 @@
 """Shared, checkpointed experiment harness for the revised manuscript.
 
-Design constraints (referee comments 6, 8, 9; editor's reproducibility request):
+Design constraints (single source of truth, resumable, cache-keyed):
 
 * Every expensive object (forward operator F, Laplacian, sigma_cl) is built once
   and cached under results/cache, keyed by the parameters that actually change

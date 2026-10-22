@@ -633,18 +633,18 @@
     "dprime_profiled_fc055_mean": {
       "computed": 0.7321137892861135,
       "archived": 0.7321137892861135,
-      "referee_reported": 0.732,
-      "match_referee": true
+      "manuscript_value": 0.732,
+      "matches_manuscript": true
     },
     "null_physical_max": {
       "computed": 0.1304274469178845,
-      "referee_reported": 0.13,
+      "manuscript_value": 0.13,
       "match": true
     },
     "pearson_r_profiled_fc055": {
       "mean": 0.3422471987555486,
       "se": 0.008234009442233339,
-      "referee_reported": 0.3422,
+      "manuscript_value": 0.3422,
       "match": 1.0
     }
   },
@@ -661,7 +661,7 @@
     "module": "observable_roc",
     "tier": "full",
     "argv": [],
-    "generated_utc": "2026-10-22T03:40:09Z",
+    "generated_utc": "2026-10-22T08:20:41Z",
     "numpy": "2.5.3",
     "python": "3.12.13",
     "fiducial": {
@@ -702,6 +702,6 @@
     ],
     "fc_index": 3,
     "fast": false,
-    "wall_time_s": 6.0
+    "wall_time_s": 2.0
   }
 }

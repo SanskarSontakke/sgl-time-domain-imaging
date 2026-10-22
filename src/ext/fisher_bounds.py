@@ -11,7 +11,7 @@ B is the per-slot nuisance indicator (nbin columns, each selecting nsc samples),
 alpha is the per-slot photometric offset, and eps ~ N(0, C) with C the
 block-diagonal OU+white covariance the profiled estimator assumes.
 
-After profiling out alpha (exact R11), the effective Fisher matrix for s is:
+After profiling out alpha exactly, the effective Fisher matrix for s is:
 
     J = F^T C^{-1} F  -  (profiling correction)
 

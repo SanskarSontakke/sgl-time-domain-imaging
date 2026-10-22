@@ -1,4 +1,4 @@
-"""Multi-aperture swarm simulation (referee Part VII item 7).
+"""Multi-aperture swarm simulation.
 
 N co-focal 1 m apertures at different ring radii rho sample different
 spatial-frequency content of the same Einstein ring.  The SGL monopole

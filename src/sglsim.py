@@ -52,7 +52,7 @@ MU_NORM = AREF * (2.0 / 3.0)
 
 # Operational overhead per dwell slot (s): translation slew, pointing settling,
 # inter-spacecraft metrology/synchronization.  These are BUDGET ASSUMPTIONS, not
-# a validated trajectory solution -- see Comment 6 of the referee report and
+# a validated trajectory solution -- see the cadence-budget discussion and
 # `kinematic_check()` below, which shows the allocated rest-to-rest time is not
 # achievable for the physical raster pitch.
 T_SLEW, T_SETTLE, T_SYNC = 30.0, 10.0, 5.0
@@ -117,7 +117,7 @@ class Campaign:
     """Observing campaign with an EXPLICIT, resource-consistent time ledger.
 
     Two mutually exclusive resource conventions are used in this work and are
-    named explicitly, because they cannot both hold (referee Comment 6):
+    named explicitly, because they cannot both hold:
 
       * ``mode="photons"``  -- keep ``mp*ts`` fixed (fixed exposure hours per
         raster position).  The campaign then needs ``nbin*mp*(ts+T_OVERHEAD)``
@@ -230,7 +230,7 @@ def illum(geo, t, decl=0.0):
     in which the sub-stellar point is pinned to the equator and never moves in
     latitude; a nonzero `decl` supplies the seasonal migration that obliquity
     implies, so that illumination and the spin-pole geometry are transformed
-    consistently (referee Comment 2).
+    consistently.
     """
     alpha = ALPHA0 + 2.0 * np.pi * t / PORB
     cd = np.cos(decl)
@@ -285,7 +285,7 @@ def make_kernel(n, pitch, d=DTEL, core="point"):
                       over one square raster cell,
                           K00 = d ln(1+sqrt(2)) / pitch,
                       which is the asymptotically correct finite-cell weight
-                      (referee eq. R21).
+                      of the discretized kernel.
     """
     ax = np.arange(2 * n) - n
     dy, dx = np.meshgrid(ax, ax, indexing="ij")
@@ -576,7 +576,7 @@ def estimate_cloud_sigma(camp, truthF, sgl, fc, tau_days, seed=999,
                          corr_deg=12.0, u_deg_day=6.0):
     """Per-sample cloud-induced standard deviation in normalized signal units.
 
-    Two different quantities are commonly conflated (referee Comment 3):
+    Two different quantities are commonly conflated:
 
       geometry="fixed"   -- stochastic ensemble variance of the cloudy-minus-
         clean convolved signal at ONE fixed illumination/viewing geometry.
@@ -808,8 +808,8 @@ def solve_gls_profiled(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
 
     is block diagonal with nbin blocks of size mp x mp (one per raster
     position), NOT diagonal -- slots are coupled through the shared temporal
-    cloud covariance of a single pixel.  Profiling alpha (referee eq. R11)
-    therefore requires inverting those mp x mp blocks.  With
+    cloud covariance of a single pixel.  Profiling alpha therefore
+    requires inverting those mp x mp blocks.  With
 
         G_j = B_j^T C^-1 F,   g_j = B_j^T C^-1 y,   H_j = B_j^T C^-1 B_j,
         v_j = H_j^-1 1_mp,    q = sum_j G_j^T v_j,   S = sum_j 1_mp^T v_j,
@@ -1212,7 +1212,7 @@ def real_sphalm_basis(nlat, nlon, lmax):
     Replaces the 2D-FFT wavenumber proxy, which is NOT spherical harmonic
     degree: on an equirectangular grid the longitude cells are not equal area,
     the map is periodic in longitude but not in latitude, and the index
-    hypot(ky,kx) has no reason to coincide with l (referee Comment 8).
+    hypot(ky,kx) has no reason to coincide with l.
     """
     from scipy.special import lpmv, gammaln
     lat = (np.arange(nlat) + 0.5) / nlat * np.pi - np.pi / 2.0
@@ -1395,8 +1395,8 @@ def analyze_deflation(camp, sgl, nlat=36, nlon=72):
 def inject_systematics(y, camp, drift_amp=1e-4, streamer_amp=1e-4, seed=77,
                         streamer_tau_days=30.0, spatial_scale_cells=8.0,
                         units="planet"):
-    """Inject the two systematics Section 5.5 names, with the convention the
-    referee asked to see stated explicitly (R22).
+    """Inject the two systematics the manuscript's coronal-systematics
+    subsection names, with the unit convention stated explicitly.
 
     UNITS.  ``y`` is the normalized planet photocentre signal, so a fractional
     residual eps of the BRIGHT coronal background enters as
@@ -1443,7 +1443,7 @@ def inject_systematics(y, camp, drift_amp=1e-4, streamer_amp=1e-4, seed=77,
 
 
 def background_reference_snr(ts, tb=None):
-    """Cost of an independent background reference of duration t_b (R22):
+    """Cost of an independent background reference of duration t_b:
     extra variance Qcor/(Qexo^2 tb); the reference SNR at tb = ts."""
     tb = ts if tb is None else tb
     var = QCOR / (QEXO ** 2 * tb)

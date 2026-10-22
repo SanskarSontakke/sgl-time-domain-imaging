@@ -3,7 +3,7 @@
     python3 -m reproduce_all --fast              # cheap analytic stages + merge
     python3 -m reproduce_all --full              # the whole suite (hours)
     python3 -m reproduce_all --stages "quadrature clouds 3"
-    python3 -m reproduce_all --fast --ext        # plus the Part VII extensions
+    python3 -m reproduce_all --fast --ext        # plus the extensions
     python3 -m reproduce_all --make-baseline /tmp/base.json
     python3 -m reproduce_all --check --baseline /tmp/base.json
 
@@ -32,9 +32,13 @@ scratch checkpoints are deleted first, so the entire suite is re-simulated
 (cost: hours on 4 cores; each new campaign dataset is ~25 s and each fit ~8 s).
 
 STAGE NAMES
-A stage name is a subcommand of ``src/run_experiments.py``; ``--stages`` takes a
-space-separated list where a stage may be followed by its own arguments, e.g.
-``--stages "quadrature clouds 3 cadence photons 2"``.
+A stage name is normally a subcommand of ``src/run_experiments.py``; ``--stages``
+takes a space-separated list where a stage may be followed by its own arguments,
+e.g. ``--stages "quadrature clouds 3 cadence photons 2"``.  One stage is a
+standalone script in ``src/`` instead: ``targets``, the generator that writes
+the target catalogue archive, the manuscript's target table and its figure.  It
+is part of the inventory below because an artifact-producing script that sits
+outside the driver is how a shipped table drifts away from its own generator.
 """
 
 import argparse
@@ -52,6 +56,14 @@ RESULTS = ROOT / "results"
 
 # ---------------------------------------------------------------- stages ----
 # (subcommand, [args]) -- the complete inventory that produced results/*.
+# STANDALONE: stages that are plain scripts in src/ rather than subcommands of
+# run_experiments.py.  targets.py writes results/targets.json,
+# paper/targets_table.tex and paper/figures/fig_targets.pdf; until it was
+# registered here, the driver could not rebuild the manuscript's own target
+# table, which is how the shipped table came to differ from its generator.
+STANDALONE = ("targets",)
+
+
 def full_stages():
     st = [("setup", []), ("quadrature", []), ("ledger", []), ("validation", [])]
     st += [("clouds", [str(i)]) for i in range(5)]
@@ -71,15 +83,16 @@ def full_stages():
     st += [("robust_morph", [str(i)]) for i in (0, 3)]
     st += [("sigma_sens", []), ("sigma_sens_est", []), ("static_ref", []),
            ("latband", []), ("diagnostics", []), ("precision", [])]
+    st.append(("targets", []))
     st.append(("merge", []))
     return st
 
 
 FAST_STAGES = [("setup", []), ("quadrature", []), ("ledger", []),
                ("validation", []), ("diagnostics", []), ("precision", []),
-               ("merge", [])]
+               ("targets", []), ("merge", [])]
 
-# Part VII extension modules (src/ext/).  Each writes only results/ext_<name>.
+# Extension modules (src/ext/).  Each writes only results/ext_<name>.
 EXT_MODULES = ("fisher_bounds", "corona_screen", "disk_kernel", "ephemeris",
                "portability", "telemetry", "truth_ensemble", "evidence_lambda",
                "scheduling", "priors", "observable_roc", "cloud_physics",
@@ -88,7 +101,10 @@ EXT_MODULES = ("fisher_bounds", "corona_screen", "disk_kernel", "ephemeris",
 
 # ---------------------------------------------------------------- running ----
 def run_stage(name, args, env):
-    cmd = [sys.executable, "run_experiments.py", name, *args]
+    if name in STANDALONE:
+        cmd = [sys.executable, f"{name}.py", *args]
+    else:
+        cmd = [sys.executable, "run_experiments.py", name, *args]
     t0 = time.time()
     p = subprocess.run(cmd, cwd=str(SRC), env=env, text=True,
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -224,7 +240,7 @@ def main(argv=None):
     ap.add_argument("--stages", type=str, default=None,
                     help='explicit stages, e.g. "quadrature clouds 3"')
     ap.add_argument("--ext", action="store_true",
-                    help="also run the Part VII extension modules in src/ext/")
+                    help="also run the extension modules in src/ext/")
     ap.add_argument("--check", action="store_true",
                     help="compare only; run nothing")
     ap.add_argument("--baseline", type=str, default=None,
@@ -282,7 +298,10 @@ def main(argv=None):
         print("  scratch cache deleted (--no-cache)")
     # The harness is redirected, not copied: stages still run from src/ (flat
     # imports) but read and write the scratch archives only.
-    env = dict(os.environ, SGL_RESULTS_DIR=str(sres))
+    # Paper artifacts (the target table and its figure) are redirected as well,
+    # so a scratch re-run cannot edit the manuscript's own files.
+    spaper = scratch / "paper"
+    env = dict(os.environ, SGL_RESULTS_DIR=str(sres), SGL_PAPER_DIR=str(spaper))
 
     t_all, rc_all = time.time(), 0
     for name, a in stages:

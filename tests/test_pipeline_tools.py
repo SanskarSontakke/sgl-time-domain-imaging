@@ -147,3 +147,58 @@ class TestArrayManifest:
         a = np.array([1.0, 2.0, 3.0])
         b = np.array([1.0, 2.0, 4.0])
         assert digest(a) != digest(b)
+
+    def test_manifest_keys_are_relative_to_the_root(self, tmp_path):
+        """A frozen baseline must survive a different checkout path.
+
+        The keys used to be absolute, which meant ``reproduce_all --check`` -- the
+        CI drift gate -- could only pass on the machine that wrote the manifest.
+        """
+        sys.path.insert(0, str(TOOLS))
+        from array_manifest import manifest
+        root = tmp_path / "results"
+        (root / "parts").mkdir(parents=True)
+        np.savez_compressed(root / "a.npz", x=np.arange(4.0))
+        np.savez_compressed(root / "parts" / "b.npz", y=np.ones(3))
+        (root / "c.json").write_text('{"k": 1}')
+        m = manifest(str(root))
+        assert sorted(m) == ["a.npz", "c.json", "parts/b.npz"], sorted(m)
+        assert not any(k.startswith("/") for k in m)
+
+    def test_check_passes_from_a_copied_tree(self, tmp_path):
+        """Write in one directory, check in another: same verdict, no MISSING."""
+        import shutil
+        sys.path.insert(0, str(TOOLS))
+        from array_manifest import compare, manifest
+        a = tmp_path / "aaa" / "results"
+        a.mkdir(parents=True)
+        np.savez_compressed(a / "x.npz", v=np.linspace(0, 1, 7))
+        (a / "y.json").write_text('{"n": 7}')
+        before = manifest(str(a))
+        b = tmp_path / "bbb" / "results"
+        shutil.copytree(a, b)
+        problems, n = compare(str(b), before, {})
+        assert problems == [], problems
+        assert n == 2  # one npz array + one json archive
+
+    def test_check_reads_a_legacy_absolute_manifest(self, tmp_path):
+        """Absolute keys from an older freeze still resolve to the right files."""
+        sys.path.insert(0, str(TOOLS))
+        from array_manifest import compare, manifest_npz
+        root = tmp_path / "results"
+        root.mkdir()
+        np.savez_compressed(root / "x.npz", v=np.arange(3.0))
+        legacy = {str(root / "x.npz"): manifest_npz(root / "x.npz")}
+        problems, _ = compare(str(root), legacy, {})
+        assert problems == [], problems
+
+    def test_check_reports_a_real_change(self, tmp_path):
+        sys.path.insert(0, str(TOOLS))
+        from array_manifest import compare, manifest
+        a = tmp_path / "results"
+        a.mkdir()
+        np.savez_compressed(a / "x.npz", v=np.arange(3.0))
+        before = manifest(str(a))
+        np.savez_compressed(a / "x.npz", v=np.arange(3.0) + 1)
+        problems, _ = compare(str(a), before, {})
+        assert any("content differs" in p for p in problems), problems

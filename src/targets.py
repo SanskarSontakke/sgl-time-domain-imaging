@@ -2,7 +2,7 @@
 plus one solar-type RV candidate, with focal-line placements, image-plane
 geometry/dynamics and an EXPLICITLY DEFINED nominal photon proxy.
 
-Written for the manuscript (referee comments 10 / R27-R29).  An earlier
+Written for the manuscript's target table.  An earlier
 version of this file presented its output as a propagated uncertainty table and
 the numbers did not survive reproduction:
 
@@ -20,24 +20,27 @@ the numbers did not survive reproduction:
 
 This module now separates three things that must not be conflated:
 
-  1. NOMINAL PROXY  -- equation (R27) of the referee report, a bolometric scalar
-     scaling, stated as a rule with its reference point.  It is not a
-     wavelength-integrated photon forecast; that would need the spectral SGL
-     treatment (Turyshev & Toth 2022c, PRD 106 044059; Turyshev & Toth 2023b,
-     PRD 107 104063).
+  1. NOMINAL PROXY  -- a bolometric scalar scaling, stated as a rule with its
+     reference point.  It is not a wavelength-integrated photon forecast; that
+     would need the spectral SGL treatment (Turyshev & Toth 2022c, PRD 106
+     044059; Turyshev & Toth 2023b, PRD 107 104063).
   2. GEOMETRIC DE-INCLINATION FACTORS -- conditional, closed-form, isotropic
      inclinations, fixed minimum mass, single power-law branch.  Computed here
-     exactly (mean 1.0978 for alpha = 0.279; the referee's 1.0982 is alpha =
-     0.28), together with median and 95th-percentile factors, and labelled as
-     NOT a posterior.
-  3. TRACKING -- the face-on circular magnitude (R29) and the edge-on average
+     exactly (mean 1.0978 for alpha = 0.279; the commonly quoted 1.0982 is the
+     alpha = 0.28 value), together with median and 95th-percentile factors, and
+     labelled as NOT a posterior.
+  3. TRACKING -- the face-on circular magnitude and the edge-on average
      reduction 2/pi, with the eccentric anomaly sampled over the actual window
      instead of an invented error bar.
 
 Writes ../results/targets.json, ../paper/figures/fig_targets.pdf and
-../paper/targets_table.tex.
+../paper/targets_table.tex.  All three are outputs of this file: the table is
+generated from the same rows as the archive, so editing paper/targets_table.tex
+by hand is both unnecessary and the fastest way to make it disagree with
+results/targets.json.
 """
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -50,6 +53,12 @@ import sglsim as S
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE.parent
+# The reproduction driver runs stages against a scratch copy of results/ and
+# points the harness at it with SGL_RESULTS_DIR.  This generator also writes two
+# manuscript artifacts, so it takes the same redirection: without it a scratch
+# re-run would edit the shipped table and figure in place.
+RESULTS = Path(os.environ.get("SGL_RESULTS_DIR", OUT / "results"))
+PAPER = Path(os.environ.get("SGL_PAPER_DIR", OUT / "paper"))
 EPS = np.deg2rad(23.43928)   # obliquity J2000
 Z = 650.0 * S.AU
 
@@ -64,7 +73,7 @@ CK_TRANSITION = 2.04         # M_earth, nominal branch transition
 CK_TRANS_ERR = (0.59, 0.66)  # -0.59 / +0.66
 
 # ----------------------------------------------------------------------
-# nominal proxy (referee eq. R27).  SNR_C for a z0 = 30 pc, S = S_earth,
+# Nominal scalar SNR proxy: SNR_C for a z0 = 30 pc, S = S_earth,
 # A = 0.30, Rp = R_earth planet at 1800 s with the background of sglsim.
 # ----------------------------------------------------------------------
 SNR_C_1800 = float(1.0 / S.noise_sigma(1.0, 1800.0))     # 43.1589
@@ -75,7 +84,7 @@ RADIUS_FACTOR_RANGE = (0.85, 1.15)   # +-1 sigma of the Terran branch is 4.03%;
 
 
 def nominal_snr(inst, rp, dpc, albedo=0.30):
-    """eq. R27 as a literal function: SNR scales as A * S * Rp / z0 relative to
+    """The scalar proxy as a literal function: SNR scales as A * S * Rp / z0 relative to
     the 30 pc, S_earth, A = 0.30, R_earth reference."""
     return (SNR_C_1800 * (albedo / 0.30) * inst * rp * (30.0 / dpc))
 
@@ -89,8 +98,8 @@ def deinclination_factors(alpha=CK_ALPHA):
                           = (1/2) B(1/2, 1 - alpha/2)
                           = sqrt(pi) Gamma(1 - alpha/2) / (2 Gamma(3/2 - alpha/2)),
 
-    finite for alpha < 1; for alpha = 0.279 it is 1.0978 (the referee's 1.0982
-    corresponds to alpha = 0.28).  1/E[sin i]^alpha = (pi/4)^-alpha = 1.070 is a
+    finite for alpha < 1; for alpha = 0.279 it is 1.0978 (the 1.0982 often quoted
+    for this correction corresponds to alpha = 0.28).  1/E[sin i]^alpha = (pi/4)^-alpha = 1.070 is a
     DIFFERENT number (mean of the ratio vs ratio of the means) and is reported
     only to show the difference.  These are geometric ratios conditional on a
     fixed minimum mass and a single power-law branch -- NOT a posterior: an RV
@@ -143,7 +152,7 @@ def transverse_accel(e, M, a_m, GM, cos_i):
     and the sky components are (a_x, a_y cos i).  Checks: i = 0 gives GM/r^2
     exactly (the full acceleration is transverse); i = 90 deg, e = 0 gives
     (GM/a^2)|cos E|, whose orbit average is 2/pi of the face-on value -- the
-    factor the referee's eq. R29 discussion quotes.
+    factor the manuscript quotes for the edge-on reduction.
     """
     M = np.asarray(M, float) % (2 * np.pi)
     E = kepler_E(M, e)
@@ -161,13 +170,13 @@ def tracking(e, P_s, a_m, ratio, T=90.0 * 86400.0, nph=480, nstep=1440):
     Quoting acc x T with an "uncertainty" of 2 e x (acc x T) is neither
     a projection nor a propagation.  Here:
 
-      * dv_face_on_ref = the face-on circular magnitude of eq. R29,
+      * dv_face_on_ref = the face-on circular magnitude,
         (4 pi^2 a / P^2) T (z/z0) -- the reference value, reported separately;
       * face_on / edge_on = integral of the PROJECTED transverse acceleration
         magnitude over the window, averaged over the starting mean anomaly, with
         the starting-phase range as an explicit min/max.  For e = 0 the face-on
-        value reproduces R29 and the edge-on value is 2/pi of it, which is the
-        reduction the referee's eq. R29 discussion states;
+        value reproduces that circular magnitude and the edge-on value is 2/pi
+        of it, which is the reduction quoted in the manuscript;
       * the acceleration quoted is the physical (target-system) mean magnitude,
         and the velocity is the image-plane value after multiplying by ratio.
 
@@ -200,21 +209,24 @@ def tracking(e, P_s, a_m, ratio, T=90.0 * 86400.0, nph=480, nstep=1440):
                 face_on=out["face_on"], edge_on=out["edge_on"])
 
 
-# name, host, SpT, dist_pc, RA(h), Dec(deg), Msini(ME), P(d), a(AU), S(S_earth), note, ecc
-# Inputs are quoted from the discovery/validation literature; the
-# revision changes what is DONE with them, not the catalogue itself.
+# name, host, SpT, dist_pc, RA(h), Dec(deg), Msini(ME), P(d), a(AU), S(S_earth),
+# note, ecc, host mass (Msun), discovery bibitem key
+# The catalogue fields are quoted from the discovery/validation literature; the
+# host mass and the citation key are carried here as input data so the
+# manuscript's target table can be rebuilt from this file alone.
 TARGETS = [
- ("Proxima Cen b","Proxima Centauri","M5.5V",1.301,14+29.7/60,-(62+41/60.),1.07,11.19,0.04857,0.65,"closest; ESPRESSO-confirmed",0.11),
- ("Ross 128 b","Ross 128","M4V",3.375,11+47.7/60,0+48/60.,1.35,9.87,0.0496,1.38,"quiet host; near inner CHZ",0.12),
- ("GJ 1061 d","GJ 1061","M5.5V",3.67,3+36.0/60,-(44+31/60.),1.64,13.03,0.054,0.69,"temperate; compact multi-planet",0.06),
- ("Teegarden c","Teegarden's Star","M7V",3.831,2+53.0/60,16+53/60.,1.11,11.41,0.0443,0.37,"conservative HZ; low-flare host",0.04),
- ("GJ 273 b (Luyten b)","GJ 273","M3.5V",3.80,7+27.4/60,5+14/60.,2.89,18.65,0.0911,1.06,"near inner CHZ edge",0.10),
- ("tau Cet e (alt.)","tau Ceti","G8.5V",3.603,1+44.1/60,-(15+56/60.),3.93,162.9,0.538,1.71,"RV signal refuted (Figueira+ 25); illustrative dynamics row only",0.18),
+ ("Proxima Cen b","Proxima Centauri","M5.5V",1.301,14+29.7/60,-(62+41/60.),1.07,11.19,0.04857,0.65,"closest; ESPRESSO-confirmed",0.11,0.122,"anglada16"),
+ ("Ross 128 b","Ross 128","M4V",3.375,11+47.7/60,0+48/60.,1.35,9.87,0.0496,1.38,"quiet host; near inner CHZ",0.12,0.168,"bonfils18"),
+ ("GJ 1061 d","GJ 1061","M5.5V",3.67,3+36.0/60,-(44+31/60.),1.64,13.03,0.054,0.69,"temperate; compact multi-planet",0.06,0.120,"dreizler20"),
+ ("Teegarden c","Teegarden's Star","M7V",3.831,2+53.0/60,16+53/60.,1.11,11.41,0.0443,0.37,"conservative HZ; low-flare host",0.04,0.089,"dreizler24"),
+ ("GJ 273 b (Luyten b)","GJ 273","M3.5V",3.80,7+27.4/60,5+14/60.,2.89,18.65,0.0911,1.06,"near inner CHZ edge",0.10,0.290,"astudillo17"),
+ ("tau Cet e (alt.)","tau Ceti","G8.5V",3.603,1+44.1/60,-(15+56/60.),3.93,162.9,0.538,1.71,"RV signal refuted (Figueira+ 25); illustrative dynamics row only",0.18,0.783,"feng17"),
 ]
 
 DEI = deinclination_factors()
 rows = []
-for (nm, host, spt, dpc, ra, dec, msini, P, a_au, inst, note, ecc) in TARGETS:
+for (nm, host, spt, dpc, ra, dec, msini, P, a_au, inst, note, ecc,
+     m_star, disc) in TARGETS:
     z0 = dpc * S.PC
     ratio = Z / z0
     above = msini > CK_TRANSITION
@@ -227,12 +239,12 @@ for (nm, host, spt, dpc, ra, dec, msini, P, a_au, inst, note, ecc) in TARGETS:
     Q = S.QEXO * inst * Rp * (30.0 / dpc)
     # Two SNR numbers, deliberately kept side by side: the exact count SNR with
     # the sglsim coronal background at 1800 s, and the background-limited scalar
-    # rule of eq. R27.  QCOR >> Q for every target here, so they agree to
-    # rounding -- which is the reproduction check the referee asked to be made
-    # explicit rather than left to the reader.
+    # rule.  QCOR >> Q for every target here, so they agree to
+    # rounding -- which is the reproduction check made explicit rather than left
+    # to the reader.
     snr_exact = float(Q * 1800.0 / np.sqrt((S.QCOR + Q) * 1800.0))
     snr_nom = nominal_snr(inst, Rp, dpc)
-    # bounded bracket implied by eq. R27 alone over the stated albedo x radius
+    # bounded implied by the scalar proxy alone over the stated albedo x radius
     # ranges; a product of two bounded ranges, NOT a confidence interval.
     snr_rule_lo = snr_nom * (ALBEDO_RANGE[0] / 0.30) * RADIUS_FACTOR_RANGE[0]
     snr_rule_hi = snr_nom * (ALBEDO_RANGE[1] / 0.30) * RADIUS_FACTOR_RANGE[1]
@@ -256,6 +268,7 @@ for (nm, host, spt, dpc, ra, dec, msini, P, a_au, inst, note, ecc) in TARGETS:
     rows.append(dict(
         name=nm, host=host, spt=spt, d_pc=dpc, ra_h=ra, dec_d=dec,
         msini=msini, P_d=P, a_au=a_au, S=inst, ecc=ecc, note=note,
+        m_star_msun=m_star, disc_cite=disc,
         above_ck_transition=bool(above),
         Rp_nominal_R=round(float(Rp), 3),
         Rp_terr_1sigma_R=round(float(Rp * CK_SIGMA_TERRAN), 3),
@@ -305,7 +318,7 @@ meta = dict(
                          R_over_Rearth=CK_C, alpha=CK_ALPHA),
     ),
     deinclination=DEI,
-    disclaimer=("Nominal proxies only.  eq. R27 is a bolometric scalar, not a "
+    disclaimer=("Nominal proxies only.  The scalar SNR rule is a bolometric scalar, not a "
                 "wavelength-integrated photon forecast (that needs the spectral "
                 "SGL treatment, Turyshev & Toth 2022c PRD 106 044059; "
                 "Turyshev & Toth 2023b PRD 107 104063).  "
@@ -317,7 +330,8 @@ meta = dict(
                 "ranges and carry no confidence level."),
 )
 
-(OUT / "results" / "targets.json").write_text(
+(PAPER / "figures").mkdir(parents=True, exist_ok=True)
+(RESULTS / "targets.json").write_text(
     json.dumps(dict(meta=meta, targets=rows), indent=1))
 
 print(f"de-inclination (alpha={CK_ALPHA}): mean {DEI['mean']:.4f} "
@@ -330,7 +344,7 @@ for r in rows:
           f"rule {r['SNRC_rule_bounded'][0]:.0f}-{r['SNRC_rule_bounded'][1]:.0f}  "
           f"dv90 face {r['dv90_face_on_kms']:.2f} [{r['dv90_face_on_range_kms'][0]:.2f},"
           f"{r['dv90_face_on_range_kms'][1]:.2f}] edge {r['dv90_edge_on_kms']:.2f} "
-          f"(R29 ref {r['dv90_face_on_ref_kms']:.2f}) ratio e/f "
+          f"(circular ref {r['dv90_face_on_ref_kms']:.2f}) ratio e/f "
           f"{r['edge_on_over_face']:.4f}  "
           f"{'[above CK transition]' if r['above_ck_transition'] else ''}")
 
@@ -378,43 +392,50 @@ ax.legend(loc="lower right", fontsize=6.5, frameon=False)
 ax.grid(alpha=0.3, lw=0.4)
 ax.set_xticklabels(["14h", "16h", "18h", "20h", "22h", "0h", "2h", "4h", "6h",
                     "8h", "10h"], fontsize=7)
-fig.savefig(OUT / "paper" / "figures" / "fig_targets.pdf")
+fig.savefig(PAPER / "figures" / "fig_targets.pdf")
 
 # ------------------------------------------------------------------ table ----
+# The table is emitted from the same rows as results/targets.json, so every
+# number in the manuscript's target table is traceable to the archive and the
+# archive alone.  The host mass and the discovery citation are catalogue inputs
+# carried in TARGETS; the rest is computed.
 lines = [
     "% Generated by src/targets.py -- do not edit by hand.",
-    "% Nominal-proxy table (referee comment 10).  Intervals are bounded ranges",
-    "% over the stated albedo and radius-factor assumptions, NOT confidence",
-    "% levels; rows marked (a) have M sin i above the Chen & Kipping (2017)",
-    "% Terran/Neptunian transition and use a rocky extrapolation.",
+    "% Nominal-proxy table.  Intervals are bounded ranges over the stated albedo",
+    "% and radius-factor assumptions, NOT confidence levels; rows marked (a) have",
+    "% M sin i above the Chen & Kipping (2017) Terran/Neptunian transition and",
+    "% therefore use a rocky extrapolation.",
     r"\begin{table*}[t]",
     r"\centering",
     r"\caption{Nearest confirmed temperate planets (plus one solar-type RV",
     r"signal whose planet interpretation has since been refuted) as SGL imaging",
-    r"targets -- explicitly a \emph{nominal-proxy} ",
-    r"table, not a propagated uncertainty budget.  Radii use the Chen \&",
-    r"Kipping (2017) Terran branch $R = 1.01\,(M\sin i/M_\oplus)^{0.279}",
-    r"\,R_\oplus$ evaluated at $M\sin i$ (no de-inclination correction is",
-    r"folded into the nominal value; the conditional isotropic factors are",
-    r"given in the text); $\pm$ values are the $4.03\%$ intrinsic dispersion of",
-    r"that branch.  $\mathrm{SNR_C}$ follows the scalar rule of eq.~\ref{eq:snrrule}",
-    r"and the bracket is the bounded product of $A\in[0.15,0.45]$ with a",
-    r"$\pm15\%$ radius allowance -- an assumption, not a confidence interval.",
-    r"$\Delta v_{90}$ is the time-integral of the projected transverse",
-    r"acceleration over 90\,d for a face-on orbit, with the range over starting",
-    r"mean anomaly and the corresponding edge-on value in parentheses.",
-    r"Observing geometry $z=650$\,AU, $d=1$\,m, $\lambda=1\,\mu$m, 1800\,s.}",
+    r"targets -- explicitly a \emph{nominal-proxy} table, not a propagated",
+    r"uncertainty budget.  Radii use the \citet{chenkipping17} Terran branch",
+    r"$R_p = 1.01\,(M\sin i/M_\oplus)^{0.279}\,R_\oplus$ evaluated at $M\sin i$",
+    r"(no de-inclination correction is folded into the nominal value; the",
+    r"conditional isotropic factors are given in the text); $\pm$ values are the",
+    r"$4.03\%$ intrinsic dispersion of that branch.  Host mass $M_\star$ and",
+    r"semimajor axis $a$ are listed to enable verification of the Keplerian",
+    r"transverse velocity budget (eq.~\ref{eq:dvrule}) and of the insolation $S$.",
+    r"$\mathrm{SNR_C}$ follows the scalar rule of eq.~\ref{eq:snrrule} and the",
+    r"bracket is the bounded product of $A\in[0.15,0.45]$ with a $\pm15\%$ radius",
+    r"allowance -- an assumption, not a confidence interval.  $\Delta v_{90}$ is",
+    r"the time-integral of the projected transverse acceleration over 90\,d for a",
+    r"face-on orbit, with the corresponding edge-on value in parentheses.",
+    r"Observing geometry $z=650$\,AU, $d=1$\,m, $\lambda=1\,\mu$m, $t_s=1800$\,s.}",
     r"\label{tab:targets}",
     r"\scriptsize",
-    r"\setlength{\tabcolsep}{2.0pt}",
-    r"{\bfseries % entire table body is revised material (editor: bold changes)",
+    r"\setlength{\tabcolsep}{1.8pt}",
     r"\resizebox{\textwidth}{!}{%",
-    r"\begin{tabular}{lcccccccccccc}",
-    r"Planet & Host (SpT) & $z_0$ & $M\sin i$ & $R_p$\,$\pm$\,disp.$^{d}$ & $S$ & $P$ &",
-    r"$D_{\rm img}$ & $\mathrm{SNR_C}$\,[range]$^{b}$ & Focal direction$^{c}$ & $\beta_{\rm ecl}$ &",
+    r"\begin{tabular}{lccccccccccccc}",
+    r"\toprule",
+    r"Planet & Discovery & Host (SpT) & $z_0$ & $M_\star$ & $a$ & $M\sin i$ &",
+    r"$R_p$\,$\pm$\,disp.$^{d}$ & $S$ & $P$ & $D_{\rm img}$ &",
+    r"$\mathrm{SNR_C}$\,[range]$^{b}$ & $\beta_{\rm ecl}$ &",
     r"$\Delta v_{90}$ (face)$^{b}$ \\",
-    r"& & (pc) & ($M_\oplus$) & ($R_\oplus$) & ($S_\oplus$) & (d) & (km) &",
-    r"(1800\,s) & (J2000) & (deg) & ($\mathrm{km\,s^{-1}}$ [range], edge) \\",
+    r"& Reference & & (pc) & ($M_\odot$) & (au) & ($M_\oplus$) & ($R_\oplus$) &",
+    r"($S_\oplus$) & (d) & (km) & (1800\,s) & (deg) &",
+    r"($\mathrm{km\,s^{-1}}$, edge) \\",
     r"\midrule",
 ]
 for r in rows:
@@ -425,24 +446,18 @@ for r in rows:
         # the 162.9 d signal is a refuted detection (Figueira+ 25), so the row
         # is an illustrative dynamics case, not a candidate target
         flag += "\\textsuperscript{e}"
-    lo, hi = r["dv90_face_on_range_kms"]
-    rah = int(r["foc_ra_h"]); ram = int(round(60.0 * (r["foc_ra_h"] - rah)))
-    dec = r["foc_dec_d"]
-    sign = "-" if dec < 0.0 else "+"
-    adec = abs(dec); decd = int(adec); decm = int(round(60.0 * (adec - decd)))
-    radec = ("%02d$^{\\rm h}$%02d$^{\\rm m}$, $%s%02d^{\\circ}%02d'$"
-             % (rah, ram, sign, decd, decm))
     host = r["host"].replace("tau Cet", r"$\tau$ Cet")
     snrlo, snrhi = r["SNRC_rule_bounded"]
-    lines.append("%s%s & %s (%s) & %.2f & %.2f & %.2f\\,$\\pm$\\,%.2f & %.2f & "
-                 "%.2f & %.1f & %.0f\\,[%.0f--%.0f] & %s & %+.1f & "
-                 "%.2f (%.2f)\\\\" % (
-                     nm, flag, host, r["spt"], r["d_pc"], r["msini"],
+    lines.append("%s%s & \\citet{%s} & %s (%s) & %.2f & %.3f & %.4f & %.2f & "
+                 "%.2f\\,$\\pm$\\,%.2f & %.2f & %.2f & %.1f & "
+                 "%.0f\\,[%.0f--%.0f] & %+.1f & %.2f (%.2f)\\\\" % (
+                     nm, flag, r["disc_cite"], host, r["spt"], r["d_pc"],
+                     r["m_star_msun"], r["a_au"], r["msini"],
                      r["Rp_nominal_R"], r["Rp_terr_1sigma_R"], r["S"], r["P_d"],
-                     r["Dimg_km"], r["SNRC_nominal"], snrlo, snrhi, radec,
+                     r["Dimg_km"], r["SNRC_nominal"], snrlo, snrhi,
                      r["foc_ecl_lat"], r["dv90_face_on_kms"],
                      r["dv90_edge_on_kms"]))
-lines += [r"\bottomrule", r"\end{tabular}", r"}", r"}", "", r"\vspace{1mm}",
+lines += [r"\bottomrule", r"\end{tabular}", r"}", "", r"\vspace{1mm}",
           r"\parbox{0.96\textwidth}{\footnotesize",
           r"\textbf{$^{a}$}\,$M\sin i$ lies above the Chen \& Kipping (2017) Terran/"
           r"Neptunian transition ($2.04^{+0.66}_{-0.59}\,M_\oplus$), so the "
@@ -456,12 +471,11 @@ lines += [r"\bottomrule", r"\end{tabular}", r"}", r"}", "", r"\vspace{1mm}",
           r"the spread over the starting mean anomaly inside a 90-day window is "
           r"below $0.02\,\mathrm{km\,s^{-1}}$ for every row except "
           r"$\tau$~Cet~e ($0.09$--$0.13\,\mathrm{km\,s^{-1}}$).",
-          r"\textbf{$^{c}$}Focal direction is the antipodal celestial coordinate of the "
-          r"host; $\beta_{\rm ecl}$ is its ecliptic latitude, which sets the "
-          r"departure plane-change cost.",
+          r"\textbf{$^{c}$}$\beta_{\rm ecl}$ is the ecliptic latitude of the "
+          r"antipodal focal direction, which sets the departure plane-change cost.",
           r"\textbf{$^{d}$}Radii, stellar parameters and orbital elements are from the "
-          r"references in Section~\ref{sec:targets}; none of these planets "
-          r"transits, so $M\sin i$ (not $M$) is the observed quantity.",
+          r"per-row discovery references; none of these planets transits, so "
+          r"$M\sin i$ (not $M$) is the observed quantity.",
           r"\textbf{$^{e}$}\,$\tau$~Cet~e is listed for dynamics illustration only. "
           r"The NASA Exoplanet Archive carries its 162.9-day signal as a "
           r"\emph{false positive} after \citet{figueira25}, who attribute the "
@@ -469,5 +483,5 @@ lines += [r"\bottomrule", r"\end{tabular}", r"}", r"}", "", r"\vspace{1mm}",
           r"confirmed target and its radius, $S$, SNR and $\Delta v$ inherit the "
           r"assumed $M\sin i = 3.93\,M_\oplus$ of a refuted ephemeris.",
           r"}", r"\end{table*}", ""]
-(OUT / "paper" / "targets_table.tex").write_text("\n".join(lines))
+(PAPER / "targets_table.tex").write_text("\n".join(lines))
 print("wrote results/targets.json, paper/figures/fig_targets.pdf, paper/targets_table.tex")

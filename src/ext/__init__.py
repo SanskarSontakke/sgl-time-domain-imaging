@@ -1,4 +1,4 @@
-"""Referee-requested extension modules (Part VII of the referee report).
+"""Additive extension modules that sit outside the fiducial pipeline.
 
 Every module here is additive: it imports the shipped spine (``sglsim``,
 ``expcommon``) and writes its OWN archive under ``results/`` named

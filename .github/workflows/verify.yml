@@ -1,9 +1,9 @@
 name: verify
 
-# Part VII item 15: the fast gates must run on every push, not only when a
-# human remembers to type them.  Everything here is the tier that costs minutes
-# rather than hours; the simulation tier is deliberately left out (see
-# tests/README.md for how to run it).
+# The fast gates must run on every push, not only when a human remembers to
+# type them.  Everything here is the tier that costs minutes rather than hours;
+# the simulation tier is deliberately left out (see tests/README.md for how to
+# run it).
 
 on:
   push:
@@ -44,3 +44,47 @@ jobs:
 
       - name: Byte-level archive drift check against the frozen baseline
         run: python -m reproduce_all --check
+
+  paper:
+    # The manuscript and the submission letter are built artifacts that live in
+    # the repository, and both had gone stale relative to their sources: a
+    # generated table fragment with one stray closing brace aborts the build and
+    # silently loses every cross-reference.  Compiling here is what makes the
+    # shipped PDFs a claim rather than a hope.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install TeX Live
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base texlive-latex-recommended texlive-latex-extra \
+            texlive-fonts-recommended latexmk poppler-utils
+
+      - name: Compile the manuscript
+        working-directory: paper
+        run: latexmk -pdf -interaction=nonstopmode main.tex
+
+      - name: Assert a clean manuscript build
+        working-directory: paper
+        run: |
+          if grep -Eiq "undefined (references|citations)|multiply defined" main.log; then
+            grep -Ei "undefined (references|citations)|multiply defined" main.log | head
+            echo "manuscript has unresolved references"
+            exit 1
+          fi
+          test -s main.pdf
+          echo "pages: $(pdfinfo main.pdf | awk '/^Pages/{print $2}')"
+          if ! pdftotext main.pdf - | grep -q "Solar Gravitational Lens"; then
+            echo "built PDF does not contain the manuscript"
+            exit 1
+          fi
+
+      - name: Compile the submission letter
+        working-directory: submission
+        run: latexmk -pdf -interaction=nonstopmode cover_letter.tex
+
+      - name: Assert the document mirrors are byte-identical to their sources
+        run: python3 src/make_app_docs.py --check

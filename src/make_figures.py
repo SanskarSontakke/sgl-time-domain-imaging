@@ -363,8 +363,8 @@ def fig6_robust():
 
 
 def fig7_lambda_sigma():
-    """Assumed-noise and regularization sensitivity (referee: a curve for
-    cloud-free and cloudy cases would be sufficient).
+    """Assumed-noise and regularization sensitivity: one parametric curve
+    each for the cloud-free and cloudy cases.
 
     (a,b) lambda sweep from lambda_sweep_f{0,3}.npz: image quality keeps
     improving across the whole tested range while the objective barely moves in
@@ -457,8 +457,8 @@ def fig7_lambda_sigma():
 
 
 def fig8_objective_vs_quality():
-    """The objective and image quality do not want the same weight
-    (referee Part VII item 16, F-07/F-09b).
+    """The objective and image quality do not want the same weight,
+    so they are plotted as two separate parametric curves.
 
     Both panels are chi2-versus-r parametric curves over the SAME lambda grid,
     one per regime, because the two regimes fail in DIFFERENT ways:

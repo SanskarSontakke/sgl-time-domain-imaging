@@ -26,7 +26,7 @@ Why the commands loop seeds internally: a float32 forward operator at n = 64 is
 0.68 GB and takes ~45 s to build, and one simulated campaign takes ~25 s.  The
 operator is therefore built ONCE per process and reused for every seed, and the
 simulations are cached in results/cache so that "the same photons" genuinely
-means the same array for every command (referee C8/C9, editor reproducibility).
+means the same array for every command (reproducibility, by construction).
 Every part file records the seed, campaign mode, quadrature order and solver.
 """
 
@@ -175,7 +175,7 @@ def cmd_ledger():
 # ----------------------------------------------------------------------
 def cmd_validation():
     """Photometric budget, reconstruction-noise scaling, and the FINITE-CELL
-    kernel test (R21): point sample vs cell average."""
+    kernel test: point sample vs cell average."""
     res = {"ns": [], "theory": [], "measured": [], "measured_sd": []}
     sig = S.noise_sigma(1.0, 1800.0)
     res["snr_c"] = 1.0 / sig
@@ -212,7 +212,7 @@ def cmd_validation():
     np.savez(E.DATA / "validation.npz",
              **{k: np.array(v) for k, v in res.items() if v})
 
-    # --- finite-cell kernel convergence on the KERNEL ITSELF (referee R21)
+    # --- finite-cell kernel convergence on the KERNEL ITSELF, not the map
     out = {}
     for n in (16, 32, 64, 128):
         pitch = S.DIMG / n
@@ -232,7 +232,7 @@ def cmd_validation():
         out[n] = dict(pitch=pitch, K00_point=float(K_pt[n, n]),
                       K00_cellmean=float(K_cm[n, n]), K00_ref=float(core_ref[2, 2]),
                       cellmean_formula=float(S.DTEL * np.log(1 + np.sqrt(2)) / pitch),
-                      # NOTE (referee F-14): K(rho) = d/(4 rho) is homogeneous of
+                      # NOTE: K(rho) = d/(4 rho) is homogeneous of
                       # degree -1, so every RELATIVE point-vs-cell-average error
                       # is a function of (offset/pitch) only and is therefore
                       # exactly constant in n.  It is a discretization bias, not
@@ -344,7 +344,7 @@ def cmd_clouds(i_fc):
         mets, maps = _fits(F, dat, camp, sigma_cl, fc, truth_c, sglop)
         E.save_part(name, fc=fc, cover=float(dat["covers"].mean()), seed=seed,
                     nsub=E.NSUB, sigma_cl=sigma_cl, mode=camp.mode, ts=camp.ts,
-                    mp=camp.mp, solver="profiled(anchored R11)",
+                    mp=camp.mp, solver="profiled(anchored_slot)",
                     **_flat(mets), **{f"map_{k}": v for k, v in maps.items()})
         log(f"{name} fc={fc:g} cover={dat['covers'].mean():.3f} "
             f"profiled r={mets['profiled']['pearson']:.4f} "
@@ -389,7 +389,7 @@ def cmd_cadence(arm, i_cfg):
 
 # ----------------------------------------------------------------------
 def cmd_cadence_control(arm, i_cfg, kind):
-    """Causal controls for the cadence law, per arm (referee C6).
+    """Causal controls for the cadence law, per arm.
 
     An earlier draft quoted r_cf and r_iid columns that were never produced by the shipped
     pipeline.  Here the two controls use the SAME campaign objects, the same
@@ -440,12 +440,12 @@ def cmd_cadence_control(arm, i_cfg, kind):
 
 # ----------------------------------------------------------------------
 def cmd_components():
-    """Solver-component ablation on identical data, all seeds (referee C4, C8):
+    """Solver-component ablation on identical data, all seeds:
 
       A  time-dependent F, white covariance, no slot handling
       B  time-dependent F, OU whitening, no slot handling
       C  approximate deflation (per-slot mean + sqrt(1-1/Nsc) rescale)
-      D  EXACT anchored nuisance profiling, white (referee eq. R11 + sum a=0)
+      D  EXACT anchored nuisance profiling, white (profile likelihood + sum a=0)
       E  free (un-anchored) profiling  -> shows the constant-mode degeneracy
       F  full TDI = D with OU whitening
     """
@@ -533,7 +533,7 @@ def cmd_robust_debias():
 
 
 def cmd_robust_clim():
-    """Structured climatology variants (referee C5): ITCZ banding, surface
+    """Structured climatology variants: ITCZ banding, surface
     coupling, multi-timescale clouds, per-pass iid clouds -- each calibrated
     against the cover it actually produces."""
     camp = E.campaign()
@@ -732,11 +732,12 @@ def cmd_nulls():
 
 # ----------------------------------------------------------------------
 def cmd_systematics():
-    """Quantitative systematic injection (referee C7: an earlier draft asserted robustness but
-    measured nothing).  A fractional coronal residual eps enters the light curve
-    as delta_y = eps * (Qcor/Qexo) = 7.7403e4 * eps in planet-reference units
-    (R22), so eps is swept in CORONAL units and the drift and streamer terms are
-    varied separately, with the injection template and time scale recorded."""
+    """Quantitative systematic injection: an earlier draft asserted
+    robustness but measured nothing.  A fractional coronal residual eps enters
+    the light curve as delta_y = eps * (Qcor/Qexo) = 7.7403e4 * eps in
+    planet-reference units, so eps is swept in CORONAL units and the drift and
+    streamer terms are varied separately, with the injection template and time
+    scale recorded."""
     camp = E.campaign()
     sglop = E.sgl("point")
     truthF, truth_c = E.truth()
@@ -793,14 +794,14 @@ LAM_GRID = [1e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 3e-1]
 
 
 def cmd_lam_sweep(i_fc):
-    """Regularization-parameter sweep (referee minor comment on lambda).
+    """Regularization-parameter sweep over lambda.
 
     Freezing lambda = 3e-3 and asserting insensitivity without measuring it is
     not testable.  Here the
     SAME cached campaign (fiducial ts/mp, seed set, GL-16 quadrature) is solved
     at nine lambda values spanning five decades, for one cloud fraction per
     invocation -- the cloud-free (i_fc=0) and fiducial-cloudy (i_fc=3) cases the
-    referee asked for, plus the intermediate fractions if wanted.
+    paper quotes, plus the intermediate fractions if wanted.
 
     Note lambda enters through lam_eff = lambda * tr(A)/tr(LtL), so the abscissa
     is the dimensionless multiplier in the paper, not the absolute penalty
@@ -849,9 +850,8 @@ WEATHER_GRID = {
 
 
 def cmd_robust_weather(i_var):
-    """Weather-parameter sensitivity (referee major comment: 'at least two
-    additional spatial correlation lengths, advection rates and decorrelation
-    times').
+    """Weather-parameter sensitivity: additional spatial correlation
+    lengths, advection rates and decorrelation times.
 
     Each variant is a DIFFERENT true cloud field, scored two ways:
       misspecified -- the estimator keeps the fiducial OU tau = 4 d, corr = 12 deg
@@ -860,7 +860,7 @@ def cmd_robust_weather(i_var):
       recalibrated -- sigma_cl (and tau in the covariance) are set to the variant
         itself, i.e. the best case where the climatology is known.
     The gap between the two columns is the cost of climatology error per se,
-    which is what the referee's comment is really about.
+    which is the quantity this grid exists to isolate.
     """
     tag = i_var
     if tag not in WEATHER_GRID:
@@ -1046,8 +1046,8 @@ MORPHS = ("supercontinent", "archipelago")
 
 
 def cmd_robust_morph(i_fc):
-    """Surface-map morphology sensitivity (referee major comment 6: 'sensitivity
-    to ... substantially different surface-map morphologies').
+    """Surface-map morphology sensitivity: performance under substantially
+    different surface-map morphologies.
 
     The earlier morphology scans are NOT inherited: they were produced with the
     superseded spherical quadrature and the approximate deflation estimator.
@@ -1103,9 +1103,8 @@ LATBANDS = [(-90, -60), (-60, -30), (-30, 0), (0, 30), (30, 60), (60, 90)]
 
 
 def cmd_latband():
-    """Quality vs latitude and illumination coverage (referee major comment 6:
-    'uncertainty or resolution maps, including the dependence on latitude and
-    illumination coverage').
+    """Quality vs latitude and illumination coverage: the per-band
+    uncertainty and resolution maps the paper quotes.
 
     No new inversions: the per-seed reconstructions of the cloudy (fc=0.55) and
     cloud-free campaigns are already archived, so this command scores them band
@@ -1277,10 +1276,9 @@ def cmd_lam_res(i_fc):
 
 # ----------------------------------------------------------------------
 def cmd_static_ref():
-    """Static ideal-data reference at the SAME photon budget (referee major
-    comment on image quality: 'compare the rotating solution with a static
-    ideal-data reference under the same photon budget, and report the
-    information or resolution loss attributable specifically to rotation').
+    """Static ideal-data reference at the SAME photon budget: the rotating
+    solution is compared with a static ideal-data reference and the information
+    or resolution loss attributable specifically to rotation is reported.
 
     The reference campaign is the fiducial 64x64 raster, 16 revisits, 1800 s
     dwell -- so every raster position receives the same 8 h of integration --
@@ -1339,7 +1337,7 @@ def cmd_static_ref():
 # ----------------------------------------------------------------------
 def cmd_diagnostics():
     """Replace the '25% rank loss / 93.75% information retained' claim with
-    diagnostics that are actually about the surface map (referee C4)."""
+    diagnostics that are actually about the surface map."""
     camp = E.campaign()
     sglop = E.sgl("point")
     truthF, truth_c = E.truth()
@@ -1451,7 +1449,7 @@ def cmd_merge():
                  nsub=E.NSUB, truth_seed=E.TRUTH_SEED, campaign_seed=E.CAMPAIGN_SEED,
                  tau_days=E.TAU_DAYS, lam=E.LAM_GLS, fc=E.FC, seeds=E.SEEDS,
                  cad_seeds=E.CAD_SEEDS, kernel_core="point",
-                 solver="solve_gls_profiled (exact anchored R11 profiling)",
+                 solver="solve_gls_profiled (exact anchored slot-nuisance profiling)",
                  overhead_s=S.T_OVERHEAD, snr_c_1800=float(1.0 / S.noise_sigma(1.0, 1800.0)),
                  qcor_over_qexo=float(S.QCOR / S.QEXO))}
 
@@ -1565,7 +1563,7 @@ def cmd_merge():
                 "They cannot both hold.")
     audit["cadence_note"] = cad_note
 
-    # --- cadence causal controls (cf / iid), per arm (R6, R16) ---------
+    # --- cadence causal controls (cf / iid), per arm ------------------
     def _ps(x, y):
         x = np.asarray(x, float); y = np.asarray(y, float)
         ok = np.isfinite(x) & np.isfinite(y)
@@ -1611,7 +1609,7 @@ def cmd_merge():
     if ctl:
         audit["cadence_controls"] = ctl
 
-    # --- resource ledger + effective independent looks (R13) ----------
+    # --- resource ledger + effective independent looks ----------------
     lp = E.DATA / "ledger.npz"
     if lp.exists():
         L = np.load(lp)
@@ -1660,7 +1658,7 @@ def cmd_merge():
             nrm[c][j] = d.get(f"norm_{c}", np.nan)
     # F - C and F - B contrasts, emitted HERE rather than derived by hand in a
     # notebook: every array a manuscript number rests on has to come out of a
-    # named writer (referee F-22).  The reldev contrast is the relative
+    # named writer.  The reldev contrast is the relative
     # deviation of the approximate-deflation map from the full TDI map,
     # ||F - C|| / ||F|| -- measured against F, not against D, which is what the
     # previously hand-computed array (misleadingly named reldev_F_minus_C) did.
@@ -1806,7 +1804,7 @@ def cmd_merge():
         r_cf = np.array(r_cf); r_cl = np.array(r_cl); quad = np.array(quad)
         # The cloud-free curve never crosses r < 0.5 on a 36x72 grid, so a
         # threshold-0.5 "effective degree" is undefined there and was being
-        # stored as a blank (referee F-20).  Two changes: keep the 0.5 crossing
+        # stored as a blank.  Two changes: keep the 0.5 crossing
         # for the cloudy curve, and define a FIDELITY crossing at r < 0.90 for
         # both curves, which is finite and is the honest cloud-free ceiling.
         leff_cf = np.array([_first_below(l, x) if _first_below(l, x) is not None
@@ -1822,7 +1820,7 @@ def cmd_merge():
                  l_eff_cf90=leff_cf90, l_eff_cl90=leff_cl90)
         _j = lambda a: [None if not np.isfinite(v) else int(v) for v in a]
         leff = [x for x in _j(leff_cl) if x is not None]
-        # (2l+1)-weighted band means (referee F-03 / Part VII item 16).  An
+        # (2l+1)-weighted band means.  An
         # UNWEIGHTED average of per-band means over-weights high degrees, which
         # carry (2l+1) more modes each: that is exactly what made the merged
         # "l >= 13" row hide the fact that the 13-16 band GAINS under smoothing

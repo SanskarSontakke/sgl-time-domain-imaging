@@ -4,7 +4,7 @@ Authors: Sanskar Sontakke
 
 Primary category: astro-ph.IM
 Cross-list: astro-ph.EP
-Comments: 24 pages, 8 figures, 13 tables. Revised version: every quoted result re-derived from the shipped seeded pipeline, two explicit resource ledgers for the cadence study, exact anchored slot-offset profiling replacing the approximate deflation operator, and one withdrawn claim (in-flight spin refinement). Simulation code and data archives included as ancillary files.
+Comments: 36 pages, 9 figures, 16 tables. Revised version: every quoted result re-derived from the shipped seeded pipeline, two explicit resource ledgers for the cadence study, exact anchored slot-offset profiling replacing the approximate deflation operator, and one withdrawn claim (in-flight spin refinement). Simulation code and data archives included as ancillary files.
 License: CC BY 4.0
 
 Abstract:

@@ -1,4 +1,4 @@
-"""Shared plumbing for the Part VII extension modules.
+"""Shared plumbing for the extension modules.
 
 Import style: run as ``python3 -m ext.<name>`` from ``src/``, because the spine
 (``sglsim`` / ``expcommon``) uses flat imports and expects ``src/`` on the path.
@@ -11,8 +11,8 @@ Every module writes exactly one of
     results/ext_<name>.json    scalars, tables, provenance
 
 and nothing else.  ``results/parts/`` and the shipped top-level archives belong
-to the fiducial pipeline; extensions must not write there (a referee has to be
-able to delete ``ext_*`` and get the original paper back).
+to the fiducial pipeline; extensions must not write there (deleting every
+``ext_*`` archive has to leave the original paper standing).
 
 Two run tiers are standard:
 ``--fast`` uses EXT_SEEDS (4 noise seeds) and is what CI runs; the default tier

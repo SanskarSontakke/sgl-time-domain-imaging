@@ -6,18 +6,23 @@ Comprehensive pytest test suite covering the simulation pipeline, physics consta
 
 | Module | Purpose | Count |
 |--------|---------|-------|
-| `test_constants.py` | First-principles physics re-derivations (z_min, D_img, kernel, SNR_C, noise floor F-01) | 9 |
+| `test_constants.py` | First-principles physics re-derivations (z_min, D_img, kernel, SNR_C, noise floor F-01) | 11 |
 | `test_statistics.py` | Paired stats harness, exact sign-test floors, audit.json p-value consistency | 8 |
 | `test_quadrature.py` | Gauss-Legendre convergence, equal-spaced 3-node defect | 4 |
 | `test_kernel.py` | Cellmean kernel formula, F-14 homogeneity defect | 4 |
-| `test_geometry.py` | Ecliptic latitudes for 6 targets, Chen & Kipping de-inclination, grid sizes F-16 | 11 |
+| `test_geometry.py` | Ecliptic latitudes for 6 targets, Chen & Kipping de-inclination, grid sizes F-16 | 12 |
 | `test_archive_schema.py` | Method/component labels, version pattern, PART_PREFIX | 10 |
 | `test_audit_consistency.py` | Profiled vs deflate, component ablation F vs C, cloud-free r(l) min F-15, lambda sweep F-07/F-09b, l_eff null F-20 | 8 |
 | `test_defect_regression.py` | Pins defects F-01, F-07, F-15, F-20, F-22 | 6 |
-| `test_pipeline_tools.py` | Pure functions from tools/*.py (flat_name, remap, strip_rev, digest) | 16 |
-| `test_latex_integrity.py` | No \rev markup, ref/label integrity, cite keys, F-12/F-18/F-05 repairs | 7 |
+| `test_pipeline_tools.py` | Pure functions from tools/*.py (flat_name, remap, strip_rev, digest) plus the byte-level archive manifest and its path-portability contract | 20 |
+| `test_pipeline_live.py` | Slow tier: re-runs the fiducial estimator on the cached dataset and compares against the shipped checkpoints; proves `results/` is read-only | 19 |
+| `test_ledger_resource.py` | Analytic resource-ledger and `N_eff` arithmetic: OU pair weights, Arm A/B photon-vs-wall-clock conservation, dose accounting | 12 |
+| `test_latex_integrity.py` | No \rev markup, ref/label integrity, cite keys, F-12/F-18/F-05 repairs, brace/environment balance, generated-table shape, document-mirror freshness, no revision-tracker IDs in reader-facing text | 33 |
+| `test_ext_archives.py` | Contract for the 14 computed extensions in `src/ext/`: every `ext_*.{npz,json}` pair exists, carries a schema, a `provenance` block with tier and argv, headline strings within length limits, and values that agree with the manuscript | 163 |
+| `test_reproduce_entrypoint.py` | `reproduce_all.py` CLI surface: stage registry (8 fast / 70 full), subcommand <-> module mapping, scratch isolation, baseline freeze/check, `--figures`/`--ext` plumbing | 37 |
 
-**Total: 86 tests**
+**Total: 200 test functions, 347 collected checks** (326 in the default fast
+tier, 21 marked `slow`).
 
 ## Running the Tests
 
@@ -27,9 +32,14 @@ cd /data/workspace/sgl-time-domain-imaging
 python3 -m pytest tests -q
 ```
 
-### Exclude slow tests (none currently marked slow)
+### Exclude slow tests (default CI tier; 326 of 347 checks)
 ```bash
 python3 -m pytest tests -q -m "not slow"
+```
+
+### Slow tier only (the 21 end-to-end re-simulation checks)
+```bash
+python3 -m pytest tests -q -m slow
 ```
 
 ### Verbose output
@@ -44,8 +54,13 @@ python3 -m pytest tests/test_constants.py -v
 
 ## Test Tiers
 
-- **Fast (< 1s)**: All current tests. No simulation runs required.
-- **Slow (> 5s)**: Mark with `@pytest.mark.slow`. None currently.
+- **Fast (default)**: 326 checks. No simulation is re-run; every value is read
+  from a shipped archive, `results/audit.json`, or the manuscript source.
+- **Slow (> 5s)**: 21 checks marked `@pytest.mark.slow` — 19 in
+  `test_pipeline_live.py`, which re-runs GLS solves against the shipped
+  checkpoints and is the tier that catches drift between `src/` and `results/`,
+  and 2 in `test_reproduce_entrypoint.py`, which invoke the real
+  `reproduce_all` entry point in a scratch directory.
 
 ## Configuration
 
@@ -55,18 +70,20 @@ python3 -m pytest tests/test_constants.py -v
 ## Data Dependencies
 
 Tests read from (but never write to):
-- `results/*.npz` (39 shipped archives)
-- `results/audit.json`
-- `results/targets.json`
-- `results/kernel_convergence.json`
-- `results/parts/*.npz` (checkpoint files)
+- `results/*.npz` (45 shipped archives, 14 of them `ext_*` extension archives)
+- `results/*.json` (22 headline files — all 14 `ext_*` archives ship an
+  `npz`/`json` pair, plus `audit`, `precision`, `targets`, `kinematics`,
+  `core_ablation`, `deflation_diag`, `kernel_convergence`, `uniform_disk`)
+- `results/parts/*.npz` (582 checkpoint files)
+- `results/cache/` (memoised forward operators and photon streams)
 - `paper/main.tex`
 - `paper/targets_table.tex`
+- `paper/main.pdf` and the `public/docs/` mirrors (freshness gate)
 - `tools/*.py` (verification utilities)
 
 ## Defect Coverage
 
-The suite pins the following defects from the referee report:
+The suite pins the following defects from the revision record:
 
 | Defect | Test | Status |
 |--------|------|--------|
@@ -82,9 +99,17 @@ The suite pins the following defects from the referee report:
 
 ## Runtime Performance
 
-- **Full suite**: ~0.8 seconds
-- **With -m "not slow"**: ~0.8 seconds (no slow tests currently)
-- **Well within 4-minute budget**
+Measured on the four-core / 7 GB sandbox the archive was audited in, with the
+memoised forward operators present under `results/cache/`:
+
+- **Fast tier** (`-m "not slow"`, 326 checks): ~1.5 s
+- **Slow tier** (`-m slow`, 21 checks): ~147 s
+- **Both tiers**: ~2.5 min
+
+`results/cache/` is 731 MB and is deliberately *not* shipped (`.gitignore`), so on
+a fresh clone the slow tier rebuilds it first and costs hours rather than minutes.
+The fast tier never touches it, which is why CI runs only the fast tier plus
+`reproduce_all --fast`.
 
 ## Notes
 

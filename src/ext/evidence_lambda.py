@@ -1,4 +1,4 @@
-"""Evidence-based hyperparameter selection (Part VII item 6).
+"""Evidence-based hyperparameter selection.
 
 The paper proves the whitened χ² cannot select λ and freezes 3e-3. This module
 implements the EVIDENCE side properly: for the ridge/Gaussian-prior case the
@@ -258,7 +258,7 @@ def main():
     # shipped 9-point grid the log-evidence falls monotonically with lambda, so
     # its maximum is the LEFT edge; r and SSIM rise monotonically, so their
     # maxima are the RIGHT edge.  Only chi2 has an interior minimum.  Calling an
-    # edge value "the optimal lambda" is exactly the F-01/F-14 class of error,
+    # edge value "the optimal lambda" is exactly the reused-field class of error,
     # so every location field is flagged with where it sits on the grid.
     i_lo, i_hi = 0, len(LAM_GRID) - 1
 

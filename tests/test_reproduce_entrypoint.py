@@ -1,6 +1,6 @@
 """Tests for the top-level reproduction entry point (``reproduce_all.py``).
 
-Defect F-10 in the referee report was that the manuscript printed a reproduction
+Defect F-10 in the revision record was that the manuscript printed a reproduction
 command that did not exist.  ``reproduce_all.py`` is the fix, so it needs the
 same treatment as the science: the stage inventory must cover every subcommand,
 the diff engine must be able to SEE a difference (including the ones numpy hides,
@@ -32,19 +32,27 @@ class TestStageInventory:
         st = RA.full_stages()
         assert st[0][0] == "setup"
         assert st[-1] == ("merge", [])
-        assert len(st) == 69, "stage count changed: the manuscript quotes it"
+        assert len(st) == 70, "stage count changed: the manuscript quotes it"
 
     def test_no_duplicate_invocations(self):
         st = {(n, tuple(a)) for n, a in RA.full_stages()}
         assert len(st) == len(RA.full_stages())
 
     def test_every_stage_is_a_real_subcommand(self):
-        """A typo here would silently skip a whole archive."""
+        """A typo here would silently skip a whole archive.
+
+        Standalone generators (``STANDALONE``) are the exception: they are their
+        own script rather than a ``run_experiments`` subcommand, and they exist
+        precisely so that no artifact-producing script sits outside the driver.
+        """
         import run_experiments as R
         names = {n for n, _ in RA.full_stages()} | {n for n, _ in RA.FAST_STAGES}
-        assert names <= set(R.COMMANDS), sorted(names - set(R.COMMANDS))
+        pipeline = names - set(RA.STANDALONE)
+        assert pipeline <= set(R.COMMANDS), sorted(pipeline - set(R.COMMANDS))
         # and the reverse: nothing the front end offers is left unrunnable
         assert set(R.COMMANDS) <= names, sorted(set(R.COMMANDS) - names)
+        for name in RA.STANDALONE:
+            assert (D.ROOT / "src" / f"{name}.py").exists(), f"src/{name}.py missing"
 
     def test_arguments_are_strings(self):
         for name, args in RA.full_stages():

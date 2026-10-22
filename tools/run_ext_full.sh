@@ -1,5 +1,5 @@
 #!/bin/bash
-# Regenerate the Part VII extension archives at the FULL tier, in dependency
+# Regenerate the extension archives at the FULL tier, in dependency
 # order: the cheap analytic modules first, the simulation-heavy ones last, so
 # the memory-hungry runs never overlap.  Only results/ext_* is written.
 #

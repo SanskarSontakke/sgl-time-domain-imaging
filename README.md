@@ -14,7 +14,7 @@ core-hours across four parallel streams, not 40 core-minutes).
 
 ## Paper
 
-📄 [`paper/sgl_time_domain_imaging.pdf`](paper/sgl_time_domain_imaging.pdf) — 24 pages, 8 figures, 13 tables (revised version).
+📄 [`paper/sgl_time_domain_imaging.pdf`](paper/sgl_time_domain_imaging.pdf) — 36 pages, 9 figures, 16 tables, 28 references (revised version).
 
 **Headline results (revised; every value below is in `results/audit.json`)**
 
@@ -51,7 +51,7 @@ paper/        main.tex (compiles with TeX Live / tectonic: pdflatex, no exotic c
 src/          sglsim.py           physics + estimators library
               expcommon.py        single source of conventions (seeds, arms, stats)
               run_experiments.py  checkpointed experiment driver (CLI)
-              targets.py          Table 2 + Fig. 8 (target selection)
+              targets.py          Table 13 + Fig. 9 (target selection)
               make_figures.py     Figs. 1-8 (select with `python3
                                   make_figures.py 8`)
               make_app_maps.py    demo map payload (data/reconstructionMaps.ts
@@ -60,13 +60,16 @@ src/          sglsim.py           physics + estimators library
               make_app_code.py    data/codeSnippets.json (source viewer)
               make_app_figures.py mirrors paper/figures -> public/figures
                                   (PDF copy + 200 dpi PNG rasterisation)
-              ext/                Part VII extension modules (additive; each writes
+              make_app_docs.py    mirrors the compiled PDFs ->
+                                  paper/sgl_time_domain_imaging.pdf +
+                                  public/docs/
+              ext/                extension modules (additive; each writes
                                   its own results/ext_<name>.npz/.json)
 results/      merged experiment archives (*.npz, *.json),
               parts/ (582 unprefixed checkpoints), cache/ (memoised operators)
 app/ + components/ + data/
               interactive Next.js demo; every screen takes its numbers from
-              the shipped results/ archives (regenerate with the four
+              the shipped results/ archives (regenerate with the five
               make_app_* scripts above after `merge`)
 submission/   OJA cover letter (cover_letter.tex/.pdf), arXiv metadata
 reviews/      pre-submission proofread report, response_to_editor.md
@@ -148,6 +151,11 @@ python3 src/make_app_maps.py
 python3 src/make_app_data.py
 python3 src/make_app_code.py
 python3 src/make_app_figures.py   # mirrors paper/figures -> public/figures
+
+# the manuscript and the letter, then their byte mirrors
+cd paper && latexmk -pdf -interaction=nonstopmode main.tex && cd ..
+cd submission && latexmk -pdf -interaction=nonstopmode cover_letter.tex && cd ..
+python3 src/make_app_docs.py      # mirrors both PDFs into public/docs/
 ```
 
 Seeds: truth map 7 · campaign geometry 2026 · realizations 11–20 (cadence arm:
@@ -167,10 +175,10 @@ cd src && python3 run_experiments.py <stage> [args]
 To run the entire suite from the repository root:
 
 ```bash
-python3 -m reproduce_all --fast    # 7 analytic/audit stages, ~2 min, no simulation
-python3 -m reproduce_all --full    # 69 stage invocations, 10-seed ensembles (hours)
+python3 -m reproduce_all --fast    # 8 analytic/audit stages, ~4.5 min, no simulation
+python3 -m reproduce_all --full    # 70 stage invocations, 10-seed ensembles (hours)
 python3 -m reproduce_all --stages "quadrature clouds 3"    # selected stages
-python3 -m reproduce_all --fast --ext    # plus the 14 Part VII extension modules
+python3 -m reproduce_all --fast --ext    # plus the 14 extension modules
 python3 -m reproduce_all --make-baseline tools/baseline_manifest.json
 python3 -m reproduce_all --check   # byte-level drift check against that baseline
 ```
@@ -183,7 +191,8 @@ Verification:
 
 ```bash
 pytest tests -q -m "not slow"      # fast gates: units, archives, cross-consistency
-pytest tests -q -m slow            # re-solves the fiducial pipeline (~1 h)
+pytest tests -q -m slow            # re-solves the fiducial pipeline: ~2.5 min
+#   with results/cache/ present, hours on a fresh clone (the cache is not shipped)
 bash tools/verify_flat.sh          # gates G-1..G-7 (single-version consolidation)
 bash tools/verify_flat.sh --full   # also npm build and the numeric gate G-3
 bash tools/run_ext_full.sh         # regenerate every extension archive at full tier

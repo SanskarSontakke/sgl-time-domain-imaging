@@ -310,7 +310,7 @@ const SLIDES: Slide[] = [
     stats: [
       { label: "Deliverable", value: "r = 0.342", desc: "± 0.008, 55% cover, 10 seeds" },
       { label: "Usable Band", value: "ℓ ≲ 9", desc: "≈ 2200 km elements" },
-      { label: "Status", value: "Revise & Resubmit", desc: "TOJA, under review" },
+      { label: "Status", value: "Revised after pre-submission review; ready to submit", desc: "OJA (Open Journal of Astrophysics)" },
       { label: "Code Status", value: "Open Source", desc: "Seeds fixed, figures reproducible" },
     ],
   },

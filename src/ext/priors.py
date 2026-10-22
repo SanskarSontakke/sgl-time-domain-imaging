@@ -1,4 +1,4 @@
-"""Modern inversion priors as a floor for method claims (Part VII item 8).
+"""Modern inversion priors as a floor for method claims.
 
 On identical archived datasets/maps, compare the shipped TDI estimator against:
 (a) Total-variation regularised reconstruction

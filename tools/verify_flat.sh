@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Single-version consolidation gates G-1 .. G-7 (referee report Part VIII §8.11).
+# Single-version consolidation gates G-1 .. G-7 (the contract this script
+# enforces; each gate prints its own name).
 #
 #   bash tools/verify_flat.sh              # gates G-1..G-4 + G-6/G-7 if available
 #   bash tools/verify_flat.sh --repro      # also python3 -m reproduce_all --fast
@@ -121,14 +122,16 @@ if [ "$FULL" = 1 ]; then
   else
     skip "npm run build (no node_modules; run npm ci first)"
   fi
-  if [ -e /tmp/audit_baseline.json ]; then
-    # tools/verify_flat.py takes (old, new); the Stage-0 baseline is the pre-refactor
-    # copy of audit.json and the current tree is the new side.
-    python3 tools/verify_flat.py /tmp/audit_baseline.json results/audit.json \
-      >/tmp/verify_numeric.log 2>&1 && pass "numeric gate" \
+  # tools/verify_flat.py takes (old, new).  The baseline is the pre-consolidation
+  # copy of audit.json, now tracked in the repo so the gate runs in CI rather
+  # than only on the machine where it was first taken.
+  BASE=${AUDIT_BASELINE:-tools/audit_baseline.json}
+  if [ -e "$BASE" ]; then
+    python3 tools/verify_flat.py "$BASE" results/audit.json \
+      >/tmp/verify_numeric.log 2>&1 && pass "numeric gate ($(tail -1 /tmp/verify_numeric.log))" \
       || fail "numeric gate (see /tmp/verify_numeric.log)"
   else
-    skip "numeric gate (needs /tmp/audit_baseline.json from Stage 0)"
+    skip "numeric gate (no baseline at $BASE)"
   fi
 else
   skip "npm build + numeric gate (pass --full)"
@@ -145,7 +148,7 @@ else
   skip "pytest not installed"
 fi
 
-echo "== G-7 Part VII extension archives =="
+echo "== G-7 extension archives =="
 python3 - <<'PY'
 import glob, json, os, sys
 ext = sorted(glob.glob('results/ext_*.json'))

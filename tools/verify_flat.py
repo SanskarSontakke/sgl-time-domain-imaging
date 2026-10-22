@@ -31,7 +31,7 @@ RENAME = {
     "fiducial_profiled_vs_v2_rel_diff": "fiducial_profiled_vs_deflate_rel_diff",
     "sigma_sensitivity_v2": "sigma_sensitivity_deflate",
 }
-# keys whose *content* is intentionally redefined by the referee repairs
+# keys whose *content* is intentionally redefined by the revision
 SKIP_SUBSTR = ("generated_utc", "l_eff", "energy_frac", "cellmean_formula_vs_brute",
                "peak_to_offdiag", "paired_F_vs_C", "paired_reldev_F_vs_C",
                "l_eff_thresholds", "n_seeds")

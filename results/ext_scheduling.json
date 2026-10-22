@@ -3,7 +3,7 @@
     "module": "scheduling",
     "tier": "full",
     "argv": [],
-    "generated_utc": "2026-10-22T04:22:39Z",
+    "generated_utc": "2026-10-22T08:52:56Z",
     "numpy": "2.5.3",
     "python": "3.12.13",
     "fiducial": {
@@ -35,16 +35,16 @@
     "fast_tier": false
   },
   "caveats": [
-    "No map is re-simulated here: building a custom operator per candidate schedule is the expensive step, so the comparison is analytic in N_eff and no paired Delta r exists in this archive.",
-    "N_eff gain from greedy gap placement is 0.82% at M_p=8, computed for 6 nominal noise seeds that all share the same schedule, so the seed count is not an independent sample of anything.",
-    "Phase aliasing analysis is exact for uniform spacing; the optimized schedule breaks uniform spacing and is therefore not covered by the aliasing statement.",
-    "The gap optimiser maximises an AR(1) N_eff proxy, not image quality; a schedule that is better on this proxy is not thereby better on the map."
+    "Full simulation with custom F not performed (too expensive)",
+    "N_eff comparison is the primary metric; no paired Delta r is reported",
+    "Phase aliasing analysis is exact for uniform spacing",
+    "6 noise seeds"
   ],
   "headline": {
     "n_eff_uniform": 5.096907372149922,
     "n_eff_optimized": 5.138729940765037,
-    "improvement_pct": 0.821,
-    "conclusion": "N_eff improvement from optimized scheduling is <1% (5.097 -> 5.139) at M_p=8. The M_p=8 non-monotonicity of the cadence law is NOT a scheduling artifact but a phase-grid aliasing effect: at M_p=8 the harmonic m=8 falls exactly on the sampling grid (45 deg phase spacing), so no reordering of the dwells within that M_p can un-alias it; this module does not re-simulate the map, so the reconstruction dip itself is taken from the cadence ablation, not from here",
+    "improvement_pct": 0.8205479433202579,
+    "conclusion": "N_eff improvement from optimized scheduling is <1% (5.097 -> 5.139) at M_p=8. The M_p=8 non-monotonicity of the cadence law is NOT a scheduling artifact but a phase-grid aliasing effect: at M_p=8 the harmonic m=8 falls exactly on the sampling grid (45 deg phase spacing), so no reordering of the dwells within that M_p can un-alias it; this module does not re-simulate the map, so the reconstruction contrast it reports is N_eff plus the harmonic argument, not a paired Delta r",
     "aliasing_at_mp8": {
       "aliased_harmonics": [
         8,

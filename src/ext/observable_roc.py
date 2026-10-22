@@ -1,4 +1,4 @@
-"""Observable-level retrieval metrics (referee Part VII item 9).
+"""Observable-level retrieval metrics.
 
 Reuses archived reconstructions -- no new simulations.  Computes:
   (a) land/ocean feature-detection ROC (AUC) per method per seed
@@ -322,16 +322,16 @@ def main():
     # Validation against archives
     # ------------------------------------------------------------------
     validation = {}
-    # Check d' matches referee report
+    # Check d' against the value the manuscript quotes
     validation["dprime_profiled_fc055_mean"] = dict(
         computed=obs_dprime_mean,
         archived=float(dprime_mat[methods.index("profiled"), fc_idx, :].mean()),
-        referee_reported=0.732,
-        match_referee=abs(obs_dprime_mean - 0.732) < 0.001,
+        manuscript_value=0.732,
+        matches_manuscript=abs(obs_dprime_mean - 0.732) < 0.001,
     )
     validation["null_physical_max"] = dict(
         computed=null_max,
-        referee_reported=0.130,
+        manuscript_value=0.130,
         match=abs(null_max - 0.130) < 0.001,
     )
     # Check pearson r matches
@@ -339,7 +339,7 @@ def main():
     validation["pearson_r_profiled_fc055"] = dict(
         mean=float(r_prof.mean()),
         se=float(r_prof.std(ddof=1) / np.sqrt(len(r_prof))),
-        referee_reported=0.3422,
+        manuscript_value=0.3422,
         match=abs(r_prof.mean() - 0.3422) < 0.001,
     )
 

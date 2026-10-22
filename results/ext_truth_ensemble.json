@@ -3,7 +3,7 @@
     "module": "truth_ensemble",
     "tier": "full",
     "argv": [],
-    "generated_utc": "2026-10-22T05:45:47Z",
+    "generated_utc": "2026-10-22T09:08:54Z",
     "numpy": "2.5.3",
     "python": "3.12.13",
     "fiducial": {
@@ -38,7 +38,7 @@
     "Dominant cloudy uncertainty is within-map (noise seeds): between-map sd 0.02118 vs within-map (noise-seed) sd 0.02549; cloud-free between-map (0.00374 vs 0.00054)",
     "Profiled-minus-deflate sign is NOT stable across truth maps (3 positive, 2 negative of 5 maps): mean difference +3.72e-06, member-to-member scatter 2.80e-04; the two solvers are indistinguishable under a geography change, which is a weaker statement than 'profiled is better'",
     "Validation: truth_seed=7 reproduces archived fiducial to <1e-6",
-    "Full tier reduced to 5 truth x 4 noise seeds (20 members); the solve took 46.2 min, so the grid is a budget decision, not a convergence check"
+    "Full tier reduced to 5 truth x 4 noise seeds (20 members); the solve took 13.7 min, so the grid is a budget decision, not a convergence check"
   ],
   "headline": {
     "cloudy_profiled_r": {

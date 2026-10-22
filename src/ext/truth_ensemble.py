@@ -1,4 +1,4 @@
-"""Truth-map ensemble (Part VII item 2 — external validity).
+"""Truth-map ensemble (external validity).
 
 The single biggest statistical weakness of the paper's headline numbers is that
 they were computed over ONE truth map (seed=7) with 10 noise realizations. This

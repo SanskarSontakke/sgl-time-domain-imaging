@@ -1,4 +1,4 @@
-"""Realistic cloud physics (referee Part VII item 10).
+"""Realistic cloud physics.
 
 Tests the paper's most important NEGATIVE claim — that rotational
 phase-locking defeats cadence gains — against non-OU weather models:

@@ -44,7 +44,7 @@
    "p99": 1.727070220689864,
    "note": "mean of the RATIO, not ratio of the means; the mean diverges for alpha >= 1"
   },
-  "disclaimer": "Nominal proxies only.  eq. R27 is a bolometric scalar, not a wavelength-integrated photon forecast (that needs the spectral SGL treatment, Turyshev & Toth 2022c PRD 106 044059; Turyshev & Toth 2023b PRD 107 104063).  De-inclination factors are conditional geometric ratios at fixed minimum mass on a single branch, not a posterior; radii above the 2.04 M_earth Terran/Neptunian transition are rocky EXTRAPOLATIONS, not the published probabilistic model.  The albedo x radius brackets are bounded intervals over stated ranges and carry no confidence level."
+  "disclaimer": "Nominal proxies only.  The scalar SNR rule is a bolometric scalar, not a wavelength-integrated photon forecast (that needs the spectral SGL treatment, Turyshev & Toth 2022c PRD 106 044059; Turyshev & Toth 2023b PRD 107 104063).  De-inclination factors are conditional geometric ratios at fixed minimum mass on a single branch, not a posterior; radii above the 2.04 M_earth Terran/Neptunian transition are rocky EXTRAPOLATIONS, not the published probabilistic model.  The albedo x radius brackets are bounded intervals over stated ranges and carry no confidence level."
  },
  "targets": [
   {
@@ -60,6 +60,8 @@
    "S": 0.65,
    "ecc": 0.11,
    "note": "closest; ESPRESSO-confirmed",
+   "m_star_msun": 0.122,
+   "disc_cite": "anglada16",
    "above_ck_transition": false,
    "Rp_nominal_R": 1.029,
    "Rp_terr_1sigma_R": 0.041,
@@ -108,6 +110,8 @@
    "S": 1.38,
    "ecc": 0.12,
    "note": "quiet host; near inner CHZ",
+   "m_star_msun": 0.168,
+   "disc_cite": "bonfils18",
    "above_ck_transition": false,
    "Rp_nominal_R": 1.098,
    "Rp_terr_1sigma_R": 0.044,
@@ -156,6 +160,8 @@
    "S": 0.69,
    "ecc": 0.06,
    "note": "temperate; compact multi-planet",
+   "m_star_msun": 0.12,
+   "disc_cite": "dreizler20",
    "above_ck_transition": false,
    "Rp_nominal_R": 1.159,
    "Rp_terr_1sigma_R": 0.047,
@@ -204,6 +210,8 @@
    "S": 0.37,
    "ecc": 0.04,
    "note": "conservative HZ; low-flare host",
+   "m_star_msun": 0.089,
+   "disc_cite": "dreizler24",
    "above_ck_transition": false,
    "Rp_nominal_R": 1.04,
    "Rp_terr_1sigma_R": 0.042,
@@ -252,6 +260,8 @@
    "S": 1.06,
    "ecc": 0.1,
    "note": "near inner CHZ edge",
+   "m_star_msun": 0.29,
+   "disc_cite": "astudillo17",
    "above_ck_transition": true,
    "Rp_nominal_R": 1.358,
    "Rp_terr_1sigma_R": 0.055,
@@ -300,6 +310,8 @@
    "S": 1.71,
    "ecc": 0.18,
    "note": "RV signal refuted (Figueira+ 25); illustrative dynamics row only",
+   "m_star_msun": 0.783,
+   "disc_cite": "feng17",
    "above_ck_transition": true,
    "Rp_nominal_R": 1.48,
    "Rp_terr_1sigma_R": 0.06,

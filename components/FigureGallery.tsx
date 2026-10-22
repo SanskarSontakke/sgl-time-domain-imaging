@@ -89,6 +89,16 @@ const FIGURES: FigureItem[] = [
   {
     id: "fig8",
     num: 8,
+    title: "Objective vs. Image Quality, One Panel per Regime",
+    filename: "/figures/fig_objective.png",
+    pdfFilename: "/figures/fig_objective.pdf",
+    caption: "The objective and image quality plotted against each other, one panel per regime (10 seeds each; results/lambda_sweep_f3.npz, lambda_sweep_f0.npz). Each point is one λ, joined in increasing λ; error bars are the seed-to-seed spread of r. Open boxes mark the χ² optimum, the r optimum and the frozen λ = 3×10⁻³. (a) Cloudy: χ² has a shallow interior minimum at λ = 0.1 (43,019.9, 0.13% below the frozen value) while r rises monotonically to the right edge of the tested grid. (b) Cloud-free: the disagreement reverses — χ² increases monotonically with λ, so its optimum is the left edge (λ = 10⁻⁵, where r = 0.9752), while r peaks at λ = 0.3 (0.9916) and SSIM at λ = 1.",
+    takeaway: "In neither regime does a truth-blind reading of the objective select the quality optimum: cloudy χ² prefers λ = 0.1 where r = 0.374, two decades below the best quality reachable here (0.520), and cloud-free χ² prefers the boundary λ = 10⁻⁵.",
+    keyMetric: "χ² Optimum ≠ r Optimum in Both Regimes",
+  },
+  {
+    id: "fig9",
+    num: 9,
     title: "Candidate Exo-Earth Targets & Focal-Line Placement",
     filename: "/figures/fig_targets.png",
     pdfFilename: "/figures/fig_targets.pdf",
