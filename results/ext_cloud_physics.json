@@ -1,0 +1,235 @@
+{
+  "headline": {
+    "status": "weather_model_sensitivity_range;_archived_collapse_not_reached",
+    "collapse_reproduced": false,
+    "r_ou_mean": 0.3422471987555486,
+    "r_ou_se": 0.008234009442233339,
+    "cover_ou": 0.5577,
+    "r_markov_mean": 0.6722647454230286,
+    "cover_markov": 0.3692,
+    "r_hawkes_mean": 0.2835617683638657,
+    "cover_hawkes": 0.6169,
+    "r_topo_mean": 0.4173965338104849,
+    "cover_topo": 0.5353,
+    "r_anchor_strong_mean": 0.4979247909275431,
+    "cover_anchor_strong": 0.5201,
+    "delta_r_markov_vs_ou": 0.33001754666747996,
+    "delta_r_hawkes_vs_ou": -0.05868543039168288,
+    "delta_r_topo_vs_ou": 0.07514933505493623,
+    "delta_r_anchor_strong_vs_ou": 0.15567759217199445,
+    "archived_collapse_r": 0.14443774900707168
+  },
+  "markov": {
+    "r_per_seed": [
+      0.6742815703399951,
+      0.6711732667568256,
+      0.6701887971391494,
+      0.6709412668942961,
+      0.6597866887323472,
+      0.6837784195515721,
+      0.6757146548246455,
+      0.6808680018961523,
+      0.6753244168984778,
+      0.6605903711968243
+    ],
+    "r_mean": 0.6722647454230286,
+    "r_se": 0.0024293509781760205,
+    "cover_per_seed": [
+      0.3683449074074074,
+      0.3654513888888889,
+      0.36930941358024694,
+      0.36863425925925924,
+      0.36689814814814814,
+      0.37191358024691357,
+      0.37451774691358025,
+      0.36853780864197533,
+      0.3653549382716049,
+      0.37287808641975306
+    ],
+    "paired_vs_ou": {
+      "delta_r": 0.33001754666747996,
+      "se": 0.009551875765143922,
+      "n": 10
+    }
+  },
+  "hawkes": {
+    "r_per_seed": [
+      0.2778947305921407,
+      0.3041227135503341,
+      0.2880696663139353,
+      0.25763736601612974,
+      0.3155558068299464,
+      0.2840135199631692,
+      0.2514992058424032,
+      0.29968958748061814,
+      0.241319279561048,
+      0.31581580748893257
+    ],
+    "r_mean": 0.2835617683638657,
+    "r_se": 0.008355937015747198,
+    "cover_per_seed": [
+      0.6037808641975309,
+      0.6030092592592593,
+      0.6575038580246914,
+      0.6249035493827161,
+      0.6121720679012346,
+      0.6075424382716049,
+      0.6501736111111112,
+      0.6100501543209876,
+      0.6146797839506173,
+      0.5847800925925926
+    ],
+    "paired_vs_ou": {
+      "delta_r": -0.05868543039168288,
+      "se": 0.009020859019736859,
+      "n": 10
+    }
+  },
+  "topo_anchored": {
+    "r_per_seed": [
+      0.4092673774454023,
+      0.4441990223114066,
+      0.44136994108606153,
+      0.3724495764316078,
+      0.45405969638707055,
+      0.4252335418069229,
+      0.37526910148621634,
+      0.42542066363288916,
+      0.3808264725621831,
+      0.4458699449550882
+    ],
+    "r_mean": 0.4173965338104849,
+    "r_se": 0.009872648933672734,
+    "cover_per_seed": [
+      0.5190972222222222,
+      0.5276813271604939,
+      0.576195987654321,
+      0.5634645061728395,
+      0.5219907407407407,
+      0.5216049382716049,
+      0.5532407407407407,
+      0.5102237654320988,
+      0.537133487654321,
+      0.5218942901234568
+    ],
+    "paired_vs_ou": {
+      "delta_r": 0.07514933505493623,
+      "se": 0.00934359571762637,
+      "n": 10
+    }
+  },
+  "strong_anchor_arm": {
+    "note": [
+      "static orographic offset doubled; NOT a phase-locking test"
+    ],
+    "r_per_seed": [
+      0.4948565429570472,
+      0.5242624054815597,
+      0.5252704495884235,
+      0.4485526100981944,
+      0.5352128353765253,
+      0.5076721163439103,
+      0.4583447989285791,
+      0.5032219964712182,
+      0.46382349370176074,
+      0.5180306603282121
+    ],
+    "r_mean": 0.4979247909275431,
+    "cover_per_seed": [
+      0.5148533950617284,
+      0.5160108024691358,
+      0.5559413580246914,
+      0.5582561728395061,
+      0.5043402777777778,
+      0.5085841049382716,
+      0.5303819444444444,
+      0.4871720679012346,
+      0.5212191358024691,
+      0.5043402777777778
+    ],
+    "paired_vs_ou": {
+      "delta_r": 0.15567759217199445,
+      "se": 0.009505504063775561,
+      "n": 10
+    },
+    "collapse_reproduced": false
+  },
+  "ou_reference": {
+    "r_per_seed": [
+      0.3314145328675251,
+      0.32896476345055403,
+      0.3957809016865677,
+      0.3403565771217843,
+      0.3357607260582112,
+      0.34215518925636085,
+      0.3271391075182877,
+      0.3245964427089988,
+      0.31433557761602066,
+      0.3819681692711758
+    ],
+    "r_mean": 0.3422471987555486,
+    "r_se": 0.008234009442233339,
+    "cover_mean": 0.5576997995376587
+  },
+  "archived_collapse_reference": {
+    "source": "results/audit.json:robust_clim.surf",
+    "r_mean": 0.14443774900707168,
+    "r_se": 0.012360918244934408,
+    "n_seeds": 10
+  },
+  "caveats": [
+    "Markov model uses simplified 3-state transition matrix; real cloud physics is more complex",
+    "Hawkes excitation parameter (0.3) is assumed; not calibrated to Earth data",
+    "Topographic anchor uses albedo as proxy for orography; real mountains have different signatures",
+    "sigma_cl is the OU-calibrated value and is NOT recalibrated per model, so the realized final-frame cover differs by arm (OU 0.5577, Markov 0.3692, Hawkes 0.6169, topo 0.5353, strong anchor 0.5201); absolute r across arms is therefore a sensitivity range, not a controlled A/B test",
+    "Each model runs simulate_dataset independently; cloud fields are not shared across models",
+    "The anchored arm is OU noise plus a STATIC orographic offset; it has no rotational phase locking, so it neither reproduces nor refutes the spine's surf_coupling collapse case (read from audit.robust_clim instead)",
+    "10 noise seeds; the collapse reference is the spine's 10-seed ensemble, so the two are not paired"
+  ],
+  "provenance": {
+    "module": "cloud_physics",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T05:50:33Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    },
+    "seeds_used": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "fast": false,
+    "wall_time_s": 3208.2
+  }
+}

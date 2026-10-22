@@ -34,7 +34,7 @@
       "snr_c_1800": 43.158875285522335,
       "qcor_over_qexo": 77403.24594257178
     },
-    "note": "Every value here is a v3 archive number. The manuscript tables in paper/main.tex are the authoritative presentation; this file exists so the demo site can ship a machine-readable blob."
+    "note": "Every value here is generated from results/ by this script. The tables in paper/main.tex are the authoritative presentation; this file exists so the demo site can ship a machine-readable blob."
   },
   "targets": [
     {
@@ -878,7 +878,7 @@
     "configurations": [
       "A_white_nodefl",
       "B_ou_nodefl",
-      "C_v2_deflate",
+      "C_deflate",
       "D_profiled_anchor",
       "E_profiled_free",
       "F_full_tdi"
@@ -894,7 +894,7 @@
         "se": 0.009,
         "n": 10
       },
-      "C_v2_deflate": {
+      "C_deflate": {
         "mean": 0.3422,
         "se": 0.008,
         "n": 10
@@ -926,7 +926,7 @@
         "se": 0.003,
         "n": 10
       },
-      "C_v2_deflate": {
+      "C_deflate": {
         "mean": 0.1058,
         "se": 0.006,
         "n": 10
@@ -948,6 +948,26 @@
       }
     },
     "paired": {
+      "F_vs_C": {
+        "mean": 4.109613754473829e-05,
+        "se": 2.9862682405527054e-05,
+        "ci_lo": -2.010086177434589e-05,
+        "ci_hi": 8.987346469052915e-05,
+        "p_t": 0.20203961715567997,
+        "p_sign": 0.109375,
+        "n": 10,
+        "sd": 9.443409344370153e-05
+      },
+      "reldev_F_vs_C": {
+        "mean": 0.008303850716343233,
+        "se": 0.002239061472835545,
+        "ci_lo": 0.004788560973390738,
+        "ci_hi": 0.01295782480390085,
+        "p_t": 0.004855263631263651,
+        "p_sign": 0.001953125,
+        "n": 10,
+        "sd": 0.007080534075291554
+      },
       "D_vs_C": {
         "mean": 0.0032279834677159613,
         "se": 0.0019098325143667822,
@@ -1063,6 +1083,37 @@
       9,
       7
     ],
+    "l_eff_cf90": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "l_eff_cl90": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "l_eff_thresholds": {
+      "crossing": 0.5,
+      "fidelity": 0.9
+    },
+    "l_eff_cf_note": "null means NO crossing: on a 36x72 grid the cloud-free r(l) never falls below 0.90 within the supported band, so an effective degree is undefined and is reported as null rather than as a fabricated number. The ceiling is the minimum of the curve, r_cf_min, at l_at_r_cf_min.",
+    "r_cf_min": 0.9866285338292963,
+    "l_at_r_cf_min": 17,
     "quadrature_err_by_l": [
       0.0003,
       0.001,
@@ -2597,6 +2648,15 @@
     "map_diff_normal_vs_qr": 1.6672697114635312e-13,
     "max_abs_map": 1.7492046156188594,
     "rank_A_unregularized": 2016,
+    "nullity_unregularized": 576,
+    "zero_columns": 288,
+    "zero_column_lat_rows": [
+      0,
+      1,
+      34,
+      35
+    ],
+    "nullity_note": "unregularized nullity = 2 x the identically-zero polar columns; the partners are their near-degenerate twins",
     "ns": 2592,
     "regime": {
       "n": 32,
@@ -2608,7 +2668,7 @@
       "note": "reduced size; the fiducial n=64 design would need ~2.8 GB in two float64 copies"
     },
     "fiducial_chunk_order_rel_diff": 3.4000660015301285e-13,
-    "fiducial_profiled_vs_v2_rel_diff": 0.0035824207027970213,
+    "fiducial_profiled_vs_deflate_rel_diff": 0.0035824207027970213,
     "fiducial_absmax": 1.0735624657653635,
     "note": "results/precision.json; cond_A_unregularized = +Infinity is reported as null (the unregularized normal matrix is rank 2016 of 2592)."
   }

@@ -1,3 +1,5 @@
+**Terminology note:** This letter was written when the repository carried parallel version trees. The labels v1/v2/v3 and the `v2` estimator have since been consolidated into a single version; the `v2` estimator is now named `deflate` (the approximate-deflation baseline). See `docs/HISTORY.md` for the full rename map and provenance.
+
 # Response to the Editor and Referee
 
 **Manuscript:** Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar

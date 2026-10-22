@@ -2,7 +2,7 @@
 plus one solar-type RV candidate, with focal-line placements, image-plane
 geometry/dynamics and an EXPLICITLY DEFINED nominal photon proxy.
 
-Rewritten for the revised manuscript (referee comments 10 / R27-R29).  The v2
+Written for the manuscript (referee comments 10 / R27-R29).  An earlier
 version of this file presented its output as a propagated uncertainty table and
 the numbers did not survive reproduction:
 
@@ -158,7 +158,7 @@ def transverse_accel(e, M, a_m, GM, cos_i):
 def tracking(e, P_s, a_m, ratio, T=90.0 * 86400.0, nph=480, nstep=1440):
     """Transverse velocity BUDGET over a window T, by explicit projection.
 
-    v2 quoted acc x T with an "uncertainty" of 2 e x (acc x T), which is neither
+    Quoting acc x T with an "uncertainty" of 2 e x (acc x T) is neither
     a projection nor a propagation.  Here:
 
       * dv_face_on_ref = the face-on circular magnitude of eq. R29,
@@ -201,7 +201,7 @@ def tracking(e, P_s, a_m, ratio, T=90.0 * 86400.0, nph=480, nstep=1440):
 
 
 # name, host, SpT, dist_pc, RA(h), Dec(deg), Msini(ME), P(d), a(AU), S(S_earth), note, ecc
-# Inputs are quoted from the discovery/validation literature as in v2; the
+# Inputs are quoted from the discovery/validation literature; the
 # revision changes what is DONE with them, not the catalogue itself.
 TARGETS = [
  ("Proxima Cen b","Proxima Centauri","M5.5V",1.301,14+29.7/60,-(62+41/60.),1.07,11.19,0.04857,0.65,"closest; ESPRESSO-confirmed",0.11),
@@ -389,7 +389,7 @@ lines = [
     "% Terran/Neptunian transition and use a rocky extrapolation.",
     r"\begin{table*}[t]",
     r"\centering",
-    r"\caption{\rev{Nearest confirmed temperate planets (plus one solar-type RV",
+    r"\caption{Nearest confirmed temperate planets (plus one solar-type RV",
     r"signal whose planet interpretation has since been refuted) as SGL imaging",
     r"targets -- explicitly a \emph{nominal-proxy} ",
     r"table, not a propagated uncertainty budget.  Radii use the Chen \&",
@@ -403,7 +403,7 @@ lines = [
     r"$\Delta v_{90}$ is the time-integral of the projected transverse",
     r"acceleration over 90\,d for a face-on orbit, with the range over starting",
     r"mean anomaly and the corresponding edge-on value in parentheses.",
-    r"Observing geometry $z=650$\,AU, $d=1$\,m, $\lambda=1\,\mu$m, 1800\,s.}}",
+    r"Observing geometry $z=650$\,AU, $d=1$\,m, $\lambda=1\,\mu$m, 1800\,s.}",
     r"\label{tab:targets}",
     r"\scriptsize",
     r"\setlength{\tabcolsep}{2.0pt}",

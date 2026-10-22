@@ -7,8 +7,8 @@ authors:
     given-names: Sanskar
     orcid: "https://orcid.org/0009-0008-4531-5707"
     email: sanskarsontakke@gmail.com
-version: "1.0"
-date-released: "2026-07-15"
+version: "1.0.0"
+date-released: "2026-10-22"
 license: MIT
 preferred-citation:
   type: article

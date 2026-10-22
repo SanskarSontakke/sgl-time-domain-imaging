@@ -210,7 +210,7 @@ const MEDIA_ITEMS: MediaItem[] = [
       { label: "Benchmark SNR", value: "43.16", desc: "per 1800 s dwell" }
     ],
     keyPoints: [
-      "Profiling is a rank-one anchored correction, not a plain mean subtraction: v2's approximate deflation is audited and replaced (Section 4.2).",
+      "Profiling is a rank-one anchored correction, not a plain mean subtraction: the approximate-deflation baseline is audited and replaced (Section 4.2).",
       "The disk-integrated albedo mode is exactly what profiling preserves; without the anchor it is projected out entirely.",
       "Metrics shown are the archived 10-seed means with ddof=1 standard errors, quoted from results/audit.json."
     ],

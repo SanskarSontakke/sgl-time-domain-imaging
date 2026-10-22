@@ -1,0 +1,225 @@
+{
+  "headline": {
+    "frobenius_ratio": 0.662241,
+    "frobenius_deflation_diag": 0.662286,
+    "profiling_retained_free": 0.0206,
+    "profiling_retained_anchored": 0.8472,
+    "naive_1_minus_1_over_nsc": 0.9375,
+    "v_fiducial": 46.184592,
+    "nullity": 288,
+    "crlb_vs_constant_map_a": 1260.9,
+    "crlb_informative": false,
+    "crlb_diag_null_directions": 144,
+    "crlb_diag_median": 0.1263573,
+    "crlb_diag_max": 7570.355,
+    "achieved_var_over_crlb_fid": 0.000698,
+    "nrmse_fid_pred": 35.509793,
+    "r_fid_pred": 0.0,
+    "sigma_k": 0.02317,
+    "sigma_cl": 0.440637,
+    "neff_sat_arm_a": 0.1892,
+    "neff_sat_arm_b": 0.1819,
+    "disc_r_pred_vs_sim_a": "degenerate_r_pred_is_zero",
+    "disc_r_pred_vs_sim_b": "degenerate_r_pred_is_zero",
+    "disc_nrmse_pred_vs_sim_a": 44.5825,
+    "disc_nrmse_pred_vs_sim_b": 44.7569,
+    "mp8_alias_a": 0.8,
+    "mp8_rat_dist_a": 0.0
+  },
+  "caveats": [
+    "CRLB cadence sweep uses analytic N_eff scaling calibrated at the fiducial per-pixel variance, not full Fisher builds at each point, so it inherits the scaling problem stated next.",
+    "The per-pixel CRLB from pinv(J) is NOT a comparable floor for this estimator: mean(diag V) = 4.6185e+01 exceeds var(truth) = 3.6627e-02 by 1260.9x, so the bound is weaker than predicting the constant map and r_pred is identically zero. J has nullity 288 and an infinite condition number, and pinv gives those 144 directions zero variance while the near-degenerate ones reach 7.57e+03 (median of the non-zero diagonal 1.26e-01). The archived regularised fit actually achieves (1-r^2)var = 3.225e-02 at M_p=16, i.e. 7.0e-04 of that pseudo-inverse bound; a biased estimator 'beating' an unbiased bound by three decades is the signature of the wrong yardstick, not of super-efficiency.",
+    "What this module does establish is the information accounting: trace(J_prof)/trace(J_unprof) and its agreement with the independent normal-matrix audit. The variance floor it also computes is reported for completeness and marked degenerate.",
+    "nrmse_sim derived from archived r_sim as sqrt(1 - r^2); archived cadence files do not store nrmse directly.",
+    "Aliasing explanation of M_p=8 non-monotonicity is qualitative; a full harmonic analysis would be needed for rigorous proof.",
+    "Fisher matrix built with constant sigma_k (not signal-dependent noise); valid in the background-dominated regime Q_cor >> Q_exo.",
+    "frobenius_ratio = trace(J_prof)/trace(J_unprof) = 0.662 is distinct from profiling constant-mode survival (free=0.0206, anchored=0.8472)."
+  ],
+  "provenance": {
+    "module": "fisher_bounds",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:34:27Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    }
+  },
+  "mp_grid": [
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "crlb_a": [
+    28.585976825148098,
+    31.92874691930959,
+    46.18459200982438,
+    80.9129410686785,
+    150.04175809884498
+  ],
+  "crlb_b": [
+    27.221898667373598,
+    30.25507594777676,
+    43.984108211344726,
+    80.22294160420591,
+    163.4502023448669
+  ],
+  "neff_a": [
+    3.9720906484822023,
+    7.112467740237579,
+    9.83411014658276,
+    11.226495017999392,
+    12.10821229115137
+  ],
+  "neff_b": [
+    3.9784254940289467,
+    7.202082247462673,
+    10.028383834944465,
+    11.270225193065302,
+    11.642479241354915
+  ],
+  "nrmse_pred_a": [
+    27.93676392656625,
+    29.525041484849137,
+    35.50979253785866,
+    47.00115961230453,
+    64.00378407788398
+  ],
+  "nrmse_pred_b": [
+    27.262067311738193,
+    28.740790102241725,
+    34.65352951387644,
+    46.80032516782832,
+    66.80243767748652
+  ],
+  "nrmse_sim_a": [
+    0.9988085817437721,
+    0.9850050653939817,
+    0.9383308024363396,
+    0.8680066573181583,
+    0.8208122880170584
+  ],
+  "nrmse_sim_b": [
+    0.9987788622331645,
+    0.9864477226020159,
+    0.945662483772722,
+    0.8670770350228733,
+    0.8173167550871256
+  ],
+  "r_sim_a": [
+    0.04879976470224656,
+    0.1725254217447324,
+    0.3457387817401672,
+    0.49655255799497944,
+    0.5711980285682029
+  ],
+  "r_sim_b": [
+    0.049404294916793705,
+    0.1640758683453977,
+    0.32514991432384893,
+    0.4981740813570523,
+    0.5761886165604554
+  ],
+  "r_pred_a": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "r_pred_b": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "frac_disc_r_a": [
+    -0.9999999979508097,
+    -0.9999999994203752,
+    -0.9999999997107643,
+    -0.9999999997986114,
+    -0.9999999998249294
+  ],
+  "frac_disc_r_b": [
+    -0.9999999979758845,
+    -0.9999999993905258,
+    -0.9999999996924496,
+    -0.9999999997992669,
+    -0.9999999998264457
+  ],
+  "frac_disc_nrmse_a": [
+    26.97008799733757,
+    28.97450725813504,
+    36.84357546610907,
+    53.14838608750662,
+    76.97615240971662
+  ],
+  "frac_disc_nrmse_b": [
+    26.295398751384806,
+    28.135644434980044,
+    35.64471215148735,
+    52.9748180059875,
+    80.73384095410113
+  ],
+  "alias_phase_a": [
+    0.466666666666665,
+    0.8000000000000007,
+    0.4666666666666668,
+    0.7999999999999998,
+    0.46666666666666656
+  ],
+  "alias_phase_b": [
+    0.5,
+    0.25,
+    0.625,
+    0.8125,
+    0.40625
+  ],
+  "rat_dist_a": [
+    0.03333333333333499,
+    6.661338147750939e-16,
+    0.033333333333333215,
+    2.220446049250313e-16,
+    0.03333333333333344
+  ],
+  "rat_dist_b": [
+    0.0,
+    0.0,
+    0.0,
+    0.012499999999999956,
+    0.006249999999999978
+  ],
+  "ts_b_list": [
+    7548.75,
+    3751.875,
+    1853.4375,
+    904.21875,
+    429.609375
+  ],
+  "wall_clock_s": 487.9
+}

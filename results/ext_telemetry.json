@@ -1,0 +1,175 @@
+{
+  "headline": {
+    "phase_err_1s_deg": 0.004167,
+    "phase_err_0_1s_deg": 0.000417,
+    "phase_err_10ms_deg": 4.2e-05,
+    "phase_err_f05_8_64s_deg": 0.036,
+    "archived_slope_r_per_deg": 0.001917,
+    "r_loss_1s": -7.987e-06,
+    "r_loss_0_1s": -7.99e-07,
+    "r_loss_10ms": -8e-08,
+    "r_loss_f05_8_64s": -6.9007e-05,
+    "r_interp_minus_base_1s": -5.069e-06,
+    "raw_volume_mb": 2.1,
+    "value_only_volume_mb": 0.262,
+    "total_samples": 65536,
+    "binned_volume_mb": 0.262,
+    "bookkept_over_binned": 8.0,
+    "duty_cycle": 0.9756,
+    "dv_lower_ms": 0.929,
+    "dv_symmetric_ms": 1.859
+  },
+  "caveats": [
+    "The r_loss_* fields linearise the phase-error response at the archived local slope measured from robprof_s0.npz (0.00192 per degree, two-sided over +/-5 deg); the response is visibly non-linear and asymmetric beyond a few degrees, so these numbers are only meaningful for the sub-degree phase errors a real timing budget produces.",
+    "Downlink volume is stated in two declared record conventions: 32 B/sample (time tag, value, uncertainty, bookkeeping; this is what raw_volume_mb reports) and 4 B/sample (float32 value only, value_only_volume_mb). Neither assumes lossless compression.",
+    "The gridded product holds one float32 per pixel per pass, which is exactly as many numbers as the campaign has measurements (n^2*mp = nbin*mp*nsc), so the value-only chain compresses by 1.00x and bookkept_over_binned measures the bookkeeping overhead, not a compression gain.",
+    "Kinematic check uses idealised rest-to-rest maneuver; actual trajectory includes gravity and drag.",
+    "The timing budget does not include thermal settling or detector readout time.",
+    "The 8.64 s worst-case timing error is derived as 1e-4 * Prot; the actual requirement depends on the science goal."
+  ],
+  "provenance": {
+    "module": "telemetry",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:22:37Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    }
+  },
+  "timing_sweep": {
+    "delta_t_s": [
+      1.0,
+      0.1,
+      0.01,
+      0.001
+    ],
+    "phase_err_deg": [
+      0.004166666666666667,
+      0.00041666666666666664,
+      4.166666666666667e-05,
+      4.166666666666667e-06
+    ],
+    "r_loss_linear": [
+      -7.986868128037963e-06,
+      -7.986868128037962e-07,
+      -7.986868128037964e-08,
+      -7.986868128037963e-09
+    ],
+    "r_from_robprof": [
+      0.3314094634358079,
+      0.331414025924353,
+      0.33141448217320746,
+      0.33141452779809294
+    ],
+    "r_loss_vs_archived_base": [
+      -5.069431716742123e-06,
+      -5.069431716631101e-07,
+      -5.069431718851547e-08,
+      -5.069431707749317e-09
+    ],
+    "archived_phase_err_deg": [
+      -10.0,
+      -5.0,
+      0.0,
+      5.0,
+      10.0
+    ],
+    "archived_r": [
+      0.29613120393447473,
+      0.3183293674203076,
+      0.33141453286752465,
+      0.3253312148074506,
+      0.30630796317444237
+    ],
+    "archived_slope_r_per_deg": 0.0019168483507291112,
+    "archived_r_at_zero_deg": 0.33141453286752465
+  },
+  "downlink_volume": {
+    "total_dwells": 4096,
+    "samples_per_dwell": 16,
+    "total_samples": 65536,
+    "bytes_value_only": 4,
+    "bytes_bookkept": 32,
+    "value_only_bytes": 262144,
+    "value_only_mb": 0.262144,
+    "bookkept_bytes": 2097152,
+    "bookkept_mb": 2.097152,
+    "binned_per_pass_bytes": 16384,
+    "binned_total_bytes": 262144,
+    "binned_total_mb": 0.262144,
+    "bookkept_over_binned": 8.0,
+    "value_only_over_binned": 1.0
+  },
+  "timing_budget": {
+    "t_slew_s": 30.0,
+    "t_settle_s": 10.0,
+    "t_sync_s": 5.0,
+    "t_overhead_s": 45.0,
+    "t_dwell_s": 1800.0,
+    "t_total_per_dwell_s": 1845.0,
+    "duty_cycle": 0.975609756097561
+  },
+  "kinematic_check": {
+    "pitch_m": 20.913397661737033,
+    "t_avail_s": 45.0,
+    "dv_lower_ms": 0.9294843405216459,
+    "dv_symmetric_ms": 1.8589686810432917,
+    "acc_symmetric_ms2": 0.04131041513429538
+  },
+  "vol_vs_mp": [
+    {
+      "mp": 4,
+      "bookkept_mb": 0.524288,
+      "value_only_mb": 0.065536,
+      "gridded_mb": 0.065536
+    },
+    {
+      "mp": 8,
+      "bookkept_mb": 1.048576,
+      "value_only_mb": 0.131072,
+      "gridded_mb": 0.131072
+    },
+    {
+      "mp": 16,
+      "bookkept_mb": 2.097152,
+      "value_only_mb": 0.262144,
+      "gridded_mb": 0.262144
+    },
+    {
+      "mp": 32,
+      "bookkept_mb": 4.194304,
+      "value_only_mb": 0.524288,
+      "gridded_mb": 0.524288
+    },
+    {
+      "mp": 64,
+      "bookkept_mb": 8.388608,
+      "value_only_mb": 1.048576,
+      "gridded_mb": 1.048576
+    }
+  ],
+  "wall_clock_s": 0.1
+}

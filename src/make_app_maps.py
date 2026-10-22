@@ -1,4 +1,4 @@
-"""Regenerate the web-demo reconstruction payload from the shipped v3 archive.
+"""Regenerate the web-demo reconstruction payload from the shipped archive.
 
 Consumes results/clouds.npz (merged by `run_experiments.py merge`) and writes
 one identical JSON payload to two places:
@@ -16,13 +16,13 @@ Conventions, chosen to match src/make_figures.py:
     coadd (B2)] and hold the per-fc means over the 10 paired seeds -- exactly
     the row order the sandbox component indexes;
   * clouds[fc_0] is all zeros (the cloud-free campaign has no OU realization);
-    fc >= 1 regenerate the opacity screen of the SAME v3 campaign the archived
+    fc >= 1 regenerate the opacity screen of the SAME campaign the archived
     maps come from -- the OU field seeded 100+11 (seed 11, expcommon.dataset)
     stepped to the first dwell time -- downsampled 2x2 from the 72x144 climate
     grid. It is a single snapshot, so its mean sits 0.00--0.04 below the
     campaign-mean realized cover in clouds.npz (which averages over all 4096
     dwell slots of the same field), and it is illustrative only: the
-    metric rows above are the authoritative v3 numbers.
+    metric rows above are the authoritative archive numbers.
 
 Run from src/:  python3 make_app_maps.py
 """
@@ -44,7 +44,7 @@ METHODS = ("profiled", "white", "b2")          # rows, in payload order
 KEYS = ("gls", "white", "b2")                  # payload key prefixes
 FCS = (0.0, 0.25, 0.40, 0.55, 0.70)
 
-# Normalized value -> natural RGB, extracted from the v1-era demo palette and
+# Normalized value -> natural RGB, from the demo palette and
 # re-fitted on the same [0, 0.7] window (deep ocean < 0.12, vegetated land,
 # then ice/snow above ~0.65).
 NAT_K = np.array([0, 16, 30, 34, 60, 90, 120, 150, 166, 172, 182, 187, 200,
@@ -99,8 +99,8 @@ def main():
             m = north_up(cl[f"map_{meth}_fc{i}"])
             payload[f"{pref}_cividis"][f"fc_{i}"] = render(m)
             payload[f"{pref}_natural"][f"fc_{i}"] = render(m, cmap_nat=True)
-    # Opacity overlay: regenerate the v3 OU field rather than reading the
-    # superseded v2-era part files (which are the only place a snapshot was
+    # Opacity overlay: regenerate the OU field rather than reading a
+    # stored snapshot (which is the only place a
     # ever stored, and whose scene conventions do not match the shipped maps).
     sys.path.insert(0, str(HERE))
     import expcommon as E

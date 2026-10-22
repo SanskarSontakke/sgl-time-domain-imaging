@@ -1,0 +1,376 @@
+{
+  "headline": {
+    "winner_feasibility": "GJ 273 b (Luyten b)",
+    "winner_snr_c_median": 485.94091278961207,
+    "winner_reachability": 0.4773269689737471,
+    "nominal_snr_winner": "Proxima Cen b",
+    "snr_ranking_changed_by_priors": false,
+    "feasibility_reorders_vs_snr": true,
+    "nominal_snr_ranking": [
+      "Proxima Cen b",
+      "Ross 128 b",
+      "GJ 273 b (Luyten b)",
+      "GJ 1061 d",
+      "Teegarden c"
+    ],
+    "posterior_snr_ranking": [
+      "Proxima Cen b",
+      "Ross 128 b",
+      "GJ 273 b (Luyten b)",
+      "GJ 1061 d",
+      "Teegarden c"
+    ],
+    "feasibility_ranking": [
+      "GJ 273 b (Luyten b)",
+      "Ross 128 b",
+      "GJ 1061 d",
+      "Proxima Cen b",
+      "Teegarden c"
+    ],
+    "p_top_two_snr_ordered": 0.6219,
+    "p_proxima_beats_gj273_snr": 0.73902,
+    "refuted_targets_excluded": [
+      "tau Cet e (alt.)"
+    ],
+    "n_draws": 50000
+  },
+  "comparison_table": [
+    {
+      "name": "Proxima Cen b",
+      "snr_c_median": 664.6535685531801,
+      "snr_c_nominal": 665.8,
+      "snr_c_68ci": [
+        439.0522145945533,
+        890.8890248123405
+      ],
+      "d_img_median_km": 31.77088923003968,
+      "d_img_nominal_km": 31.8,
+      "d_img_rederived_km": 31.7587866966492,
+      "d_img_match": true
+    },
+    {
+      "name": "Ross 128 b",
+      "snr_c_median": 580.5643219110059,
+      "snr_c_nominal": 581.4,
+      "snr_c_68ci": [
+        384.1964574874567,
+        779.336520261269
+      ],
+      "d_img_median_km": 13.063096652753318,
+      "d_img_nominal_km": 13.1,
+      "d_img_rederived_km": 13.063344715427421,
+      "d_img_match": true
+    },
+    {
+      "name": "GJ 1061 d",
+      "snr_c_median": 281.2679348470407,
+      "snr_c_nominal": 282.3,
+      "snr_c_68ci": [
+        185.61428573397183,
+        377.87110955311425
+      ],
+      "d_img_median_km": 12.685055262017507,
+      "d_img_nominal_km": 12.7,
+      "d_img_rederived_km": 12.680699059594055,
+      "d_img_match": true
+    },
+    {
+      "name": "Teegarden c",
+      "snr_c_median": 130.01049322089443,
+      "snr_c_nominal": 130.0,
+      "snr_c_68ci": [
+        85.93986127562405,
+        174.1865549925061
+      ],
+      "d_img_median_km": 10.900036895275976,
+      "d_img_nominal_km": 10.9,
+      "d_img_rederived_km": 10.900514865820023,
+      "d_img_match": true
+    },
+    {
+      "name": "GJ 273 b (Luyten b)",
+      "snr_c_median": 485.94091278961207,
+      "snr_c_nominal": 490.5,
+      "snr_c_68ci": [
+        318.64345913398273,
+        670.0604260575698
+      ],
+      "d_img_median_km": 14.347288714113635,
+      "d_img_nominal_km": 14.4,
+      "d_img_rederived_km": 14.349672770343862,
+      "d_img_match": true
+    },
+    {
+      "name": "tau Cet e (alt.)",
+      "snr_c_median": 895.8323824041574,
+      "snr_c_nominal": 909.2,
+      "snr_c_68ci": [
+        590.7139194947691,
+        1240.8907031922822
+      ],
+      "d_img_median_km": 16.467101503932597,
+      "d_img_nominal_km": 16.5,
+      "d_img_rederived_km": 16.49389697351983,
+      "d_img_match": true
+    }
+  ],
+  "targets": [
+    {
+      "name": "Proxima Cen b",
+      "msini": 1.07,
+      "above_transition": false,
+      "is_refuted": false,
+      "snr_c_posterior_median": 664.6535685531801,
+      "snr_c_68ci": [
+        439.0522145945533,
+        890.8890248123405
+      ],
+      "snr_c_nominal": 665.8,
+      "snr_c_bounded_range": [
+        283.0,
+        1148.5
+      ],
+      "snr_c_fractional_width": 0.6798079956169452,
+      "d_img_posterior_median_km": 31.77088923003968,
+      "d_img_68ci_km": [
+        30.50541980150204,
+        33.060984018476816
+      ],
+      "d_img_nominal_km": 31.8,
+      "d_img_rederived_km": 31.7587866966492,
+      "d_img_rederivation_match": true,
+      "reachability_score": 0.1737619461337967,
+      "beta_ecl_deg": 44.8,
+      "dv90_face_on_kms": 5.81,
+      "dv90_edge_on_kms": 3.7,
+      "n_draws": 50000,
+      "feasibility_index": 115.49149757657342
+    },
+    {
+      "name": "Ross 128 b",
+      "msini": 1.35,
+      "above_transition": false,
+      "is_refuted": false,
+      "snr_c_posterior_median": 580.5643219110059,
+      "snr_c_68ci": [
+        384.1964574874567,
+        779.336520261269
+      ],
+      "snr_c_nominal": 581.4,
+      "snr_c_bounded_range": [
+        247.1,
+        1002.9
+      ],
+      "snr_c_fractional_width": 0.6806137543436279,
+      "d_img_posterior_median_km": 13.063096652753318,
+      "d_img_68ci_km": [
+        12.554516471159985,
+        13.599318414299377
+      ],
+      "d_img_nominal_km": 13.1,
+      "d_img_rederived_km": 13.063344715427421,
+      "d_img_rederivation_match": true,
+      "reachability_score": 0.29368575624082227,
+      "beta_ecl_deg": 0.5,
+      "dv90_face_on_kms": 2.94,
+      "dv90_edge_on_kms": 1.87,
+      "n_draws": 50000,
+      "feasibility_index": 170.50347192687394
+    },
+    {
+      "name": "GJ 1061 d",
+      "msini": 1.64,
+      "above_transition": false,
+      "is_refuted": false,
+      "snr_c_posterior_median": 281.2679348470407,
+      "snr_c_68ci": [
+        185.61428573397183,
+        377.87110955311425
+      ],
+      "snr_c_nominal": 282.3,
+      "snr_c_bounded_range": [
+        120.0,
+        486.9
+      ],
+      "snr_c_fractional_width": 0.6835362300494567,
+      "d_img_posterior_median_km": 12.685055262017507,
+      "d_img_68ci_km": [
+        12.190703622736518,
+        13.20552218014107
+      ],
+      "d_img_nominal_km": 12.7,
+      "d_img_rederived_km": 12.680699059594055,
+      "d_img_rederivation_match": true,
+      "reachability_score": 0.42105263157894735,
+      "beta_ecl_deg": 60.8,
+      "dv90_face_on_kms": 1.68,
+      "dv90_edge_on_kms": 1.07,
+      "n_draws": 50000,
+      "feasibility_index": 118.4286041461224
+    },
+    {
+      "name": "Teegarden c",
+      "msini": 1.11,
+      "above_transition": false,
+      "is_refuted": false,
+      "snr_c_posterior_median": 130.01049322089443,
+      "snr_c_68ci": [
+        85.93986127562405,
+        174.1865549925061
+      ],
+      "snr_c_nominal": 130.0,
+      "snr_c_bounded_range": [
+        55.3,
+        224.3
+      ],
+      "snr_c_fractional_width": 0.6787659328924046,
+      "d_img_posterior_median_km": 10.900036895275976,
+      "d_img_68ci_km": [
+        10.471816971756963,
+        11.34622067143877
+      ],
+      "d_img_nominal_km": 10.9,
+      "d_img_rederived_km": 10.900514865820023,
+      "d_img_rederivation_match": true,
+      "reachability_score": 0.41493775933609955,
+      "beta_ecl_deg": -0.3,
+      "dv90_face_on_kms": 1.72,
+      "dv90_edge_on_kms": 1.1,
+      "n_draws": 50000,
+      "feasibility_index": 53.9462627472591
+    },
+    {
+      "name": "GJ 273 b (Luyten b)",
+      "msini": 2.89,
+      "above_transition": true,
+      "is_refuted": false,
+      "snr_c_posterior_median": 485.94091278961207,
+      "snr_c_68ci": [
+        318.64345913398273,
+        670.0604260575698
+      ],
+      "snr_c_nominal": 490.5,
+      "snr_c_bounded_range": [
+        208.5,
+        846.1
+      ],
+      "snr_c_fractional_width": 0.7231681006364098,
+      "d_img_posterior_median_km": 14.347288714113635,
+      "d_img_68ci_km": [
+        12.416674233522212,
+        16.599672335016162
+      ],
+      "d_img_nominal_km": 14.4,
+      "d_img_rederived_km": 14.349672770343862,
+      "d_img_rederivation_match": true,
+      "reachability_score": 0.4773269689737471,
+      "beta_ecl_deg": 16.5,
+      "dv90_face_on_kms": 1.34,
+      "dv90_edge_on_kms": 0.85,
+      "n_draws": 50000,
+      "feasibility_index": 231.9527030022015
+    },
+    {
+      "name": "tau Cet e (alt.)",
+      "msini": 3.93,
+      "above_transition": true,
+      "is_refuted": true,
+      "snr_c_posterior_median": 895.8323824041574,
+      "snr_c_68ci": [
+        590.7139194947691,
+        1240.8907031922822
+      ],
+      "snr_c_nominal": 909.2,
+      "snr_c_bounded_range": [
+        386.4,
+        1568.4
+      ],
+      "snr_c_fractional_width": 0.7257795057068878,
+      "d_img_posterior_median_km": 16.467101503932597,
+      "d_img_68ci_km": [
+        14.233158167801298,
+        19.05532461107375
+      ],
+      "d_img_nominal_km": 16.5,
+      "d_img_rederived_km": 16.49389697351983,
+      "d_img_rederivation_match": true,
+      "reachability_score": 0.9174311926605504,
+      "beta_ecl_deg": 24.8,
+      "dv90_face_on_kms": 0.11,
+      "dv90_edge_on_kms": 0.07,
+      "n_draws": 50000
+    }
+  ],
+  "deinclination_verification": {
+    "closed_form": 1.0978188176032546,
+    "numeric": 1.097818817603255,
+    "numeric_err": 3.019806626980426e-14,
+    "abs_err": 4.440892098500626e-16,
+    "matches_archive": true,
+    "matches_1e9": true
+  },
+  "assumed_priors": {
+    "albedo_uniform": [
+      0.15,
+      0.45
+    ],
+    "distance_fractional_sigma": 0.05,
+    "msini_fractional_sigma": 0.1,
+    "chen_kipping_terran_dispersion": 0.0403,
+    "chen_kipping_neptunian_dispersion": 0.146,
+    "chen_kipping_transition_M_earth": 2.04,
+    "chen_kipping_alpha": 0.279
+  },
+  "not_established": {
+    "per_target_distance_errors": "targets.json does not carry per-target distance uncertainties; assumed 5% Gaussian",
+    "per_target_msini_errors": "targets.json does not carry per-target M sin i uncertainties; assumed 10% Gaussian",
+    "catalogue_covariance_matrices": "Not available in the repository; parameters treated as independent",
+    "spectral_energy_distribution": "Wavelength-dependent photon correction not implemented (requires Turyshev & Toth 2022c/2023b)"
+  },
+  "caveats": [
+    "Distance uncertainty: assumed 5% fractional (Gaussian) -- targets.json does not carry per-target distance errors",
+    "M sin i uncertainty: assumed 10% fractional (Gaussian) -- actual errors depend on RV precision and are target-specific",
+    "Chen & Kipping Terran branch dispersion 4.03% applied to targets below transition",
+    "Chen & Kipping Neptunian branch dispersion 14.60% applied to targets above transition (rocky EXTRAPOLATION)",
+    "Albedo prior: uniform over [0.15, 0.45], matching the paper's bounded range",
+    "No per-target catalogue covariance matrices available -- each parameter drawn independently",
+    "De-inclination factor used as fixed constant (1.0978), not propagated (its uncertainty is negligible)",
+    "Reachability score is a simple 1/(1+dv) heuristic, not a full trajectory optimization"
+  ],
+  "provenance": {
+    "module": "target_uncertainty",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:02:51Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    },
+    "n_draws": 50000,
+    "seed_mc": 20260915,
+    "fast": false,
+    "wall_time_s": 0.5
+  }
+}

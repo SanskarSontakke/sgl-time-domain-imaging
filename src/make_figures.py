@@ -1,11 +1,11 @@
-"""Publication figures for the revised (v3) manuscript.
+"""Publication figures for the manuscript.
 
 Reads ../results/*.npz -- the archives written by ``run_experiments.py merge``
 from the per-(configuration, seed) part files -- and writes ../paper/figures/.
 
-v3 conventions this file depends on:
+Archive conventions this file depends on:
   * clouds.npz stores metrics as (method, fc, seed) matrices with
-    methods = (profiled, v2, white, b2, b1, b2coarse) and reconstructed maps as
+    methods = (profiled, deflate, white, b2, b1, b2coarse) and reconstructed maps as
     ``map_<method>_fc<i>`` (36x72 flattened).
   * cadence_photons.npz / cadence_wallclock.npz are the two resource arms
     (A: mp*ts = 8 h fixed; B: wall clock <= 90 d fixed), 6 paired seeds each.
@@ -36,14 +36,15 @@ plt.rcParams.update({
 
 NLAT, NLON = E.NLAT, E.NLON
 COL = {"profiled": "#0173b2", "white": "#de8f05", "b2": "#029e73",
-       "b1": "#d55e00", "cf": "#56b4e9", "iid": "#cc79a7", "v2": "#8c8c8c"}
+       "b1": "#d55e00", "cf": "#56b4e9", "iid": "#cc79a7", "deflate": "#8c8c8c"}
 LBL = {"profiled": "TDI (profiled, OU-whitened)",
        "white": "clouds-as-white-noise GLS (B3)",
        "b2": "16-bin phase-binned coadd (B2)",
        "b1": "phase-blind coadd (B1)",
        "b2coarse": "8-bin phase-binned coadd",
-       "v2": "v2 deflation (approximate)"}
-METHODS = ("profiled", "v2", "white", "b2", "b1", "b2coarse")
+       "deflate": "approximate deflation (baseline)"}
+METHODS = E.RECON_METHODS if hasattr(E, "RECON_METHODS") else \
+    ("profiled", "deflate", "white", "b2", "b1", "b2coarse")
 
 
 def show_map(ax, m, vmin=0.0, vmax=0.7, title=None):
@@ -455,9 +456,77 @@ def fig7_lambda_sigma():
     plt.close(fig)
 
 
+def fig8_objective_vs_quality():
+    """The objective and image quality do not want the same weight
+    (referee Part VII item 16, F-07/F-09b).
+
+    Both panels are chi2-versus-r parametric curves over the SAME lambda grid,
+    one per regime, because the two regimes fail in DIFFERENT ways:
+
+      * cloudy (f_c = 0.558): the objective has an interior minimum at
+        lambda ~ 0.1 while r and SSIM both keep rising to the right edge of the
+        tested grid (lambda = 10), so the objective's preferred weight is two
+        decades below the best quality reachable here.
+      * cloud-free (f_c = 0): the objective increases monotonically with
+        lambda, so its optimum is the LEFT edge (lambda = 1e-5, r = 0.9752)
+        while r peaks at lambda = 0.3 (0.9916) and SSIM at lambda = 1 -- here
+        the objective is anti-correlated with quality over the useful range.
+
+    Marking the frozen lambda = 3e-3 completes the point: in neither regime does
+    a truth-blind reading of this objective select the quality optimum, which is
+    why lambda is frozen by convention and reported with a measured sensitivity
+    rather than tuned.
+    """
+    panels = (("(a) cloudy $f_c=0.558$", DATA / "lambda_sweep_f3.npz",
+               "lower right"),
+              ("(b) cloud-free $f_c=0$", DATA / "lambda_sweep_f0.npz",
+               "lower left"))
+    if not any(f.exists() for _, f, _ in panels):
+        print("fig_objective: lambda sweep archives missing, skipped"); return
+
+    fig, axs = plt.subplots(1, 2, figsize=(6.4, 2.5))
+    for ax, (ttl, f, lloc) in zip(axs, panels):
+        if not f.exists():
+            ax.set_visible(False)
+            continue
+        d = np.load(f)
+        lam = d["lam"]
+        r = d["r"].mean(0)
+        r_sd = d["r"].std(0, ddof=1) / np.sqrt(d["r"].shape[0])
+        chi = d["chi2"].mean(0)
+        ic = int(np.argmin(chi))
+        ir = int(np.argmax(r))
+        ifz = int(np.argmin(np.abs(lam - E.LAM_GLS)))
+        ax.errorbar(chi, r, yerr=r_sd, fmt="o-", ms=3.2, lw=0.9,
+                    color=COL["profiled"], capsize=1.6, zorder=2)
+        handles = []
+        for k, lab, col, dy in ((ic, r"$\chi^2$ optimum", COL["white"], -12),
+                                (ir, "$r$ optimum", COL["profiled"], 9),
+                                (ifz, "frozen weight", "0.35", -12)):
+            ax.plot(chi[k], r[k], "s", ms=7.5, mfc="none", mec=col, mew=1.4, zorder=3)
+            side = -7 if k == len(lam) - 1 else 6
+            ax.annotate(f"$\\lambda$={lam[k]:g}", xy=(chi[k], r[k]),
+                        xytext=(side, dy), textcoords="offset points",
+                        fontsize=5.8, color=col,
+                        ha="right" if side < 0 else "left")
+            handles.append(plt.Line2D([], [], ls="none", marker="s", ms=5.5,
+                                      mfc="none", mec=col, mew=1.3, label=lab))
+        ax.legend(handles=handles, frameon=False, fontsize=5.6, loc=lloc,
+                  handlelength=1.2, borderaxespad=0.3)
+        span = max(r.max() - r.min(), 1e-6)
+        ax.set_ylim(r.min() - 0.16 * span, r.max() + 0.20 * span)
+        ax.set_xlabel(r"whitened $\chi^2$ (mean over seeds)")
+        ax.set_ylabel(r"Pearson $r$")
+        ax.set_title(ttl, fontsize=7.5)
+        ax.tick_params(labelsize=6.5)
+    fig.tight_layout()
+    fig.savefig(FIGS / "fig_objective.pdf")
+    plt.close(fig)
+
+
 FIGURES = {"1": fig1_model, "2": fig2_validation, "3": fig3_gallery,
            "4": fig4_ssim_fc, "5": fig5_cadence, "6": fig6_robust,
-           "7": fig7_lambda_sigma}
+           "7": fig7_lambda_sigma, "8": fig8_objective_vs_quality}
 if __name__ == "__main__":
     import sys
     which = sys.argv[1:] or sorted(FIGURES)

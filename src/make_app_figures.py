@@ -2,8 +2,8 @@
 
 public/figures/ is what the web app displays, and it is a *copy* of
 paper/figures/ -- so it silently goes stale the moment a figure is regenerated
-for the paper.  This happened in the v2 -> v3 transition: the shipped PNGs were
-still rendered from the v2 PDFs and contradicted the manuscript captions.
+for the paper.  Historically the shipped PNGs were
+rendered from stale PDFs and contradicted the manuscript captions.
 
 The script copies each vector PDF and rasterises a 200 dpi PNG next to it, so
 the gallery always shows exactly what paper/main.tex includes.  It shells out to

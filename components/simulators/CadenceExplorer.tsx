@@ -31,7 +31,7 @@ export default function CadenceExplorer() {
   const exposureDays = (nPositions * totalBudgetSec) / 86400;
   const wallDays = exposureDays + ((revisits - 1) * nPositions * overheadSec) / 86400;
 
-  // v3 arm-A cadence law (fixed 8 h per raster position, 6 paired seeds),
+  // arm-A cadence law (fixed 8 h per raster position, 6 paired seeds),
   // archived in results/audit.json as cadence_photons.{r_profiled,r_white}
   // {mean,se,n=6}.  Only these five points exist.
   const ARCHIVED_R: Record<number, { r: number; se: number; white: number }> = {

@@ -226,7 +226,7 @@ def illum(geo, t, decl=0.0):
 
     The sub-stellar unit vector in the sky frame (X, Y, Zc) is
         s = (cos(decl) sin(alpha), sin(decl), cos(decl) cos(alpha)),
-    with alpha the orbital phase angle.  `decl`=0 reproduces the v2 behaviour,
+    with alpha the orbital phase angle.  `decl`=0 reproduces the
     in which the sub-stellar point is pinned to the equator and never moves in
     latitude; a nonzero `decl` supplies the seasonal migration that obliquity
     implies, so that illumination and the spin-pole geometry are transformed
@@ -275,7 +275,7 @@ def render_disk(map_flat, geo, t, nlat, nlon, prot=PROT, static=False,
 def make_kernel(n, pitch, d=DTEL, core="point"):
     """Discrete aperture-averaged SGL kernel.
 
-    core="point"    : v2 behaviour, K(0)=1 with a d/(4 rho) tail.  The central
+    core="point"    : K(0)=1 with a d/(4 rho) tail.  The central
                       value is a POINT sample of the singular kernel, whereas
                       every other entry is also a point sample of a function
                       whose cell average is far smaller; the resulting
@@ -581,12 +581,12 @@ def estimate_cloud_sigma(camp, truthF, sgl, fc, tau_days, seed=999,
       geometry="fixed"   -- stochastic ensemble variance of the cloudy-minus-
         clean convolved signal at ONE fixed illumination/viewing geometry.
         This is the quantity the working covariance C is meant to represent.
-      geometry="varying" -- the v2 behaviour, which also integrates the
+      geometry="varying" -- which also integrates the
         DETERMINISTIC variation of the cloud contrast across illumination
         phase.  That is not stochastic scatter about the ensemble mean and
         inflates sigma_cl.
 
-    The v2 pipeline used "varying"; the revised pipeline uses "fixed" and
+    The shipped pipeline uses "fixed" and
     reports both so the difference is auditable.
     """
     if fc <= 0:
@@ -744,7 +744,7 @@ def solve_gls(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
 
     deflate=True uses the ORIGINAL approximate procedure (subtract the
     per-slot mean of F and y and rescale the marginal noise by
-    sqrt(1-1/N_sc)).  Kept only so the published v2 numbers remain
+    sqrt(1-1/N_sc)).  Kept as the approximate-deflation baseline so its
     reproducible; it is NOT statistically exact -- see solve_gls_profiled.
     """
     ns = F.shape[1]
@@ -820,7 +820,7 @@ def solve_gls_profiled(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
         A_free = F^T C^-1 F - sum_j G_j^T H_j^-1 G_j,
         b_free = F^T C^-1 y - sum_j G_j^T H_j^-1 g_j.
 
-    ANCHORING.  A small print of the v2 discussion said the offsets "remove
+    ANCHORING.  A naive discussion says the offsets "remove
     6.25% of the rank".  Both before and after profiling the normal matrix here
     has the SAME nullity (the unobservable polar cap of the equirectangular
     basis), so slot profiling removes NO rank at all -- see
@@ -900,10 +900,10 @@ def solve_gls_profiled(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
         A0 -= Gj2.T @ np.matmul(Sj, Gj).reshape(cj * mp, ns)
         b0 -= Gj2.T @ np.matmul(Sj, gj[:, :, None]).reshape(cj * mp)
         if anchor:
-            v1 = Sj.sum(axis=2).reshape(cj * mp)        # H_j^-1 1_mp
+            u1 = Sj.sum(axis=2).reshape(cj * mp)        # H_j^-1 1_mp
             S_tot += float(Sj.sum())
-            qvec += Gj2.T @ v1
-            m_tot += float(v1 @ gj.ravel())
+            qvec += Gj2.T @ u1
+            m_tot += float(u1 @ gj.ravel())
     A, b = A0, b0
     if deflate and anchor:
         A = A + np.outer(qvec, qvec) / S_tot
@@ -1038,7 +1038,7 @@ def whitened_normal(F, camp, sigma, sigma_cl, tau_days, white=False, chunk=64):
 
 def profiling_information_audit(F, camp, sigma, sigma_cl, tau_days, lam, LtL,
                                 nlon=None):
-    """What slot-offset profiling actually costs, replacing the v2 claim that
+    """What slot-offset profiling actually costs, replacing the claim that
     deflation "removes 6.25% of the rank and preserves 93.75% of the
     information".
 
@@ -1352,7 +1352,7 @@ def phase_scrambled_null(map_2d, seed=42):
     grid.  It ignores the cos(lat) cell areas, does not respect the sphere, and
     contains neither photon noise nor the reconstruction operator, so it is not
     a null for any detection statistic reported in the paper.  Retained only so
-    the v2 numbers remain reproducible."""
+    the baseline remains reproducible."""
     rng = np.random.default_rng(seed)
     F = np.fft.rfft2(map_2d)
     mag = np.abs(F)
@@ -1404,7 +1404,7 @@ def inject_systematics(y, camp, drift_amp=1e-4, streamer_amp=1e-4, seed=77,
         delta_y = eps * Q_cor / Q_exo = 7.7403e4 * eps   (planet units)
 
     -- not as eps itself.  ``units="coronal"`` therefore multiplies the given
-    amplitudes by QCOR/QEXO; ``units="planet"`` takes them literally.  The v2
+    amplitudes by QCOR/QEXO; ``units="planet"`` takes them literally.  An earlier
     injection used raw ~1e-4 amplitudes on y, i.e. it injected a fractional
     error of the PLANET signal, which is ~7.7e4 times too small to represent a
     coronal residual.
@@ -1463,10 +1463,10 @@ def effective_cadence_overhead(ts, mp, wallclock_days=90.0, slew_s=30.0, settle_
 
 
 def check_numerical_precision(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
-                              block=256):
+                              block=256, nlon=None):
     """Auditable precision diagnostics with ONE stated norm convention.
 
-    The v2 version reported max|ds|/max|s| next to RMS(ds)/std(s) -- different
+    Reporting max|ds|/max|s| next to RMS(ds)/std(s) -- different
     denominators, which is why its RMS exceeded its maximum -- and it compared
     SOLUTION vectors while the manuscript described it as a normal-matrix
     accumulation test.
@@ -1483,7 +1483,10 @@ def check_numerical_precision(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
       * blocked vs single-pass accumulation in float64;
       * normal-equation solve vs a QR solve of the same whitened design.
 
-    Every relative error uses one stated denominator.
+    Every relative error uses one stated denominator.  ``nlon``, when given, is
+    the basis width used only to report WHICH latitude rows the raster fails to
+    sample at this problem size (``zero_column_lat_rows``), which is what makes
+    the unregularized nullity size-dependent.
     """
     ns = F.shape[1]
     tau = tau_days * 86400.0
@@ -1546,6 +1549,16 @@ def check_numerical_precision(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
     s_qr = np.linalg.lstsq(Aug, bgu, rcond=None)[0]
     del Aug
     resid = float(np.linalg.norm(b64 - Al @ s_np) / nb_)
+    rank = int(np.linalg.matrix_rank(A64))
+    # Which columns of the design are identically zero, i.e. which scene cells
+    # the circular image-plane raster never samples at THIS size.  Chunked so
+    # the float32 design is never materialised twice.
+    col = np.zeros(ns, dtype=np.float64)
+    for i in range(0, F.shape[0], 4096):
+        blk = np.asarray(F[i:i + 4096], np.float32)
+        col += (blk.astype(np.float64) ** 2).sum(axis=0)
+    col = np.sqrt(col)
+    dead = np.where(col < 1e-12 * max(col.max(), 1e-30))[0]
     return dict(
         denom_A_fro=nA, denom_b_norm=nb_,
         rel_err_A_fro=float(np.linalg.norm(A32 - A64, ord="fro") / nA),
@@ -1562,7 +1575,13 @@ def check_numerical_precision(F, y, camp, sigma, sigma_cl, tau_days, lam, LtL,
         map_diff_normal_vs_qr=float(np.linalg.norm(s_np - s_qr) /
                                     np.linalg.norm(s_np)),
         max_abs_map=float(np.abs(s_np).max()),
-        rank_A_unregularized=int(np.linalg.matrix_rank(A64)),
+        rank_A_unregularized=rank,
+        nullity_unregularized=int(ns - rank),
+        zero_columns=int(dead.size),
+        zero_column_lat_rows=(sorted({int(i) // nlon for i in dead})
+                              if nlon else []),
+        nullity_note=("unregularized nullity = 2 x the identically-zero polar "
+                      "columns; the partners are their near-degenerate twins"),
         ns=int(ns),
     )
 

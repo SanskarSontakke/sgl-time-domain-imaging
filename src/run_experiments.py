@@ -65,7 +65,7 @@ def cmd_setup():
 
 # ----------------------------------------------------------------------
 def cmd_quadrature():
-    """Exact vs implemented exposure response: the v2 3-node equal-spaced
+    """Exact vs implemented exposure response: an equal-spaced three-node
     sub-exposure average is not a convergent quadrature of the smear kernel."""
     ts_list = [7200.0, 3600.0, 1800.0, 900.0, 450.0]
     nsubs = (3, 5, 8, 16, 32)
@@ -79,7 +79,7 @@ def cmd_quadrature():
     nodes3 = (np.array([-1 / 3.0, 0.0, 1 / 3.0]) * 2.0)   # equal-spaced, +-ts/3
 
     def equal3(ts, mm):
-        """The rule v2 actually used: three EQUAL-WEIGHT sub-exposures at
+        """The equal-weight three-node rule: three EQUAL-WEIGHT sub-exposures at
         -ts/3, 0, +ts/3.  Note this is NOT a Gauss-Legendre 3-node rule; its
         node spacing is ts/3, so at ts = 7200 s it samples every 2400 s = 10 deg
         of longitude, which is exactly the period of azimuthal harmonic m = 36.
@@ -105,7 +105,7 @@ def cmd_quadrature():
     kc = S.kinematic_check()
     (E.DATA / "kinematics.json").write_text(json.dumps(kc, indent=2, default=float))
     # shapes: exact/gl* are (ts, m); eq3_max_err is (ts,); gl_max_err is (nsub, ts)
-    log(f"equal-3 (v2 rule): max |response error| over m<=40, by dwell "
+    log(f"equal-3 rule: max |response error| over m<=40, by dwell "
         + " ".join(f"{t:.0f}s:{e:.2e}" for t, e in zip(ts_list, eq3_err)))
     for i, ns_ in enumerate(nsubs):
         log(f"GL nsub={ns_:2d}: max |response error| by dwell "
@@ -232,12 +232,25 @@ def cmd_validation():
         out[n] = dict(pitch=pitch, K00_point=float(K_pt[n, n]),
                       K00_cellmean=float(K_cm[n, n]), K00_ref=float(core_ref[2, 2]),
                       cellmean_formula=float(S.DTEL * np.log(1 + np.sqrt(2)) / pitch),
+                      # NOTE (referee F-14): K(rho) = d/(4 rho) is homogeneous of
+                      # degree -1, so every RELATIVE point-vs-cell-average error
+                      # is a function of (offset/pitch) only and is therefore
+                      # exactly constant in n.  It is a discretization bias, not
+                      # a convergence test -- hence the n-dependent entries below.
                       offdiag_rel_err_point=float(np.abs(K_pt[n, n + 1] / core_ref[2, 3] - 1)),
                       offdiag_rel_err_cellmean=float(np.abs(K_cm[n, n + 1] / core_ref[2, 3] - 1)),
+                      cellmean_formula_vs_brute=float(K_cm[n, n] / core_ref[2, 2] - 1),
+                      energy_frac_3x3=float(np.abs(K_cm[n - 1:n + 2, n - 1:n + 2]).sum()
+                                            / np.abs(K_cm).sum()),
+                      energy_frac_r4=float(np.abs(K_cm[n - 4:n + 5, n - 4:n + 5]).sum()
+                                           / np.abs(K_cm).sum()),
+                      peak_to_offdiag_cm=float(K_cm[n, n] / K_cm[n, n + 1]),
                       point_over_cellmean=float(K_pt[n, n] / K_cm[n, n]))
         log(f"n={n:4d} pitch={pitch:8.2f} m: K00 point={K_pt[n, n]:.5f} "
             f"cellmean={K_cm[n, n]:.5f} brute={core_ref[2, 2]:.5f} "
-            f"ratio={out[n]['point_over_cellmean']:.1f}x")
+            f"ratio={out[n]['point_over_cellmean']:.1f}x "
+            f"E(3x3)/E={out[n]['energy_frac_3x3']:.4f} "
+            f"E(r<=4)/E={out[n]['energy_frac_r4']:.4f}")
     (E.DATA / "kernel_convergence.json").write_text(json.dumps(out, indent=2, default=float))
 
     # --- both cores on a uniform disk, and the RECONSTRUCTION consequence
@@ -261,7 +274,7 @@ def cmd_validation():
         sglop = E.sgl(core)
         dat = E.dataset(camp, sglop, truthF, 11, 0.0)
         F = E.get_F(camp, sglop, cache=False)
-        s = E.fit("v2", F, dat, camp, 0.0, white=True, deflate=False)
+        s = E.fit("deflate", F, dat, camp, 0.0, white=True, deflate=False)
         rows[core] = E.evaluate(s, truth_c)
         log(f"cloud-free n=64 core={core:8s}: r={rows[core]['pearson']:.4f} "
             f"ssim={rows[core]['ssim']:.4f} nrmse={rows[core]['nrmse']:.4f}")
@@ -269,12 +282,12 @@ def cmd_validation():
 
 
 # ----------------------------------------------------------------------
-def _fits(F, dat, camp, sigma_cl, fc, truth_c, sglop, want=("profiled", "v2",
+def _fits(F, dat, camp, sigma_cl, fc, truth_c, sglop, want=("profiled", "deflate",
                                                             "white", "b2", "b1",
                                                             "b2coarse")):
     """All estimators on ONE dataset; returns (metrics-by-name, maps-by-name)."""
     out, maps = {}, {}
-    for sv in ("profiled", "v2"):
+    for sv in ("profiled", "deflate"):
         if sv not in want:
             continue
         s = E.fit(sv, F, dat, camp, sigma_cl)
@@ -335,7 +348,7 @@ def cmd_clouds(i_fc):
                     **_flat(mets), **{f"map_{k}": v for k, v in maps.items()})
         log(f"{name} fc={fc:g} cover={dat['covers'].mean():.3f} "
             f"profiled r={mets['profiled']['pearson']:.4f} "
-            f"ssim={mets['profiled']['ssim']:.4f} | v2 {mets['v2']['pearson']:.4f} "
+            f"ssim={mets['profiled']['ssim']:.4f} | def {mets['deflate']['pearson']:.4f} "
             f"| white {mets['white']['pearson']:.4f} | b2 {mets['b2']['pearson']:.4f}")
 
 
@@ -360,7 +373,7 @@ def cmd_cadence(arm, i_cfg):
             log(f"{name} exists, skipping"); continue
         dat = E.get_dat(camp, sglop, truthF, seed, E.FC)
         mets, maps = _fits(F, dat, camp, sigma_cl, E.FC, truth_c, sglop,
-                           want=("profiled", "v2", "white", "b2", "b2coarse", "b1"))
+                           want=("profiled", "deflate", "white", "b2", "b2coarse", "b1"))
         E.save_part(name, arm=arm, mp=mp, ts=camp.ts, seed=seed,
                     wall=camp.wallclock_days, duty=camp.duty_cycle,
                     photons_h=mp * camp.ts / 3600.0, exposure_days=camp.exposure_days,
@@ -369,7 +382,7 @@ def cmd_cadence(arm, i_cfg):
                     **_flat(mets), **{f"map_{k}": v for k, v in maps.items()})
         log(f"{name} mp={mp:2d} ({arm}) ts={camp.ts:.1f}s "
             f"wall={camp.wallclock_days:.2f}d r: profiled "
-            f"{mets['profiled']['pearson']:.4f} v2 {mets['v2']['pearson']:.4f} "
+            f"{mets['profiled']['pearson']:.4f} def {mets['deflate']['pearson']:.4f} "
             f"white {mets['white']['pearson']:.4f} b2 {mets['b2']['pearson']:.4f} "
             f"b1 {mets['b1']['pearson']:.4f}")
 
@@ -378,7 +391,7 @@ def cmd_cadence(arm, i_cfg):
 def cmd_cadence_control(arm, i_cfg, kind):
     """Causal controls for the cadence law, per arm (referee C6).
 
-    v2 quoted r_cf and r_iid columns that were never produced by the shipped
+    An earlier draft quoted r_cf and r_iid columns that were never produced by the shipped
     pipeline.  Here the two controls use the SAME campaign objects, the same
     seeds and the same estimator as cmd_cadence:
 
@@ -431,7 +444,7 @@ def cmd_components():
 
       A  time-dependent F, white covariance, no slot handling
       B  time-dependent F, OU whitening, no slot handling
-      C  v2 approximate deflation (per-slot mean + sqrt(1-1/Nsc) rescale)
+      C  approximate deflation (per-slot mean + sqrt(1-1/Nsc) rescale)
       D  EXACT anchored nuisance profiling, white (referee eq. R11 + sum a=0)
       E  free (un-anchored) profiling  -> shows the constant-mode degeneracy
       F  full TDI = D with OU whitening
@@ -448,7 +461,7 @@ def cmd_components():
                                                     white=True),
         "B_ou_nodefl": lambda y, sg: S.solve_gls(F, y, camp, sg, sigma_cl,
                                                  E.TAU_DAYS, E.LAM_GLS, LtL),
-        "C_v2_deflate": lambda y, sg: S.solve_gls(F, y, camp, sg, sigma_cl,
+        "C_deflate": lambda y, sg: S.solve_gls(F, y, camp, sg, sigma_cl,
                                                   E.TAU_DAYS, E.LAM_GLS, LtL,
                                                   deflate=True),
         "D_profiled_anchor": lambda y, sg: S.solve_gls_profiled(F, y, camp, sg,
@@ -481,7 +494,7 @@ def cmd_components():
                for k, v in maps.items()}
         E.save_part(name, seed=seed, nsub=E.NSUB, sigma_cl=sigma_cl,
                     **_flat(out), **{f"reldev_{k}": v for k, v in dev.items()},
-                    map_D=ref, map_C=maps["C_v2_deflate"],
+                    map_D=ref, map_C=maps["C_deflate"],
                     map_F=maps["F_full_tdi"], map_E=maps["E_profiled_free"],
                     norm_D=float(np.linalg.norm(ref)),
                     **{f"norm_{k}": float(np.linalg.norm(v)) for k, v in maps.items()})
@@ -579,7 +592,7 @@ def cmd_robust_geom():
 def cmd_robust_prof():
     """Profile likelihood over (assumed-period error, assumed-phase error).
 
-    v2 quoted a 40% period shift from a coarse grid; here the objective is the
+    An earlier draft quoted a 40% period shift from a coarse grid; here the objective is the
     WHITENED chi^2 evaluated in the same space the estimator is fitted in, the
     grid is centred on the true values, and both the anchored and the free
     profile are reported (the free profile has no mean-albedo mode, so its
@@ -628,7 +641,7 @@ def cmd_robust_prof():
 # ----------------------------------------------------------------------
 def cmd_resolution():
     """Real-harmonic scale-dependent correlation with an explicit quadrature
-    error bound (v2 used a 2D-FFT r(l), which is not a spherical-harmonic
+    error bound (a 2D-FFT r(l), which is not a spherical-harmonic
     decomposition on an equirectangular grid)."""
     camp = E.campaign()
     sglop = E.sgl("point")
@@ -693,7 +706,7 @@ def cmd_nulls_cloud(n_real=40):
 
 def cmd_nulls():
     """Land-ocean d' against (a) the shared cloud-only physical null and (b) a
-    label permutation.  Replaces the v2 phase-scrambled equirectangular
+    label permutation.  Replaces a phase-scrambled equirectangular
     surrogate, which mixed a geometry transform into a photometric test."""
     camp = E.campaign()
     sglop = E.sgl("point")
@@ -719,7 +732,7 @@ def cmd_nulls():
 
 # ----------------------------------------------------------------------
 def cmd_systematics():
-    """Quantitative systematic injection (referee C7: v2 asserted robustness but
+    """Quantitative systematic injection (referee C7: an earlier draft asserted robustness but
     measured nothing).  A fractional coronal residual eps enters the light curve
     as delta_y = eps * (Qcor/Qexo) = 7.7403e4 * eps in planet-reference units
     (R22), so eps is swept in CORONAL units and the drift and streamer terms are
@@ -782,8 +795,8 @@ LAM_GRID = [1e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1, 3e-1]
 def cmd_lam_sweep(i_fc):
     """Regularization-parameter sweep (referee minor comment on lambda).
 
-    v2 fixed lambda = 3e-3 and asserted the result was insensitive without
-    measuring it; the v3 robustness text explicitly withdrew that.  Here the
+    Freezing lambda = 3e-3 and asserting insensitivity without measuring it is
+    not testable.  Here the
     SAME cached campaign (fiducial ts/mp, seed set, GL-16 quadrature) is solved
     at nine lambda values spanning five decades, for one cloud fraction per
     invocation -- the cloud-free (i_fc=0) and fiducial-cloudy (i_fc=3) cases the
@@ -935,7 +948,7 @@ def cmd_sigma_sens():
 
 
 # ----------------------------------------------------------------------
-SIGCL_ESTS = ("free", "v2")
+SIGCL_ESTS = E.SIGCL_ESTIMATORS
 
 
 def cmd_sigma_sens_est():
@@ -945,9 +958,9 @@ def cmd_sigma_sens_est():
     (exact anchored profiling + OU whitening).  The claim that the reconstruction
     does not use sigma_cl is an estimator claim, so it has to be tested for the
     two variants the paper compares TDI against: the free (un-anchored) profiler
-    and v2's approximate deflation.  Same fiducial cloudy data, same factor grid,
+    and the approximate deflation.  Same fiducial cloudy data, same factor grid,
     same scoring; whitened chi2 is only defined for the profiled system, so the
-    free/v2 arms record r/ssim/bias and the map-level conclusion only.
+    free/deflate arms record r/ssim/bias and the map-level conclusion only.
     """
     camp = E.campaign()
     sglop = E.sgl("point")
@@ -1036,7 +1049,7 @@ def cmd_robust_morph(i_fc):
     """Surface-map morphology sensitivity (referee major comment 6: 'sensitivity
     to ... substantially different surface-map morphologies').
 
-    v2's morphology scans are NOT inherited: they were produced with the
+    The earlier morphology scans are NOT inherited: they were produced with the
     superseded spherical quadrature and the approximate deflation estimator.
     This re-runs them on the corrected pipeline.  Three truth fields at the same
     quantile land fraction (30% of the fine grid above the albedo threshold, so
@@ -1379,7 +1392,7 @@ def cmd_precision():
     dat = E.get_dat(camp, sglop, truthF, 11, E.FC)
     d = S.check_numerical_precision(F, np.asarray(dat["y"], float), camp,
                                     np.asarray(dat["sigma"], float), sigma_cl,
-                                    E.TAU_DAYS, E.LAM_GLS, LtL)
+                                    E.TAU_DAYS, E.LAM_GLS, LtL, nlon=E.NLON)
     d["regime"] = dict(n=camp.n, nsc=camp.nsc, mp=camp.mp, ts=camp.ts,
                        nsamp=camp.nsamp, ns=F.shape[1],
                        note="reduced size; the fiducial n=64 design would need "
@@ -1398,13 +1411,13 @@ def cmd_precision():
     s_alt = S.solve_gls_profiled(F64, np.asarray(dat64["y"], float), camp64,
                                  np.asarray(dat64["sigma"], float), sc64,
                                  E.TAU_DAYS, E.LAM_GLS, LtL, jchunk=256)
-    s_v2 = S.solve_gls(F64, np.asarray(dat64["y"], float), camp64,
+    s_def = S.solve_gls(F64, np.asarray(dat64["y"], float), camp64,
                        np.asarray(dat64["sigma"], float), sc64, E.TAU_DAYS,
                        E.LAM_GLS, LtL, deflate=True)
     d["fiducial_chunk_order_rel_diff"] = float(
         np.linalg.norm(s_ref - s_alt) / np.linalg.norm(s_ref))
-    d["fiducial_profiled_vs_v2_rel_diff"] = float(
-        np.linalg.norm(s_ref - s_v2) / np.linalg.norm(s_ref))
+    d["fiducial_profiled_vs_deflate_rel_diff"] = float(
+        np.linalg.norm(s_ref - s_def) / np.linalg.norm(s_ref))
     d["fiducial_absmax"] = float(np.abs(s_ref).max())
     (E.DATA / "precision.json").write_text(json.dumps(d, indent=2, default=float))
     for k, v in d.items():
@@ -1443,7 +1456,7 @@ def cmd_merge():
                  qcor_over_qexo=float(S.QCOR / S.QEXO))}
 
     # --- clouds -------------------------------------------------------
-    methods = ("profiled", "v2", "white", "b2", "b1", "b2coarse")
+    methods = E.RECON_METHODS
     shape = (len(methods), len(E.FCS), len(E.SEEDS))
     keys = ("pearson", "ssim", "nrmse", "bias", "contrast")
     stack = {k: np.full(shape, np.nan) for k in keys}
@@ -1486,7 +1499,7 @@ def cmd_merge():
         pearson_sd_pooled={m: _sd(stack["pearson"][mi])
                            for mi, m in enumerate(methods)},
         fiducial=dict(fc=E.FCS[fcbest], r_profiled=_ms(stack["pearson"][0, fcbest]),
-                      r_v2=_ms(stack["pearson"][1, fcbest]),
+                      r_deflate=_ms(stack["pearson"][1, fcbest]),
                       r_white=_ms(stack["pearson"][2, fcbest]),
                       r_b2=_ms(stack["pearson"][3, fcbest]),
                       bias_profiled=_ms(stack["bias"][0, fcbest]),
@@ -1517,7 +1530,7 @@ def cmd_merge():
     tss_by_arm = {}
     for arm in ("photons", "wallclock"):
         r = {m: np.full((len(mp_arr), len(E.CAD_SEEDS)), np.nan)
-             for m in ("profiled", "v2", "white", "b2", "b1", "b2coarse")}
+             for m in E.RECON_METHODS}
         walls = np.full(len(mp_arr), np.nan); tss = np.full(len(mp_arr), np.nan)
         phot = np.full(len(mp_arr), np.nan); duty = np.full(len(mp_arr), np.nan)
         expd = np.full(len(mp_arr), np.nan); ovd = np.full(len(mp_arr), np.nan)
@@ -1542,7 +1555,7 @@ def cmd_merge():
             exposure_days=expd.tolist(), overhead_days=ovd.tolist(),
             fits_90d=[bool(x <= E.ARM_WALL + 1e-9) for x in walls],
             r_profiled=[_ms(r["profiled"][i]) for i in range(len(mp_arr))],
-            r_v2=[_ms(r["v2"][i]) for i in range(len(mp_arr))],
+            r_deflate=[_ms(r["deflate"][i]) for i in range(len(mp_arr))],
             r_white=[_ms(r["white"][i]) for i in range(len(mp_arr))],
             r_b2=[_ms(r["b2"][i]) for i in range(len(mp_arr))],
             r_b1=[_ms(r["b1"][i]) for i in range(len(mp_arr))],
@@ -1628,8 +1641,7 @@ def cmd_merge():
                   "NOT independent looks and the gain from mp saturates."))
 
     # --- components ---------------------------------------------------
-    comps = ("A_white_nodefl", "B_ou_nodefl", "C_v2_deflate", "D_profiled_anchor",
-             "E_profiled_free", "F_full_tdi")
+    comps = E.ABLATION_COMPONENTS
     cm = {c: np.full(len(E.SEEDS), np.nan) for c in comps}
     cs = {c: np.full(len(E.SEEDS), np.nan) for c in comps}
     cb = {c: np.full(len(E.SEEDS), np.nan) for c in comps}
@@ -1646,22 +1658,58 @@ def cmd_merge():
             cb[c][j] = d.get(f"{c}_bias", np.nan)
             dev[c][j] = d.get(f"reldev_{c}", np.nan)
             nrm[c][j] = d.get(f"norm_{c}", np.nan)
+    # F - C and F - B contrasts, emitted HERE rather than derived by hand in a
+    # notebook: every array a manuscript number rests on has to come out of a
+    # named writer (referee F-22).  The reldev contrast is the relative
+    # deviation of the approximate-deflation map from the full TDI map,
+    # ||F - C|| / ||F|| -- measured against F, not against D, which is what the
+    # previously hand-computed array (misleadingly named reldev_F_minus_C) did.
+    d_r = cm["F_full_tdi"] - cm["C_deflate"]
+    d_ssim = cs["F_full_tdi"] - cs["C_deflate"]
+    d_dev = dev["F_full_tdi"] - dev["C_deflate"]
+    rel_fc = np.full(len(E.SEEDS), np.nan)
+    for j in range(len(E.SEEDS)):
+        p = E.part_path(f"comp_s{j}")
+        if not p.exists():
+            continue
+        d = np.load(p)
+        rel_fc[j] = float(np.linalg.norm(d["map_F"] - d["map_C"])
+                          / np.linalg.norm(d["map_F"]))
+
+    def _sem(v):
+        v = v[np.isfinite(v)]
+        return float(v.std(ddof=1) / np.sqrt(v.size)) if v.size > 1 else float("nan")
+
     np.savez(E.DATA / "component_ablation.npz", methods=np.array(comps),
              seeds=np.array(E.SEEDS), **{f"r_{c}": v for c, v in cm.items()},
              **{f"ssim_{c}": v for c, v in cs.items()},
              **{f"bias_{c}": v for c, v in cb.items()},
              **{f"reldev_{c}": v for c, v in dev.items()},
-             **{f"norm_{c}": v for c, v in nrm.items()})
+             **{f"norm_{c}": v for c, v in nrm.items()},
+             r_diff_F_minus_C=d_r, ssim_diff_F_minus_C=d_ssim,
+             reldev_diff_F_minus_C=d_dev, reldev_F_vs_C=rel_fc,
+             mean_r_diff_F_minus_C=float(np.nanmean(d_r)),
+             sem_r_diff_F_minus_C=_sem(d_r),
+             mean_ssim_diff_F_minus_C=float(np.nanmean(d_ssim)),
+             sem_ssim_diff_F_minus_C=_sem(d_ssim),
+             mean_reldev_diff_F_minus_C=float(np.nanmean(d_dev)),
+             sem_reldev_diff_F_minus_C=_sem(d_dev),
+             mean_reldev_F_vs_C=float(np.nanmean(rel_fc)),
+             sem_reldev_F_vs_C=_sem(rel_fc))
     audit["components"] = {c: dict(r=_ms(cm[c]), ssim=_ms(cs[c]), bias=_ms(cb[c]),
                                   reldev_vs_D_mean=float(np.nanmean(dev[c])),
                                   norm_mean=float(np.nanmean(nrm[c])))
                            for c in comps}
+    audit["components"]["paired_F_vs_C"] = E.paired_stats(cm["F_full_tdi"],
+                                                          cm["C_deflate"])
+    audit["components"]["paired_reldev_F_vs_C"] = E.paired_stats(
+        rel_fc, np.zeros_like(rel_fc))
     audit["components"]["paired_D_vs_C"] = E.paired_stats(cm["D_profiled_anchor"],
-                                                          cm["C_v2_deflate"])
+                                                          cm["C_deflate"])
     audit["components"]["paired_F_vs_B"] = E.paired_stats(cm["F_full_tdi"],
                                                           cm["B_ou_nodefl"])
     audit["components"]["norm_ratio_C_vs_D"] = float(
-        np.nanmean(nrm["C_v2_deflate"] / nrm["D_profiled_anchor"]))
+        np.nanmean(nrm["C_deflate"] / nrm["D_profiled_anchor"]))
 
     # --- robustness ---------------------------------------------------
     rob = {}
@@ -1756,17 +1804,63 @@ def cmd_merge():
             quad.append(d["quadrature_err"])
     if r_cf:
         r_cf = np.array(r_cf); r_cl = np.array(r_cl); quad = np.array(quad)
+        # The cloud-free curve never crosses r < 0.5 on a 36x72 grid, so a
+        # threshold-0.5 "effective degree" is undefined there and was being
+        # stored as a blank (referee F-20).  Two changes: keep the 0.5 crossing
+        # for the cloudy curve, and define a FIDELITY crossing at r < 0.90 for
+        # both curves, which is finite and is the honest cloud-free ceiling.
+        leff_cf = np.array([_first_below(l, x) if _first_below(l, x) is not None
+                            else np.nan for x in r_cf], float)
+        leff_cf90 = np.array([_first_below(l, x, 0.90) if _first_below(l, x, 0.90)
+                              is not None else np.nan for x in r_cf], float)
+        leff_cl = np.array([_first_below(l, x) if _first_below(l, x) is not None
+                            else np.nan for x in r_cl], float)
+        leff_cl90 = np.array([_first_below(l, x, 0.90) if _first_below(l, x, 0.90)
+                              is not None else np.nan for x in r_cl], float)
         np.savez(E.DATA / "spatial_resolution.npz", l=l, r_cf=r_cf, r_cl=r_cl,
-                 quadrature_err=quad,
-                 l_eff_cf=[_first_below(l, x) for x in r_cf],
-                 l_eff_cl=[_first_below(l, x) for x in r_cl])
-        leff = [x for x in [_first_below(l, y) for y in r_cl] if x is not None]
+                 quadrature_err=quad, l_eff_cf=leff_cf, l_eff_cl=leff_cl,
+                 l_eff_cf90=leff_cf90, l_eff_cl90=leff_cl90)
+        _j = lambda a: [None if not np.isfinite(v) else int(v) for v in a]
+        leff = [x for x in _j(leff_cl) if x is not None]
+        # (2l+1)-weighted band means (referee F-03 / Part VII item 16).  An
+        # UNWEIGHTED average of per-band means over-weights high degrees, which
+        # carry (2l+1) more modes each: that is exactly what made the merged
+        # "l >= 13" row hide the fact that the 13-16 band GAINS under smoothing
+        # while 17-20 loses.  Both conventions are emitted so the text can name
+        # the one it uses.
+        RBANDS = [(1, 4), (5, 8), (9, 12), (13, 16), (17, 20)]
+
+        def _band(curve, weighted):
+            out = []
+            for a, b in RBANDS:
+                sel = (l >= a) & (l <= b)
+                w = (2.0 * l[sel] + 1.0) if weighted else np.ones(int(sel.sum()))
+                out.append(float(np.average(np.asarray(curve)[sel], weights=w)))
+            return out
         audit["resolution"] = dict(
             n_seeds=len(r_cf), l=l.tolist(), r_cf_mean=r_cf.mean(0).tolist(),
             r_cl_mean=r_cl.mean(0).tolist(), r_cl_sd=r_cl.std(0, ddof=1).tolist(),
             quadrature_err_mean=quad.mean(0).tolist(),
-            l_eff_cf=[x for x in [_first_below(l, y) for y in r_cf]],
-            l_eff_cl=[x for x in [_first_below(l, y) for y in r_cl]],
+            band_labels=[f"{a}-{b}" for a, b in RBANDS],
+            r_cf_band_unweighted=_band(r_cf.mean(0), False),
+            r_cf_band_weighted=_band(r_cf.mean(0), True),
+            r_cl_band_unweighted=_band(r_cl.mean(0), False),
+            r_cl_band_weighted=_band(r_cl.mean(0), True),
+            band_weighting_note=("weighted = sum (2l+1) r(l) / sum (2l+1) over the "
+                                 "band; unweighted = arithmetic mean of the degrees "
+                                 "in the band. The two differ most at high l, which "
+                                 "is why an unweighted mean of 13-16 and 17-20 can "
+                                 "conceal a resolved gain in 13-16."),
+            l_eff_cf=_j(leff_cf), l_eff_cl=_j(leff_cl),
+            l_eff_cf90=_j(leff_cf90), l_eff_cl90=_j(leff_cl90),
+            l_eff_thresholds=dict(crossing=0.5, fidelity=0.90),
+            l_eff_cf_note=("null means NO crossing: on a 36x72 grid the cloud-free "
+                           "r(l) never falls below 0.90 within the supported band, so "
+                           "an effective degree is undefined and is reported as null "
+                           "rather than as a fabricated number. The ceiling is the "
+                           "minimum of the curve, r_cf_min, at l_at_r_cf_min."),
+            r_cf_min=float(np.nanmin(r_cf.mean(0))),
+            l_at_r_cf_min=int(l[int(np.nanargmin(r_cf.mean(0)))]),
             scale_km=[S.harmonic_l_to_scale_km(x) for x in (leff or [np.nan])])
     dp = []
     for j in range(len(E.SEEDS)):
@@ -1979,7 +2073,7 @@ def cmd_merge():
             note=("sigma_cl is the ASSUMED cloud amplitude; r is scored against "
                   "truth while chi2 is the whitened objective under that same "
                   "assumed covariance"))
-    # sigma_cl sensitivity for the other two estimators (free, v2 deflation)
+    # sigma_cl sensitivity for the other two estimators (free, deflate)
     sge = {}
     for est in SIGCL_ESTS:
         rws = [np.load(E.part_path(f"sigcl{est}_s{j}"))

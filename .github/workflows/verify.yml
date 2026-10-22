@@ -1,0 +1,46 @@
+name: verify
+
+# Part VII item 15: the fast gates must run on every push, not only when a
+# human remembers to type them.  Everything here is the tier that costs minutes
+# rather than hours; the simulation tier is deliberately left out (see
+# tests/README.md for how to run it).
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned scientific stack
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: G-1..G-4 consolidation gates (single-version narrative)
+        run: bash tools/verify_flat.sh
+
+      - name: Unit + archive-consistency tests (fast tier)
+        run: python -m pytest tests -q -m "not slow"
+
+      - name: Cheap end-to-end stage through the public entry point
+        run: python -m reproduce_all --stages quadrature
+
+      - name: Fast-tier reproduction in a scratch tree (diff against shipped archives)
+        run: python -m reproduce_all --fast
+
+      - name: Byte-level archive drift check against the frozen baseline
+        run: python -m reproduce_all --check

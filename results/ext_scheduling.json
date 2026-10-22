@@ -1,0 +1,123 @@
+{
+  "provenance": {
+    "module": "scheduling",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:22:39Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    },
+    "n_seeds": 6,
+    "mp_test": 8,
+    "fast_tier": false
+  },
+  "caveats": [
+    "No map is re-simulated here: building a custom operator per candidate schedule is the expensive step, so the comparison is analytic in N_eff and no paired Delta r exists in this archive.",
+    "N_eff gain from greedy gap placement is 0.82% at M_p=8, computed for 6 nominal noise seeds that all share the same schedule, so the seed count is not an independent sample of anything.",
+    "Phase aliasing analysis is exact for uniform spacing; the optimized schedule breaks uniform spacing and is therefore not covered by the aliasing statement.",
+    "The gap optimiser maximises an AR(1) N_eff proxy, not image quality; a schedule that is better on this proxy is not thereby better on the map."
+  ],
+  "headline": {
+    "n_eff_uniform": 5.096907372149922,
+    "n_eff_optimized": 5.138729940765037,
+    "improvement_pct": 0.821,
+    "conclusion": "N_eff improvement from optimized scheduling is <1% (5.097 -> 5.139) at M_p=8. The M_p=8 non-monotonicity of the cadence law is NOT a scheduling artifact but a phase-grid aliasing effect: at M_p=8 the harmonic m=8 falls exactly on the sampling grid (45 deg phase spacing), so no reordering of the dwells within that M_p can un-alias it; this module does not re-simulate the map, so the reconstruction dip itself is taken from the cadence ablation, not from here",
+    "aliasing_at_mp8": {
+      "aliased_harmonics": [
+        8,
+        16,
+        24,
+        32,
+        40
+      ],
+      "lowest_aliased": 8,
+      "phase_spacing_deg": 45.0
+    }
+  },
+  "summary": {
+    "mp_test": 8,
+    "n_eff_uniform": 5.096907372149922,
+    "n_eff_optimized": 5.138729940765037,
+    "delta_n_eff": 0.0418225686151148,
+    "aliasing": {
+      "4": {
+        "aliased_harmonics": [
+          4,
+          8,
+          12,
+          16,
+          20
+        ],
+        "lowest_aliased": 4,
+        "phase_spacing_deg": 90.0
+      },
+      "8": {
+        "aliased_harmonics": [
+          8,
+          16,
+          24,
+          32,
+          40
+        ],
+        "lowest_aliased": 8,
+        "phase_spacing_deg": 45.0
+      },
+      "16": {
+        "aliased_harmonics": [
+          16,
+          32,
+          48,
+          64,
+          80
+        ],
+        "lowest_aliased": 16,
+        "phase_spacing_deg": 22.5
+      },
+      "32": {
+        "aliased_harmonics": [
+          32,
+          64,
+          96,
+          128,
+          160
+        ],
+        "lowest_aliased": 32,
+        "phase_spacing_deg": 11.25
+      },
+      "64": {
+        "aliased_harmonics": [
+          64,
+          128,
+          192,
+          256,
+          320
+        ],
+        "lowest_aliased": 64,
+        "phase_spacing_deg": 5.625
+      }
+    }
+  }
+}

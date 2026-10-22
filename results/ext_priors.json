@@ -1,0 +1,174 @@
+{
+  "provenance": {
+    "module": "priors",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:19:15Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    },
+    "n_seeds": 4,
+    "lam_tv": 0.01,
+    "sklearn_version": "1.9.1",
+    "fast_tier": false
+  },
+  "caveats": [
+    "TV uses post-processing of TDI solution (not joint optimization)",
+    "Sparse coding learns dictionary from TDI solution (circular)",
+    "Learned denoiser: not_established (requires training set)",
+    "4 noise seeds"
+  ],
+  "headline": {
+    "tdi_r": 0.3491291937816077,
+    "tv_r": 0.3308738051763043,
+    "sparse_r": 0.3511763956212588,
+    "conclusion": "Ranked by r: sparse r=0.3512, TDI r=0.3491, TV r=0.3309. TDI-TV paired +0.0183 [+0.0160, +0.0213] sign-test p=0.125 on 4 seeds; TDI-sparse paired -0.0020 [-0.0083, +0.0047] sign-test p=1.000. This is NOT a clean prior bake-off: the TV arm post-processes the TDI map, and the sparse dictionary is learned from it, so a margin either way partly measures the operator rather than an independent prior. At four noise seeds no pairing here can be significant (exact sign-test floor p=0.125), and the sparse arm is not distinguishable from TDI."
+  },
+  "summary": {
+    "tdi": {
+      "pearson": {
+        "mean": 0.3491291937816077,
+        "sd": 0.03148414476836854,
+        "se": 0.01574207238418427,
+        "n": 4
+      },
+      "ssim": {
+        "mean": 0.16036871859768598,
+        "sd": 0.016408237400980602,
+        "se": 0.008204118700490301,
+        "n": 4
+      },
+      "nrmse": {
+        "mean": 0.7509619696026997,
+        "sd": 0.017573051626132968,
+        "se": 0.008786525813066484,
+        "n": 4
+      },
+      "bias": {
+        "mean": 0.232988739414146,
+        "sd": 0.004029150940941451,
+        "se": 0.0020145754704707255,
+        "n": 4
+      },
+      "contrast": {
+        "mean": 0.48205138603746867,
+        "sd": 0.0544872413663805,
+        "se": 0.02724362068319025,
+        "n": 4
+      }
+    },
+    "tv": {
+      "pearson": {
+        "mean": 0.3308738051763043,
+        "sd": 0.028568989218221586,
+        "se": 0.014284494609110793,
+        "n": 4
+      },
+      "ssim": {
+        "mean": 0.1468672301411278,
+        "sd": 0.015291589714228282,
+        "se": 0.007645794857114141,
+        "n": 4
+      },
+      "nrmse": {
+        "mean": 0.7660786574646092,
+        "sd": 0.01695918068367613,
+        "se": 0.008479590341838065,
+        "n": 4
+      },
+      "bias": {
+        "mean": 0.23298873941414597,
+        "sd": 0.004029150940941416,
+        "se": 0.002014575470470708,
+        "n": 4
+      },
+      "contrast": {
+        "mean": 0.49384702660715274,
+        "sd": 0.05479957884156866,
+        "se": 0.02739978942078433,
+        "n": 4
+      }
+    },
+    "sparse": {
+      "pearson": {
+        "mean": 0.3511763956212588,
+        "sd": 0.03583631187958463,
+        "se": 0.017918155939792315,
+        "n": 4
+      },
+      "ssim": {
+        "mean": 0.16101511066533045,
+        "sd": 0.019419582870914436,
+        "se": 0.009709791435457218,
+        "n": 4
+      },
+      "nrmse": {
+        "mean": 0.7322531940573627,
+        "sd": 0.01831287679269054,
+        "se": 0.00915643839634527,
+        "n": 4
+      },
+      "bias": {
+        "mean": 0.23283541363154198,
+        "sd": 0.004280323427875462,
+        "se": 0.002140161713937731,
+        "n": 4
+      },
+      "contrast": {
+        "mean": 0.419822634150914,
+        "sd": 0.050883937943775916,
+        "se": 0.025441968971887958,
+        "n": 4
+      }
+    },
+    "learned": {
+      "status": "not_established",
+      "reason": "not_established: requires training set of truth/reconstruction pairs"
+    }
+  },
+  "paired": {
+    "tv": {
+      "mean": 0.018255388605303416,
+      "se": 0.0015126408144379138,
+      "ci_lo": 0.015990728606657928,
+      "ci_hi": 0.02127449266440519,
+      "p_t": 0.0012242593850997478,
+      "p_sign": 0.125,
+      "n": 4,
+      "sd": 0.0030252816288758276
+    },
+    "sparse": {
+      "mean": -0.0020472018396510694,
+      "se": 0.004068893173108113,
+      "ci_lo": -0.00829700820290924,
+      "ci_hi": 0.004658271534504224,
+      "p_t": 0.649486328520049,
+      "p_sign": 1.0,
+      "n": 4,
+      "sd": 0.008137786346216227
+    }
+  }
+}

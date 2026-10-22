@@ -1,0 +1,142 @@
+{
+  "provenance": {
+    "module": "evidence_lambda",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:45:02Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    },
+    "n_seeds": 10,
+    "lam_grid": [
+      1e-05,
+      0.0001,
+      0.0003,
+      0.001,
+      0.003,
+      0.01,
+      0.03,
+      0.1,
+      0.3
+    ],
+    "fast_tier": false,
+    "prior_convention": "Tikhonov/ridge with Laplacian precision \u03bbL\u1d40L, \u03bb_eff = \u03bb tr(A)/tr(LtL)"
+  },
+  "caveats": [
+    "Evidence uses deflated system (matching the deflate solver convention)",
+    "Constant offset in log-evidence is dropped (only relative comparison matters)",
+    "Archived lamsweep parts reused for r/SSIM/\u03c7\u00b2 comparison columns",
+    "Grid spans 1e-05..3e-01; the evidence maximum and the r/SSIM maxima lie ON that boundary, so they are edge locations, not located optima (chi2 is the only interior one)",
+    "10 noise seeds"
+  ],
+  "headline": {
+    "lambda_evidence_cloudy": 1e-05,
+    "lambda_evidence_cloudfree": 1e-05,
+    "lambda_r_max_cloudy": 0.3,
+    "lambda_ssim_max_cloudy": 0.3,
+    "lambda_chi2_min_cloudy": 0.1,
+    "chi2_frozen_minus_min_cloudy": 54.130223298496276,
+    "log_evidence_first_minus_last_cloudy": 2894.914723806094,
+    "conclusion": "Log-evidence DECREASES monotonically across the grid (1e-05 to 3e-01) in the cloudy case, so its maximum is the left edge lambda=1e-05, not an interior optimum; cloud-free it is decreasing with maximum lambda=1e-05. chi2 alone has an interior minimum (lambda=1e-01); r and SSIM both rise to the right edge (lambda=3e-01). The determinant term therefore does not locate a preferred smoothing scale on this grid: an evidence-based rule would drive the solver to the weakest regularisation allowed, which is the opposite of what the original wording claimed. No truth-blind criterion is established here; the grid has to be extended in both directions before any of these locations can be called an optimum."
+  },
+  "comparison": {
+    "evidence_lam_cloudy": 1e-05,
+    "r_lam_cloudy": 0.3,
+    "ssim_lam_cloudy": 0.3,
+    "chi2_lam_cloudy": 0.1,
+    "evidence_vs_r": false,
+    "evidence_vs_ssim": false,
+    "evidence_vs_chi2": false
+  },
+  "summary": {
+    "evidence_optimal": {
+      "cloudy": {
+        "lam": 1e-05,
+        "value": -5471.86828495239,
+        "se": 34.6703017640036,
+        "where": "left_edge",
+        "monotone": "decreasing"
+      },
+      "cloudfree": {
+        "lam": 1e-05,
+        "value": 1579217745.138961,
+        "se": 593371.7771607132,
+        "where": "left_edge",
+        "monotone": "decreasing"
+      }
+    },
+    "evidence_curve": {
+      "cloudy": {
+        "1e-05": -5471.86828495239,
+        "0.0001": -5829.051763058369,
+        "0.0003": -6011.482504501162,
+        "0.001": -6230.216892226549,
+        "0.003": -6460.739040366557,
+        "0.01": -6771.993605454982,
+        "0.03": -7142.201939848806,
+        "0.1": -7690.920285482098,
+        "0.3": -8366.783008758484
+      },
+      "cloudfree": {
+        "1e-05": 1579217745.138961,
+        "0.0001": 1579185574.2871706,
+        "0.0003": 1579142898.6593678,
+        "0.001": 1579027232.104986,
+        "0.003": 1578761332.6082683,
+        "0.01": 1578012388.636073,
+        "0.03": 1576361240.6308095,
+        "0.1": 1572379051.4775748,
+        "0.3": 1565132639.609181
+      }
+    },
+    "r_max": {
+      "cloudy": {
+        "lam": 0.3,
+        "value": 0.3981972665565292,
+        "where": "right_edge"
+      }
+    },
+    "ssim_max": {
+      "cloudy": {
+        "lam": 0.3,
+        "value": 0.1385650508455294,
+        "where": "right_edge"
+      }
+    },
+    "chi2_min": {
+      "cloudy": {
+        "lam": 0.1,
+        "value": 43019.927337854955,
+        "where": "interior"
+      }
+    },
+    "frozen_lambda": 0.003,
+    "frozen_vs_chi2_min": {
+      "chi2_frozen": 43074.05756115345,
+      "chi2_min": 43019.927337854955
+    }
+  }
+}
