@@ -176,6 +176,8 @@ To run the entire suite from the repository root:
 
 ```bash
 python3 -m reproduce_all --fast    # 8 analytic/audit stages, ~4.5 min, no simulation
+python3 -m reproduce_all --fast --tol 1e-12   # the same tier as CI runs it: exact
+                                   # equality is a property of one BLAS, not a result
 python3 -m reproduce_all --full    # 70 stage invocations, 10-seed ensembles (hours)
 python3 -m reproduce_all --stages "quadrature clouds 3"    # selected stages
 python3 -m reproduce_all --fast --ext    # plus the 14 extension modules
@@ -195,10 +197,13 @@ pytest tests -q -m slow            # re-solves the fiducial pipeline: ~2.5 min
 #   with results/cache/ present, hours on a fresh clone (the cache is not shipped)
 bash tools/verify_flat.sh          # gates G-1..G-7 (single-version consolidation)
 bash tools/verify_flat.sh --full   # also npm build and the numeric gate G-3
+bash tools/check_pdf_build.sh      # rebuild both PDFs from scratch and compare
+                                   # them with the shipped ones (CI's paper job)
 bash tools/run_ext_full.sh         # regenerate every extension archive at full tier
 ```
 
-`.github/workflows/verify.yml` runs the fast tier of all three on every push.
+`.github/workflows/verify.yml` runs the fast tier of all three, plus that LaTeX
+rebuild, on every push.
 
 ## Compiling the paper
 

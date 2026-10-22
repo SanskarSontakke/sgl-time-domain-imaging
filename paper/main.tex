@@ -3009,7 +3009,9 @@ re-derive every shipped archive from its checkpoints and require no simulation.}
 Invocation & Stages & What it establishes \\
 \midrule
 {\tt --fast} & 8 & the analytic and diagnostic archives regenerate bit-for-bit
-from the shipped checkpoints \\
+on the machine that produced them; continuous integration reruns the same tier
+with {\tt --tol 1e-12}, because on a different BLAS the worst difference seen was
+$4.2\times10^{-15}$ relative, on 5 of 639 stored arrays \\
 {\tt --stages "quadrature clouds 3"} & 2 & an explicit subset, for a targeted
 audit \\
 {\tt --full} & 70 & every simulation stage re-runs from scratch, including the
@@ -3052,8 +3054,8 @@ the single-version consolidation: no revision markup or
 version narrative in the manuscript, no superseded directories, no
 version-bearing keys or labels inside the archives, version-free prose in the
 README and the demo app, working entry points, the test suite, and the presence
-of all 14 extension archives. The pytest suite (200 test functions, 347 collected
-checks, 326 of them in the default fast tier) checks
+of all 14 extension archives. The pytest suite (207 test functions, 354 collected
+checks, 333 of them in the default fast tier) checks
 physics and geometry against hand-derived values, checks the shipped archives
 against each other, and --- in its {\tt slow} tier, deselected by default ---
 re-solves the fiducial pipeline and reproduces five metrics for two estimators
@@ -3076,10 +3078,21 @@ over a standard two-column article, needing no class or style file beyond
 {\tt texlive-latex-extra} and {\tt texlive-fonts-recommended} (pdfTeX 1.40.22,
 latexmk 4.76). The shipped PDF is that build --- 36 pages, no undefined
 references or citations, no overfull boxes --- and continuous integration now
-compiles it on every push, behind a test that checks the brace balance of every
-generated {\tt .tex} fragment first, because a single stray closing brace in a
+rebuilds it on every push, in a scratch copy of the sources rather than in the
+working tree. The reason is that pdfTeX stamps a creation date into every PDF it
+writes, so a PDF is not byte-reproducible and a build in place would break the
+byte-for-byte gate that keeps the shipped manuscript and the demo site's copies
+identical. A fresh build is therefore compared with the shipped one by page
+count and by flattened text: the typeset title breaks across a line, so a
+literal string match on the raw text stream of {\tt pdftotext} fails on a
+perfectly good PDF. A test of the brace balance of every generated {\tt .tex}
+fragment runs first, because a single stray closing brace in a
 generated caption is enough to abort the build and leave every cross-reference
-in the manuscript unresolved. What CI still does
+in the manuscript unresolved. The reproduction tier in CI is run with an explicit
+$10^{-12}$ relative tolerance rather than the default bit-for-bit comparison: on
+the machine that produced the archives the two agree exactly, and on a GitHub
+runner they agreed to $4.2\times10^{-15}$, so exactness there is a property of
+one build environment rather than of the result. What CI still does
 \emph{not} run is the simulation tier: it costs hours on four cores, so it is
 left to the {\tt slow} test tier and to {\tt reproduce\_all --full}.
 Second, reproducing the shipped numbers requires the pinned stack

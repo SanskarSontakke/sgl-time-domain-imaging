@@ -39,8 +39,15 @@ jobs:
       - name: Cheap end-to-end stage through the public entry point
         run: python -m reproduce_all --stages quadrature
 
+      # Default --tol is 0 (bit-for-bit), which is the right claim to make about
+      # the machine the archives were produced on.  It is the wrong claim to make
+      # about a GitHub runner: there the same tier differs from the shipped
+      # archives on 5 of 2,987 audit leaves and 5 of 639 stored arrays, by at most
+      # 4.2e-15 relative -- the signature of a different BLAS and libm, not of a
+      # changed result.  1e-12 is the tolerance the manuscript already quotes for
+      # these comparisons.
       - name: Fast-tier reproduction in a scratch tree (diff against shipped archives)
-        run: python -m reproduce_all --fast
+        run: python -m reproduce_all --fast --tol 1e-12
 
       - name: Byte-level archive drift check against the frozen baseline
         run: python -m reproduce_all --check
@@ -51,6 +58,13 @@ jobs:
     # generated table fragment with one stray closing brace aborts the build and
     # silently loses every cross-reference.  Compiling here is what makes the
     # shipped PDFs a claim rather than a hope.
+    #
+    # The build happens in a scratch copy, not in the checkout.  pdfTeX embeds a
+    # creation date and a file ID, so recompiling changes the bytes of the PDF
+    # without changing a word of it; building in place would then fail the
+    # byte-for-byte mirror gate below, which is exactly the gate that keeps
+    # public/docs/ honest.  For the same reason the fresh build is compared to the
+    # shipped PDF by page count and by text, not by checksum.
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -63,28 +77,11 @@ jobs:
             texlive-latex-base texlive-latex-recommended texlive-latex-extra \
             texlive-fonts-recommended latexmk poppler-utils
 
-      - name: Compile the manuscript
-        working-directory: paper
-        run: latexmk -pdf -interaction=nonstopmode main.tex
-
-      - name: Assert a clean manuscript build
-        working-directory: paper
-        run: |
-          if grep -Eiq "undefined (references|citations)|multiply defined" main.log; then
-            grep -Ei "undefined (references|citations)|multiply defined" main.log | head
-            echo "manuscript has unresolved references"
-            exit 1
-          fi
-          test -s main.pdf
-          echo "pages: $(pdfinfo main.pdf | awk '/^Pages/{print $2}')"
-          if ! pdftotext main.pdf - | grep -q "Solar Gravitational Lens"; then
-            echo "built PDF does not contain the manuscript"
-            exit 1
-          fi
-
-      - name: Compile the submission letter
-        working-directory: submission
-        run: latexmk -pdf -interaction=nonstopmode cover_letter.tex
-
+      # Must run before anything is built, against the untouched checkout: once a
+      # build has run in this job the working-tree PDFs are no longer the shipped
+      # bytes, and the comparison stops meaning anything.
       - name: Assert the document mirrors are byte-identical to their sources
         run: python3 src/make_app_docs.py --check
+
+      - name: Build both documents from scratch and assert they are the shipped documents
+        run: bash tools/check_pdf_build.sh "${RUNNER_TEMP}/cibuild"
