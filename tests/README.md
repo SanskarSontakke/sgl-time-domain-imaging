@@ -14,7 +14,7 @@ Comprehensive pytest test suite covering the simulation pipeline, physics consta
 | `test_archive_schema.py` | Method/component labels, version pattern, PART_PREFIX | 10 |
 | `test_audit_consistency.py` | Profiled vs deflate, component ablation F vs C, cloud-free r(l) min F-15, lambda sweep F-07/F-09b, l_eff null F-20 | 8 |
 | `test_defect_regression.py` | Pins defects F-01, F-07, F-15, F-20, F-22 | 6 |
-| `test_pipeline_tools.py` | Pure functions from tools/*.py (flat_name, remap, strip_rev, digest) plus the byte-level archive manifest, its path-portability contract, and the shape of the CI LaTeX and float-tolerance gates in `tools/check_pdf_build.sh` and `.github/workflows/verify.yml`, plus the one-command proof stack in `tools/verify_numbers.sh`, the `npm test` entry points in `package.json`, the three-job split (gates / numbers / paper) with its ceilings, concurrency and artifact upload, and the capped, retrying TeX Live install step that keeps a stalled package mirror from spending the paper job's whole ceiling | 57 |
+| `test_pipeline_tools.py` | Pure functions from tools/*.py (flat_name, remap, strip_rev, digest) plus the byte-level archive manifest, its path-portability contract, and the shape of the CI LaTeX and float-tolerance gates in `tools/check_pdf_build.sh` and `.github/workflows/verify.yml`, plus the one-command proof stack in `tools/verify_numbers.sh`, the `npm test` entry points in `package.json`, the three-job split (gates / numbers / paper) with its ceilings, concurrency and artifact upload, the capped, retrying TeX Live install step that keeps a stalled package mirror from spending the paper job's whole ceiling, and the build-convergence passes latexmk skips | 61 |
 | `test_pipeline_live.py` | Slow tier: re-runs the fiducial estimator on the cached dataset and compares against the shipped checkpoints; proves `results/` is read-only, with a cold tree's memoisation rebuild classified apart from a write into the shipped evidence | 19 |
 | `test_ledger_resource.py` | Analytic resource-ledger and `N_eff` arithmetic: OU pair weights, Arm A/B photon-vs-wall-clock conservation, dose accounting | 12 |
 | `test_latex_integrity.py` | No \rev markup, ref/label integrity, cite keys, F-12/F-18/F-05 repairs, brace/environment balance, generated-table shape, document-mirror freshness, no revision-tracker IDs in reader-facing text | 33 |
@@ -24,7 +24,7 @@ Comprehensive pytest test suite covering the simulation pipeline, physics consta
 | `test_doc_numbers.py` | Documentation audit: every count the README, this file, Appendix D and the CI workflow state is re-measured from the tree -- pytest collection, an AST walk, `np.load` over `results/`, the ledger and the build record -- with tamper proofs for each claim family, the per-module table audited in both directions, and the workflow checked against its own ceiling, install-step cap, tier and mirror-order comments | 118 |
 | `test_reproduce_entrypoint.py` | `reproduce_all.py` CLI surface: stage registry (8 fast / 70 full), subcommand <-> module mapping, scratch isolation, baseline freeze/check, `--figures`/`--ext` plumbing, and the slow tier's read-only guard -- its cold-rebuild classification driven through the fixture itself, so a guard that cannot fire cannot be trusted | 54 |
 
-**Total: 561 test functions, 750 collected checks** (729 in the default fast
+**Total: 565 test functions, 754 collected checks** (733 in the default fast
 tier, 21 marked `slow`).
 
 ## Running the Tests
@@ -35,7 +35,7 @@ cd /data/workspace/sgl-time-domain-imaging
 python3 -m pytest tests -q
 ```
 
-### Exclude slow tests (default CI tier; 729 of 750 checks)
+### Exclude slow tests (default CI tier; 733 of 754 checks)
 ```bash
 python3 -m pytest tests -q -m "not slow"
 ```
@@ -57,7 +57,7 @@ python3 -m pytest tests/test_constants.py -v
 
 ## Test Tiers
 
-- **Fast (default)**: 729 checks. No simulation is re-run; every value is read
+- **Fast (default)**: 733 checks. No simulation is re-run; every value is read
   from a shipped archive, `results/audit.json`, or the manuscript source.
 - **Slow (> 5s)**: 21 checks marked `@pytest.mark.slow` — 19 in
   `test_pipeline_live.py`, which re-runs GLS solves against the shipped
@@ -105,7 +105,7 @@ The suite pins the following defects from the revision record:
 Measured on the four-core / 7 GB sandbox the archive was audited in, with the
 memoised forward operators present under `results/cache/`:
 
-- **Fast tier** (`-m "not slow"`, 729 checks): ~5 s
+- **Fast tier** (`-m "not slow"`, 733 checks): ~5 s
 - **Slow tier** (`-m slow`, 21 checks): ~147 s
 - **Both tiers**: ~3 min
 

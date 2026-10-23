@@ -76,6 +76,14 @@ check_doc() {
     grep -Ei "undefined (references|citations)|multiply defined" "$log" | head -5
     exit 1
   fi
+  # Convergence, not just error-freedom: a log that still says "Rerun to get
+  # cross-references right" after the loop above means the PDF a reader downloads
+  # cites one pass out of date.  The structure audit calls the same pattern
+  # log.rerun and ceilings it at zero, so the two gates agree.
+  if grep -q "Rerun to get" "$log"; then
+    echo "$job: still asking for another pass -- cross-references are one pass stale"
+    exit 1
+  fi
 
   test -s "$pdf" || { echo "$job.pdf was not produced"; exit 1; }
   local fresh
@@ -116,13 +124,32 @@ compile_doc() {
   # own chatter goes to a log per document: the first pdfTeX pass of a real
   # from-scratch build lists every citation as undefined -- that is what the later
   # passes are for -- so showing it live would look like a failure.
-  local dir="$1" tex="$2" out
-  out="$build/compile-$(basename "$tex" .tex).log"
+  #
+  # latexmk can stop with the last pass still asking for one more.  Prose that
+  # reflows moves a float, which changes the page stored in \newlabel; the
+  # auxiliary-file hash latexmk compares was taken before that pass, so it
+  # declares the target up to date while the document's cross-references are one
+  # pass stale.  The shipped PDF of this manuscript did exactly that after a
+  # three-digit edit in Appendix D, so the loop forces the passes latexmk skipped
+  # and check_doc below refuses anything that still has not converged.
+  local dir="$1" tex="$2" out job log pass
+  job="$(basename "$tex" .tex)"
+  out="$build/compile-$job.log"
+  log="$dir/$job.log"
   if ! (cd "$dir" && latexmk -pdf -interaction=nonstopmode "$tex") >"$out" 2>&1; then
     echo "latexmk failed for $tex"
     tail -40 "$out"
     exit 1
   fi
+  for pass in 1 2 3; do
+    grep -q "Rerun to get" "$log" || break
+    echo "$job: the log asks for another pass, forcing pass $pass"
+    if ! (cd "$dir" && latexmk -pdf -g -interaction=nonstopmode "$tex") >>"$out" 2>&1; then
+      echo "latexmk -g failed for $tex"
+      tail -40 "$out"
+      exit 1
+    fi
+  done
 }
 
 echo

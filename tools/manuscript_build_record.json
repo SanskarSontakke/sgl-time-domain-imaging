@@ -369,10 +369,10 @@
   "overfull": 0,
   "pages": 36,
   "pdf": "main.pdf",
-  "rerun_warnings": 1,
+  "rerun_warnings": 0,
   "undefined_citations": 0,
   "undefined_references": 0,
   "underfull": 129
  },
- "source": "/tmp/build6/paper/main.tex"
+ "source": "/tmp/build11/paper/main.tex"
 }

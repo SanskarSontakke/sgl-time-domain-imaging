@@ -314,6 +314,41 @@ class TestPdfBuildGate:
             assert "--tol" in r, "CI compares floats for exact equality: " + r
 
 
+    def test_gate_forces_the_passes_latexmk_skips(self):
+        """A log that says "Rerun to get cross-references right" is not done.
+
+        Observed on this manuscript: a three-digit census edit in Appendix D
+        reflowed a page, latexmk declared the target up to date, and the shipped
+        PDF's own log still asked for another pass.  The gate has to finish the
+        job the engine declined.
+        """
+        body = self.SCRIPT.read_text()
+        assert "latexmk -pdf -g" in body, \
+            "the gate never forces the extra pass the log asks for"
+        assert re.search(r"for pass in 1 2 3; do", body), \
+            "the retry is unbounded, so an unstable document hangs the job"
+
+    def test_gate_refuses_a_document_that_has_not_converged(self):
+        body = self.SCRIPT.read_text()
+        assert "still asking for another pass" in body, \
+            "a one-pass-stale build is allowed to pass the gate"
+
+    def test_gate_and_outline_audit_agree_on_what_a_rerun_is(self):
+        """Two tools count the same warning; they must not drift apart."""
+        gate = self.SCRIPT.read_text()
+        outline = (ROOT / "tools" / "manuscript_outline.py").read_text()
+        assert 'grep -q "Rerun to get"' in gate
+        assert 'count(r"Rerun to get")' in outline, \
+            "the audit changed its pattern and the build gate did not follow"
+
+    def test_the_shipped_record_reports_a_converged_build(self):
+        """The artifact the repository advertises must itself be settled."""
+        record = json.loads((ROOT / "tools" /
+                             "manuscript_build_record.json").read_text())
+        assert record["log"]["rerun_warnings"] == 0, \
+            "the shipped build asked for a pass it never got"
+
+
 class TestVerifyNumbersStack:
     """tools/verify_numbers.sh -- the proof stack as one command.
 
