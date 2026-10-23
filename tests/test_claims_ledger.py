@@ -195,8 +195,13 @@ class TestQuotes:
         never survive flattening, so a '%' is always a printed one."""
         assert re.search(r"(?<!\\)%", text) is None
 
-    def test_percentages_are_marked_as_scales(self, claims, values):
-        """A claim printed with a '%' sign is a scaled leaf, not a new number."""
+    def test_percentages_are_marked_as_scales(self, shipped_tier, claims, values):
+        """A claim printed with a '%' sign is a scaled leaf, not a new number.
+
+        Tier-guarded like every other test that resolves a value: a fast-tier
+        ``results/ext_*`` rerun moves the leaf, not the manuscript, and the
+        printed decimal is the full-tier one.
+        """
         for c in claims:
             if "%" not in c["quote"]:
                 continue
