@@ -43,6 +43,17 @@ for d in paper submission; do
     -delete
 done
 
+# Phrases each document must contain.  Deliberately not the subtitle: the
+# manuscript was retitled once and will be retitled again, and a gate that greps
+# for a subtitle breaks on a retitle rather than on a real defect.  What is
+# pinned instead is the running head (which appears on every page of the built
+# document), one phrase from the abstract, and the journal the letter addresses.
+main_needles=("Solar Gravitational Lens"
+              "generalized least squares"
+              "Time-domain SGL imaging of cloudy exoplanets")
+cover_letter_needles=("Open Journal of Astrophysics"
+                      "Solar Gravitational Lens")
+
 check_doc() {
   # $1 = directory, $2 = job name, remaining args = phrases the PDF must contain
   local dir="$1" job="$2"
@@ -119,10 +130,8 @@ echo "== compiling (from scratch, in $build) =="
 compile_doc "$build/paper" main.tex
 compile_doc "$build/submission" cover_letter.tex
 
-check_doc "$build/paper" main \
-  "Solar Gravitational Lens" "Reconstruction Algorithms"
-check_doc "$build/submission" cover_letter \
-  "Open Journal of Astrophysics" "pre-submission"
+check_doc "$build/paper" main "${main_needles[@]}"
+check_doc "$build/submission" cover_letter "${cover_letter_needles[@]}"
 
 echo
 echo "RESULT: OK (both documents build clean and match the shipped page counts)"

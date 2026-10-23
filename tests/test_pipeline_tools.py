@@ -252,21 +252,34 @@ class TestPdfBuildGate:
             "the copied PDFs are not deleted, so latexmk may skip the build"
         assert "$build/paper" in body, "the build does not happen in a scratch copy"
 
-    def test_wrapped_title_is_found_after_flattening(self):
-        """The shipped manuscript really does break its title, and the gate copes.
+    def test_gate_needles_are_present_in_the_shipped_pdfs(self):
+        """Every phrase the gate greps for must exist, or the gate is theatre.
 
-        ``" ".join(raw.split())`` is what the gate's ``tr`` pipeline does; the point
-        is that the phrase exists in the PDF but not as one line of its text stream.
+        The needles are read from the script rather than duplicated here: this is
+        what caught the retitle, when the gate was still grepping for a subtitle
+        that the manuscript no longer has.  ``" ".join(raw.split())`` is the
+        ``tr`` pipeline the gate runs -- pdftotext breaks the typeset title across
+        a line, so the phrase exists in the document but never on one line of its
+        raw text stream.
         """
-        pdf = ROOT / "paper" / "main.pdf"
-        if not pdf.is_file() or shutil.which("pdftotext") is None:
-            pytest.skip("pdftotext or paper/main.pdf unavailable")
-        raw = subprocess.run(["pdftotext", str(pdf), "-"],
-                             stdout=subprocess.PIPE, text=True).stdout
-        flat = " ".join(raw.split())
-        assert raw.strip(), "the shipped PDF has no extractable text"
-        for phrase in ("Solar Gravitational Lens", "Reconstruction Algorithms"):
-            assert phrase in flat, phrase + " is missing from the manuscript"
+        pdfs = {"main": ROOT / "paper" / "main.pdf",
+                "cover_letter": ROOT / "submission" / "cover_letter.pdf"}
+        body = self.SCRIPT.read_text()
+        sets = re.findall(r"(\w+)_needles=\((.*?)\)\n", body, re.S)
+        assert len(sets) == 2, sets
+        if shutil.which("pdftotext") is None:
+            pytest.skip("pdftotext unavailable")
+        for job, rhs in sets:
+            needles = re.findall(r'"([^"]+)"', rhs)
+            assert needles, job + " declares no needles"
+            pdf = pdfs[job]
+            assert pdf.is_file(), str(pdf) + " is missing"
+            raw = subprocess.run(["pdftotext", str(pdf), "-"],
+                                 stdout=subprocess.PIPE, text=True).stdout
+            flat = " ".join(raw.split())
+            assert raw.strip(), str(pdf) + " has no extractable text"
+            for needle in needles:
+                assert needle in flat, f"{job}: '{needle}' is not in {pdf.name}"
 
     def test_ci_paper_job_checks_mirrors_before_building(self):
         yaml = pytest.importorskip("yaml")
