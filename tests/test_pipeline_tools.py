@@ -469,7 +469,8 @@ class TestCiNumbersJob:
                                for s in spec["jobs"]["paper"]["steps"])
         numbers_runs = "\n".join(str(s.get("run", ""))
                                  for s in spec["jobs"]["numbers"]["steps"])
-        assert "apt-get install" in paper_runs, "TeX Live belongs to the paper job"
+        assert "apt-get" in paper_runs and "texlive-latex-base" in paper_runs, \
+            "TeX Live belongs to the paper job"
         assert "apt-get" not in numbers_runs, \
             "the numbers job must not pay for a distribution install"
 
@@ -525,3 +526,56 @@ class TestCiNumbersJob:
                          self.spec()["jobs"]["paper"]["steps"])
         assert runs.count("GITHUB_STEP_SUMMARY") >= 3
         assert "Unexplained" in runs and "fingerprint" not in runs
+
+
+class TestCiTexInstallStep:
+    """The one CI step that depends on a package mirror must fail on its own.
+
+    Observed on the run that prompted this: ``gates`` and ``numbers`` were green
+    inside nine minutes while the paper job sat in ``apt-get`` for twenty, so the
+    job ceiling -- not the manuscript -- decided the verdict, and the failure name
+    said ``paper``.  A step cap plus apt retries turns that into a named, early,
+    step-level failure.
+    """
+
+    WORKFLOW = ROOT / ".github" / "workflows" / "verify.yml"
+
+    def spec(self):
+        yaml = pytest.importorskip("yaml")
+        return yaml.safe_load(self.WORKFLOW.read_text())
+
+    def install_step(self):
+        steps = [s for s in self.spec()["jobs"]["paper"]["steps"]
+                 if s.get("name") == "Install TeX Live"]
+        assert len(steps) == 1, f"expected one install step, found {len(steps)}"
+        return steps[0]
+
+    def test_the_install_is_capped_below_the_job_ceiling(self):
+        step = self.install_step()
+        cap = step.get("timeout-minutes")
+        ceiling = self.spec()["jobs"]["paper"]["timeout-minutes"]
+        assert isinstance(cap, int) and 0 < cap < ceiling, \
+            f"cap {cap!r} is not a positive budget below the {ceiling}-minute job"
+
+    def test_apt_is_told_to_retry_before_it_hangs(self):
+        run = self.install_step()["run"]
+        assert "Acquire::Retries" in run, "a transient mirror fault becomes a hang"
+        assert "Acquire::http::Timeout" in run, \
+            "with no per-request timeout, retries cannot bound anything"
+
+    def test_the_install_runs_noninteractively(self):
+        """An apt prompt is the other way this step becomes a twenty-minute hang."""
+        env = self.install_step().get("env") or {}
+        assert env.get("DEBIAN_FRONTEND") == "noninteractive"
+
+    def test_the_cap_is_documented_where_it_is_set(self):
+        text = self.WORKFLOW.read_text()
+        cap = self.install_step()["timeout-minutes"]
+        assert f"its own {cap}-minute cap" in text, \
+            "the number needs a reason next to it, as the job ceiling has"
+
+    def test_no_other_step_in_the_paper_job_is_uncapped_by_accident(self):
+        """Only the mirror-dependent step is capped; the rest are local cost."""
+        steps = self.spec()["jobs"]["paper"]["steps"]
+        capped = [s.get("name") for s in steps if "timeout-minutes" in s]
+        assert capped == ["Install TeX Live"], capped

@@ -169,15 +169,28 @@ jobs:
     # compile itself having been measured at about three seconds for the
     # manuscript.  The previous ceiling of 20 minutes cancelled the job during
     # that install, which looked exactly like a broken manuscript and was not one.
+    #
+    # The install step carries its own 12-minute cap for the same reason.  Measured
+    # on a healthy runner the step costs about a minute, so the cap is headroom
+    # rather than a budget; what it removes is the stalled-mirror case, where an
+    # uncapped hang quietly ate most of the job ceiling and the job only reported
+    # that it had run out of time.
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
+      # The only step in this job that depends on a package mirror.  Retries and a
+      # short per-request timeout keep a transient failure from becoming a hang,
+      # and the step ceiling keeps a hang from becoming the whole job.
       - name: Install TeX Live
+        timeout-minutes: 12
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 update
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 \
+            install -y --no-install-recommends \
             texlive-latex-base texlive-latex-recommended texlive-latex-extra \
             texlive-fonts-recommended latexmk poppler-utils
           python3 -m pip install --quiet numpy

@@ -8,17 +8,20 @@ like an all-NaN slice or a truncated ``<U`` label), and -- the property that mak
 this tool safe to advertise -- a verification run must not be able to write into
 the shipped ``results/`` tree.
 """
+import inspect
 import json
 import os
 import shutil
 import subprocess
 import sys
+import warnings
 
 import numpy as np
 import pytest
 
 import _data as D
 import reproduce_all as RA
+import test_pipeline_live as PL
 
 
 def _write_npz(path, **kw):
@@ -308,3 +311,175 @@ class TestEntryPointRuns:
         after = {p.name: p.stat().st_mtime_ns for p in D.RESULTS.glob("*")
                  if p.is_file() and not p.name.startswith("ext_")}
         assert before == after, "a verification run wrote into results/"
+
+
+# ------------------------------------------------ slow-tier evidence guard --
+class TestSlowTierReadOnlyGuard:
+    """The read-only rule of the slow tier, decided without running the slow tier.
+
+    ``tests/test_pipeline_live.py`` is ``pytest.mark.slow`` from its first line,
+    so its module fixture never fires in continuous integration and the rule it
+    enforces would be untested there.  The rule itself is a pure classification
+    of two ``(size, mtime)`` fingerprints, so it can be decided here -- and a
+    guard that has never been shown to fire is a guard nobody can rely on.
+    """
+
+    def test_a_cold_rebuild_is_not_mistaken_for_new_evidence(self):
+        before = {"parts/a.npz": ("meta", 10, 1)}
+        after = dict(before, **{"cache/dat_s11.npz": ("name",)})
+        delta = PL._evidence_delta(before, after)
+        assert delta["rebuilt"] == ["cache/dat_s11.npz"]
+        assert delta["created"] == [], \
+            "a memoisation key is derived data, not a new archive"
+
+    def test_a_new_archive_under_parts_is_still_fatal(self):
+        delta = PL._evidence_delta({}, {"parts/ghost.npz": ("meta", 1, 1)})
+        assert delta["created"] == ["parts/ghost.npz"]
+        assert delta["rebuilt"] == []
+
+    def test_the_two_new_buckets_partition_the_new_keys(self):
+        before = {}
+        after = {"parts/a.json": ("meta", 1, 1), "cache/F_a.npy": ("name",),
+                 "cache/dat_b.npz": ("name",)}
+        delta = PL._evidence_delta(before, after)
+        assert sorted(delta["created"] + delta["rebuilt"]) == sorted(after)
+        assert not (set(delta["created"]) & set(delta["rebuilt"]))
+
+    def test_a_deleted_cache_key_is_a_violation_too(self):
+        """Pruning cache state silently is as bad as writing new evidence."""
+        delta = PL._evidence_delta({"cache/dat_a.npz": ("name",)}, {})
+        assert delta["deleted"] == ["cache/dat_a.npz"]
+
+    def test_an_mtime_only_touch_of_a_shipped_archive_is_detected(self):
+        key = "audit.json"
+        delta = PL._evidence_delta({key: ("meta", 999, 1)},
+                                   {key: ("meta", 999, 2)})
+        assert delta["modified"] == [key], \
+            "size alone would miss a rewrite that kept its length"
+
+    def test_an_unchanged_tree_yields_an_empty_delta(self):
+        fp = PL._shipped_fingerprint()
+        assert PL._evidence_delta(fp, dict(fp)) == {
+            "created": [], "rebuilt": [], "deleted": [], "modified": [],
+            "stray": []}
+
+    def test_the_shipped_cache_is_fingerprinted_by_name_only(self):
+        """Content-hashing 731 MB per session would cost more than the suite."""
+        fp = PL._shipped_fingerprint()
+        cache = {k: v for k, v in fp.items() if k.startswith(PL.CACHE)}
+        assert cache, "the audited tree has no results/cache to learn from"
+        assert all(v == ("name",) for v in cache.values())
+        assert all(v != ("name",) for k, v in fp.items()
+                   if not k.startswith(PL.CACHE))
+
+    def test_extension_archives_are_outside_the_guard(self):
+        """The extensions legitimately rewrite their own pair while tests run."""
+        assert any((D.RESULTS / f"ext_priors.{e}").exists() for e in ("json",))
+        assert not [k for k in PL._shipped_fingerprint()
+                    if k.startswith("ext_")]
+
+    def test_every_shipped_cache_key_belongs_to_a_memoisation_family(self):
+        """Pins MEMO_PREFIXES against reality: a new family must be declared."""
+        stray = [k for k in PL._shipped_fingerprint()
+                 if k.startswith(PL.CACHE) and
+                 not k[len(PL.CACHE):].startswith(PL.MEMO_PREFIXES)]
+        assert not stray, f"undeclared cache family: {stray[:3]}"
+
+    def test_an_unknown_cache_family_is_flagged_as_stray(self):
+        delta = PL._evidence_delta({}, {"cache/mystery_v2.npz": ("name",)})
+        assert delta["stray"] == ["cache/mystery_v2.npz"]
+        assert delta["rebuilt"] == ["cache/mystery_v2.npz"], \
+            "the key is reported as built and as unexpected, not hidden"
+
+    def test_the_fixture_decides_through_the_pure_function(self):
+        """Wiring: the guard may not go back to its own inline diffing."""
+        src = inspect.getsource(PL.results_read_only)
+        assert "_evidence_delta(" in src
+        for bucket in ("created", "deleted", "modified", "stray"):
+            assert f'delta["{bucket}"]' in src, f"{bucket} no longer asserted"
+        assert "rebuilt" in src, "a cold tree would fail without a word"
+
+
+# --------- the same rule fired through the fixture, not just its classifier --
+class TestSlowTierGuardFires:
+    """The guard's assertions are reachable, so its verdict is demonstrable.
+
+    Every test here drives ``results_read_only`` itself with two snapshots of the
+    evidence tree, which is the only way to show that a slow run which wrote into
+    ``results/`` would actually fail rather than merely be described as failing.
+    """
+
+    @staticmethod
+    def _fixture_body():
+        """The generator the ``@pytest.fixture`` decorator was applied to.
+
+        pytest 9 replaces the function with a ``FixtureFunctionDefinition`` that
+        refuses a direct call, so the body is reached through the attribute the
+        marker keeps it on -- with a clear complaint if a future pytest moves it.
+        """
+        marker = PL.results_read_only
+        body = getattr(marker, "_fixture_function", None)
+        if body is None:
+            getter = getattr(marker, "_get_wrapped_function", None)
+            body = getter() if getter is not None else None
+        assert callable(body), \
+            "cannot reach the fixture body; the guard would be untestable"
+        return body
+
+    @staticmethod
+    def _run_setup(monkeypatch, before, after):
+        """Snapshot two fingerprints as the fixture's before/after, then set up."""
+        snaps = iter((before, after))
+        monkeypatch.setattr(PL, "_shipped_fingerprint", lambda: next(snaps))
+        gen = TestSlowTierGuardFires._fixture_body()()
+        next(gen)
+        return gen
+
+    EVIDENCE = {"parts/a.npz": ("meta", 10, 1), "audit.json": ("meta", 20, 2)}
+
+    def test_a_written_archive_fails_the_run(self, monkeypatch):
+        gen = self._run_setup(monkeypatch, dict(self.EVIDENCE),
+                              dict(self.EVIDENCE,
+                                   **{"parts/ghost.npz": ("meta", 1, 1)}))
+        with pytest.raises(AssertionError, match="created archive files"):
+            next(gen)
+
+    def test_a_deleted_archive_fails_the_run(self, monkeypatch):
+        after = dict(self.EVIDENCE)
+        after.pop("audit.json")
+        gen = self._run_setup(monkeypatch, dict(self.EVIDENCE), after)
+        with pytest.raises(AssertionError, match="deleted archive files"):
+            next(gen)
+
+    def test_a_rewritten_archive_fails_the_run(self, monkeypatch):
+        after = dict(self.EVIDENCE, **{"audit.json": ("meta", 20, 99)})
+        gen = self._run_setup(monkeypatch, dict(self.EVIDENCE), after)
+        with pytest.raises(AssertionError, match="modified archive files"):
+            next(gen)
+
+    def test_an_undeclared_cache_family_fails_the_run(self, monkeypatch):
+        gen = self._run_setup(monkeypatch, dict(self.EVIDENCE),
+                              dict(self.EVIDENCE,
+                                   **{"cache/mystery_v2.npz": ("name",)}))
+        with pytest.raises(AssertionError, match="unexpected file under "
+                                                 "results/cache"):
+            next(gen)
+
+    def test_a_cold_rebuild_passes_and_says_so(self, monkeypatch):
+        """The behaviour a cold clone needs, made explicit rather than tolerated."""
+        gen = self._run_setup(monkeypatch, dict(self.EVIDENCE),
+                              dict(self.EVIDENCE,
+                                   **{"cache/dat_s11.npz": ("name",),
+                                      "cache/F_a.npy": ("name",)}))
+        with pytest.warns(UserWarning, match="built 2 memoisation caches"):
+            with pytest.raises(StopIteration):
+                next(gen)
+
+    def test_a_warm_tree_warns_about_nothing(self, monkeypatch):
+        gen = self._run_setup(monkeypatch, dict(self.EVIDENCE),
+                              dict(self.EVIDENCE))
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            with pytest.raises(StopIteration):
+                next(gen)
+        assert not [w for w in caught if "memoisation" in str(w.message)]

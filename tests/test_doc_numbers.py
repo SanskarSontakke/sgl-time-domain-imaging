@@ -105,8 +105,12 @@ jobs:
   paper:
     runs-on: ubuntu-latest
     # the paper job has 45 minutes because it installs a TeX Live
+    # the install step carries its own 12-minute cap for the same reason
     timeout-minutes: 45
     steps:
+      - name: Install TeX Live
+        timeout-minutes: 12
+        run: apt-get -o Acquire::Retries=3 install texlive-latex-base
       - run: python3 tools/make_app_docs.py --check
       - run: bash tools/check_pdf_build.sh
 """
@@ -566,6 +570,48 @@ class TestWorkflowAudit:
             "      - run: bash tools/check_pdf_build.sh\n"
             "      latexmk -pdf main.tex\n"), fake_read)
         assert any("compiles in the checkout" in f for f in findings), findings
+
+    INSTALL_STEP = ("      - name: Install TeX Live\n"
+                    "        timeout-minutes: 12\n"
+                    "        run: apt-get -o Acquire::Retries=3 "
+                    "install texlive-latex-base\n")
+
+    def test_an_uncapped_tex_install_step_is_reported(self, fake_read):
+        """The observed failure: apt hung for twenty minutes inside a 45."""
+        _, findings = self.audit(MINI_WORKFLOW.replace(
+            "        timeout-minutes: 12\n", ""), fake_read)
+        assert any("install step is uncapped" in f for f in findings), findings
+
+    def test_an_install_step_missing_entirely_is_reported(self, fake_read):
+        _, findings = self.audit(MINI_WORKFLOW.replace(self.INSTALL_STEP, ""),
+                                 fake_read)
+        assert any("no Install TeX Live step" in f for f in findings), findings
+
+    def test_a_cap_that_is_not_a_cap_is_reported(self, fake_read):
+        """A step ceiling equal to the job ceiling bounds nothing."""
+        _, findings = self.audit(
+            MINI_WORKFLOW.replace("        timeout-minutes: 12",
+                                  "        timeout-minutes: 45"), fake_read)
+        assert any("so it caps nothing" in f for f in findings), findings
+
+    def test_apt_without_retries_is_reported(self, fake_read):
+        _, findings = self.audit(
+            MINI_WORKFLOW.replace("-o Acquire::Retries=3 ", ""), fake_read)
+        assert any("Acquire::Retries" in f for f in findings), findings
+
+    def test_an_install_comment_that_disagrees_with_the_step_is_reported(self,
+                                                                        fake_read):
+        _, findings = self.audit(
+            MINI_WORKFLOW.replace("its own 12-minute cap", "its own 8-minute cap"),
+            fake_read)
+        assert any("but the step asks for 12" in f for f in findings), findings
+
+    def test_a_removed_install_comment_is_a_finding_not_a_silence(self, fake_read):
+        _, findings = self.audit(MINI_WORKFLOW.replace(
+            "    # the install step carries its own 12-minute cap "
+            "for the same reason\n", ""), fake_read)
+        assert any("install cap is no longer stated" in f
+                   for f in findings), findings
 
     def test_a_missing_workflow_is_reported(self, fake_read):
         fake_read(None)

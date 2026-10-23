@@ -14,18 +14,30 @@ the 0.68 GB float32 forward operator.  Run it with:
 
     python3 -m pytest tests -q -m slow
 
-Nothing in ``results/`` is written: every value used here is a seed/parameter
-combination the pipeline has already memoised into ``results/cache``, so the
-caches are hit rather than rebuilt.  ``results_read_only`` proves that instead of
-just asserting it -- a silent cache rebuild would otherwise make the suite
-"pass" by overwriting the very evidence it is checking.
+On a warm tree nothing in ``results/`` is written: every value used here is a
+seed/parameter combination the pipeline has already memoised into
+``results/cache``, so the caches are hit rather than rebuilt.  A cold clone has
+no such cache (it is 731 MB and gitignored), so it must rebuild one, and
+``results_read_only`` separates those two events instead of forbidding both.
+New keys under ``results/cache/`` are derived data that
+``tools/array_manifest.py`` deliberately skips; any other write is the silent
+rebuild that would otherwise make the suite "pass" by overwriting the very
+evidence it is checking.
 """
+import warnings
+
 import numpy as np
 import pytest
 
 import _data as D
 
 pytestmark = pytest.mark.slow
+
+#: the one directory under ``results/`` that is scratch rather than evidence
+CACHE = "cache/"
+
+#: the memoisation families ``src/expcommon`` keys into ``results/cache``
+MEMO_PREFIXES = ("dat_", "F_", "LtL_", "sigma_")
 
 
 def _shipped_fingerprint():
@@ -53,18 +65,48 @@ def _shipped_fingerprint():
     return fp
 
 
+def _evidence_delta(before, after):
+    """Classify a fingerprint diff into the five things that can have happened.
+
+    ``created``, ``deleted`` and ``modified`` are violations of the shipped
+    evidence.  ``rebuilt`` is a cold tree earning its memoisation, and ``stray``
+    is a file under ``results/cache/`` that belongs to no memoisation family --
+    a cache key this suite has never seen is how a parameter change in ``src/``
+    hides inside a passing run, so it is reported even though it is not evidence.
+    """
+    new = sorted(set(after) - set(before))
+    in_cache = [k for k in new if k.startswith(CACHE)]
+    return {
+        "created": [k for k in new if not k.startswith(CACHE)],
+        "rebuilt": in_cache,
+        "deleted": sorted(set(before) - set(after)),
+        "modified": sorted(k for k in set(before) & set(after)
+                           if before[k] != after[k]),
+        "stray": [k for k in in_cache
+                  if not k[len(CACHE):].startswith(MEMO_PREFIXES)],
+    }
+
+
 @pytest.fixture(scope="module", autouse=True)
 def results_read_only():
     """Fail at teardown if a slow run touched the audited evidence."""
     before = _shipped_fingerprint()
     yield
-    after = _shipped_fingerprint()
-    new = sorted(set(after) - set(before))
-    gone = sorted(set(before) - set(after))
-    changed = sorted(k for k in set(before) & set(after) if before[k] != after[k])
-    assert not new, f"slow tests created archive files: {new[:5]}"
-    assert not gone, f"slow tests deleted archive files: {gone[:5]}"
-    assert not changed, f"slow tests modified archive files: {changed[:5]}"
+    delta = _evidence_delta(before, _shipped_fingerprint())
+    assert not delta["created"], \
+        f"slow tests created archive files: {delta['created'][:5]}"
+    assert not delta["deleted"], \
+        f"slow tests deleted archive files: {delta['deleted'][:5]}"
+    assert not delta["modified"], \
+        f"slow tests modified archive files: {delta['modified'][:5]}"
+    assert not delta["stray"], \
+        f"unexpected file under results/cache: {delta['stray'][:5]}"
+    if delta["rebuilt"]:
+        warnings.warn(
+            f"cold tree: this run built {len(delta['rebuilt'])} memoisation "
+            f"caches (oldest key {delta['rebuilt'][0]!r}); the shipped "
+            "evidence is untouched, but the run paid for the rebuild",
+            stacklevel=1)
 
 
 @pytest.fixture(scope="module")

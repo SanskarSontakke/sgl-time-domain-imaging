@@ -524,6 +524,39 @@ def audit_workflow(findings: list[str]) -> dict:
         findings.append("[ci.scratch] the paper job compiles in the checkout; "
                         "pdfTeX stamps a creation date, which breaks the byte "
                         "mirror gate on a rebuild that proved nothing")
+    # apt is the only step in the job that depends on a package mirror, so it is
+    # the only step that can hang.  An uncapped hang spends the whole job ceiling
+    # and the job reports that it ran out of time rather than what stalled.
+    install = re.search(r"- name: Install TeX Live\n([\s\S]*?)(?=\n      - )", paper)
+    if not install:
+        findings.append("[ci.install] the paper job has no Install TeX Live step "
+                        "this audit can read, so the one step that can hang is "
+                        "no longer watched")
+    else:
+        block = install.group(1)
+        cap = re.search(r"timeout-minutes: *(\d+)", block)
+        if not cap:
+            findings.append("[ci.install] the TeX Live install step is uncapped; "
+                            "a stalled mirror then spends the whole job ceiling "
+                            "before the job can name what hung")
+        elif "paper" in ceilings and int(cap.group(1)) >= ceilings["paper"]:
+            findings.append(f"[ci.install] the install step's {cap.group(1)}-minute "
+                            f"cap is not below the paper job's "
+                            f"{ceilings['paper']}-minute ceiling, so it caps "
+                            f"nothing")
+        if cap and "Acquire::Retries" not in block:
+            findings.append("[ci.install] apt runs without Acquire::Retries, so a "
+                            "transient mirror failure becomes a hang instead of a "
+                            "retry")
+        quoted_cap = re.search(r"its own (\d+)-minute cap", text)
+        if not quoted_cap:
+            findings.append("[ci.install] the install cap is no longer stated "
+                            "where it is set; the comment is what makes the "
+                            "number a decision rather than a guess")
+        elif cap and int(quoted_cap.group(1)) != int(cap.group(1)):
+            findings.append(f"[ci.install] the comment says the install step has "
+                            f"its own {quoted_cap.group(1)}-minute cap but the "
+                            f"step asks for {cap.group(1)}")
     return {"jobs": sorted(jobs), "ceilings": ceilings}
 def _read(rel: str) -> str | None:
     path = ROOT / rel
