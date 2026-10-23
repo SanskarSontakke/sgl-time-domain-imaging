@@ -11,6 +11,7 @@ the shipped ``results/`` tree.
 import inspect
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -363,27 +364,43 @@ class TestSlowTierReadOnlyGuard:
             "created": [], "rebuilt": [], "deleted": [], "modified": [],
             "stray": []}
 
-    def test_the_shipped_cache_is_fingerprinted_by_name_only(self):
-        """Content-hashing 731 MB per session would cost more than the suite."""
+    def test_the_cache_is_fingerprinted_by_name_only(self):
+        """Content-hashing 731 MB per session would cost more than the suite.
+
+        Runs on both tiers of tree: a fresh clone has no ``results/cache`` at all
+        (it is gitignored, which is why CI can afford the fast tier), so the
+        assertion is about the rule the fingerprint applies to whatever is there,
+        and about the evidence files that are always shipped.
+        """
         fp = PL._shipped_fingerprint()
         cache = {k: v for k, v in fp.items() if k.startswith(PL.CACHE)}
-        assert cache, "the audited tree has no results/cache to learn from"
-        assert all(v == ("name",) for v in cache.values())
-        assert all(v != ("name",) for k, v in fp.items()
-                   if not k.startswith(PL.CACHE))
+        evidence = {k: v for k, v in fp.items() if not k.startswith(PL.CACHE)}
+        assert evidence, "results/ ships no audited evidence to guard"
+        assert all(v != ("name",) for v in evidence.values())
+        assert all(v == ("name",) for v in cache.values()), \
+            "a cache entry was content-fingerprinted, which costs 731 MB"
+
+    def test_the_declared_families_are_the_ones_the_harness_builds(self):
+        """MEMO_PREFIXES against ``src/expcommon.py``, not against a warm tree.
+
+        The list is what makes a new cache key a finding rather than an accident,
+        so it has to be derived from the code that writes the keys.  A tree with a
+        populated cache is checked too, but only when it has one.
+        """
+        src = (D.ROOT / "src" / "expcommon.py").read_text()
+        found = {p for p in PL.MEMO_PREFIXES if re.search(rf'["(]{p}', src)}
+        missing = sorted(set(PL.MEMO_PREFIXES) - found)
+        assert not missing, f"declared family the harness never builds: {missing}"
+        stray = [k for k in PL._shipped_fingerprint()
+                 if k.startswith(PL.CACHE) and
+                 not k[len(PL.CACHE):].startswith(PL.MEMO_PREFIXES)]
+        assert not stray, f"undeclared cache family: {stray[:3]}"
 
     def test_extension_archives_are_outside_the_guard(self):
         """The extensions legitimately rewrite their own pair while tests run."""
         assert any((D.RESULTS / f"ext_priors.{e}").exists() for e in ("json",))
         assert not [k for k in PL._shipped_fingerprint()
                     if k.startswith("ext_")]
-
-    def test_every_shipped_cache_key_belongs_to_a_memoisation_family(self):
-        """Pins MEMO_PREFIXES against reality: a new family must be declared."""
-        stray = [k for k in PL._shipped_fingerprint()
-                 if k.startswith(PL.CACHE) and
-                 not k[len(PL.CACHE):].startswith(PL.MEMO_PREFIXES)]
-        assert not stray, f"undeclared cache family: {stray[:3]}"
 
     def test_an_unknown_cache_family_is_flagged_as_stray(self):
         delta = PL._evidence_delta({}, {"cache/mystery_v2.npz": ("name",)})
