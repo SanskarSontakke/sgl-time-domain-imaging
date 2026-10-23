@@ -312,7 +312,7 @@ Figure~\ref{fig:validation} compares measurements with the theoretical formula
 $\min(1.0, 0.891\,D/(d\sqrt{N}))$.
 The theoretical curve is capped at $1.0$ (in \texttt{src/run\_experiments.py})
 because unregularized deconvolution cannot increase SNR beyond the input.
-At $n=32$ ($D=41.8$~m), the uncapped analytic formula yields $4\times0.2912=1.1646$,
+At $n=32$ ($D=41.8$~m), the uncapped analytic formula yields $4\times0.29115=1.1646$,
 and we measure $0.657$ vs.\ the capped $1.0$.
 For $n=64$ ($D=20.9$~m), measured is $0.3244$ vs.\ analytic $0.2912$ (11\% above);
 for $n=128$ ($D=10.5$~m), measured is $0.1057$ vs.\ analytic $0.0728$ (45\% above).
@@ -436,7 +436,8 @@ auditable ledger instead of a random draw: the fiducial campaign charges
 $T_{\rm oh}=45$~s per dwell (30~s translation slew, 10~s pointing settling,
 5~s inter-spacecraft metrology) and no additional random gap.
 
-\emph{Raster kinematics and continuous-scan vs.\ stop-and-dwell.} We explicitly distinguish stop-and-dwell stepping from continuous-scan rastering. If each step of pitch $\Delta_{\rm img} = 20.913$~m is executed as a rest-to-rest stop-and-dwell translation within the nominal 30~s translation budget, kinematics imposes a strict impulse lower bound: achieving displacement $\Delta$ in time $\Delta t$ with a symmetric bang-bang thrust profile requires peak velocity $v_{\rm max} = 2\Delta/\Delta t \simeq 1.394$~m\,s$^{-1}$ and a total velocity increment of $\Delta v_{\rm hop} = 2 v_{\rm max} \simeq 2.788$~m\,s$^{-1}$ per hop. Over $16{,}320$ neighbor transitions during the 16 passes, the cumulative impulsive $\Delta v$ would reach $\approx 22.75$~km\,s$^{-1}$ per spacecraft before inter-pass repositions, an expenditure infeasible for sub-kilogram sailcraft or small exploration probes without continuous low-thrust propulsion. Accordingly, we treat these raster positions as idealized prescribed samples along the trajectory. Operationally, SGL formations would execute continuous-scan raster tracks or smooth drifting orbits through the image cylinder with continuous exposure integration, where transverse actuation is minimized to gentle station-keeping rather than discrete stop-and-dwell maneuvers. The discrete dwell times and overheads charged here serve as an explicit photometric and temporal resource ledger, not a verified closed-loop guidance and control trajectory.
+\emph{Raster kinematics and continuous-scan vs.\ stop-and-dwell.} We explicitly distinguish stop-and-dwell stepping from continuous-scan rastering. If each step of pitch $\Delta_{\rm img} = 20.913$~m is executed as a rest-to-rest stop-and-dwell translation within the nominal 30~s translation budget, kinematics imposes a strict impulse lower bound: achieving displacement $\Delta$ in time $\Delta t$ with a symmetric bang-bang thrust profile requires peak velocity $v_{\rm max} = 2\Delta/\Delta t \simeq 1.394$~m\,s$^{-1}$ and a total velocity increment of $\Delta v_{\rm hop} = 2 v_{\rm max} \simeq 2.788$~m\,s$^{-1}$ per hop. Each spacecraft therefore steps between consecutive dwell slots
+$M_p\times(256-1)=16\times255=4{,}080$ times over the 16 passes, so the cumulative impulsive $\Delta v$ would reach $\approx 11.38$~km\,s$^{-1}$ per spacecraft before inter-pass repositions, an expenditure infeasible for sub-kilogram sailcraft or small exploration probes without continuous low-thrust propulsion. Accordingly, we treat these raster positions as idealized prescribed samples along the trajectory. Operationally, SGL formations would execute continuous-scan raster tracks or smooth drifting orbits through the image cylinder with continuous exposure integration, where transverse actuation is minimized to gentle station-keeping rather than discrete stop-and-dwell maneuvers. The discrete dwell times and overheads charged here serve as an explicit photometric and temporal resource ledger, not a verified closed-loop guidance and control trajectory.
 
 \subsection{Resource conventions: two mutually exclusive ledgers}
 \label{sec:ledger}
@@ -918,7 +919,7 @@ $0.0804$, per-seed range $0.284$--$0.523$), $\mathrm{SSIM}=0.3604$, and normaliz
 RMSE $0.4299$.
 
 Measured against the rotating cloud-free headline ($r=0.9786\pm0.0002$), rotation provides a paired advantage of
-$\Delta r = +0.5712\pm0.0253$ ($t=22.5$, $p_t=3.3\times10^{-9}$, 10/10 seeds; against the B3 white-noise rotating arm of $0.9802$, the paired gain is $+0.5728\pm0.0254$). The rotating cloudy campaign sits between them: a paired loss of $\Delta r = -0.6364\pm0.0083$ ($t=-76.6$, $p_t=5.2\times10^{-14}$, 10/10 seeds) relative to the rotating cloud-free baseline (and $-0.6379\pm0.0083$ relative to the B3 rotating arm). The physical mechanism is operator conditioning rather than information loss: with the planet frozen,
+$\Delta r = +0.5712\pm0.0253$ ($t=22.5$, $p_t=3.3\times10^{-9}$, 10/10 seeds; against the B3 white-noise rotating arm of $0.9802$, the paired gain is $+0.5728\pm0.0254$). The rotating cloudy campaign sits between them: a paired loss of $\Delta r = -0.6364\pm0.0083$ ($t=-76.6$, $p_t=5.6\times10^{-14}$, 10/10 seeds) relative to the rotating cloud-free baseline (and $-0.6379\pm0.0083$ relative to the B3 rotating arm). The physical mechanism is operator conditioning rather than information loss: with the planet frozen,
 the $16$ passes of each raster position produce identical rows in
 $\mathsf{F}$, so the static design lacks the longitudinal rank diversity that rotation naturally provides, leaving the reconstruction heavily reliant on the regularizer. A frozen planet is thus not an easier inverse problem, but a degenerate one; planetary rotation is structurally advantageous, and the $\approx0.636$ drop in fidelity is driven by stochastic weather.
 
@@ -1664,7 +1665,7 @@ likewise functions of $\Delta f_c$ alone (the archived $5\times5$ parameter swee
 quoted as robustness --- it is the definition of $r$ being invariant to affine
 transforms of its argument.
 The quantities that do move are the absolute ones: mean albedo bias runs from
-$+0.206$ at $(\Delta f_c,\Delta A_{\rm cl})=(-0.15,-0.15)$ to $-0.551$ at
+$+0.206$ at $(\Delta f_c,\Delta A_{\rm cl})=(-0.15,-0.15)$ to $-0.550$ at
 $(+0.15,+0.15)$, RMSE is minimized on the $\Delta A_{\rm cl}>0$ side of the
 grid (best value $0.616$, worst $1.813$), and the land--ocean contrast ratio is
 set by $\Delta f_c$ alone, from $0.80$ to $1.61$. The honest requirement is
@@ -1703,11 +1704,11 @@ basis of a scan produced with an aliased quadrature and the approximate
 deflation estimator cannot be inherited; the scan is therefore re-measured here. Three truth fields are built
 from the same seed and the same quantile land fraction --- $30\%$ of the fine
 grid above the albedo threshold, giving mean albedo $0.235$--$0.237$ and
-standard deviation within $2\%$ across the three --- differing only in how the
+standard deviation $0.191$--$0.199$ across the three --- differing only in how the
 land is \emph{arranged}: the fiducial \emph{earthlike} field (fragmented
 continents), a \emph{supercontinent} field whose power is pushed to the largest
 scales (a Pangaea-like single mass, yielding $48.23\%$ land-bearing coarse pixels
-against the fiducial $49.96\%$ and archipelago $49.88\%$, archived in {\tt results/parts/morph\_*}), and an \emph{archipelago} field whose power is pushed to
+against the fiducial $50.96\%$ and archipelago $49.96\%$, archived in {\tt results/parts/morph\_*}), and an \emph{archipelago} field whose power is pushed to
 the smallest scales. Each gets its own weather realization on the same
 cloud seeds and its own calibrated $\sigma_{\rm cl}$, because the cloud-induced
 variance depends on the albedo pattern it modulates: $\sigma_{\rm cl}=0.4406$
@@ -2472,7 +2473,7 @@ respectively. None of that reaches the map. The pairwise kernel correlation is
 $0.9963$ at $N=2$ and $0.9934$ at $N=4$: stations separated by a few pitches
 sample almost the same transfer function, so the gain is noise averaging over
 near-duplicate measurements. The joint inversion, run for the two seeds the
-sandbox could hold, gives $r=0.2926\pm0.0028$ against the same-seed
+sandbox could hold, gives $r=0.2925\pm0.0028$ against the same-seed
 single-aperture reference $r=0.3302$ --- a paired {\it loss} of $0.0376$;
 measured instead against the ten-seed ensemble mean $r=0.3422$ the same
 comparison reads $-0.0497$, a number that is not like-for-like because the
@@ -2978,17 +2979,17 @@ Table~\ref{tab:app_seeds} presents the per-seed Pearson correlation coefficients
 Configuration & $s_0$ & $s_1$ & $s_2$ & $s_3$ & $s_4$ & $s_5$ & $s_6$ & $s_7$ & $s_8$ & $s_9$ & Mean $\pm$ SE & 95\% Bootstrap CI \\
 \midrule
 Rotating cloud-free ($f_c=0$) & 0.9786 & 0.9781 & 0.9790 & 0.9790 & 0.9780 & 0.9782 & 0.9788 & 0.9789 & 0.9799 & 0.9776 & $0.9786\pm0.0002$ & $[0.9783,\,0.9790]$ \\
-TDI fiducial ($f_c=0.558$, Row F) & 0.3314 & 0.3290 & 0.3958 & 0.3404 & 0.3358 & 0.3422 & 0.3271 & 0.3246 & 0.3143 & 0.3820 & $0.3422\pm0.0082$ & $[0.3285,\,0.3590]$ \\
-White GLS (B3 / Row A) & 0.2765 & 0.3042 & 0.3253 & 0.2670 & 0.3026 & 0.2725 & 0.2461 & 0.2799 & 0.2652 & 0.3468 & $0.2886\pm0.0097$ & $[0.2716,\,0.3075]$ \\
-Exact profile, white (Row D) & 0.3305 & 0.3386 & 0.3961 & 0.3395 & 0.3438 & 0.3390 & 0.3214 & 0.3294 & 0.3263 & 0.3897 & $0.3454\pm0.0082$ & $[0.3320,\,0.3622]$ \\
-Approx.\ deflate, OU (Row C) & 0.3316 & 0.3289 & 0.3956 & 0.3402 & 0.3357 & 0.3421 & 0.3271 & 0.3246 & 0.3143 & 0.3819 & $0.3422\pm0.0082$ & $[0.3285,\,0.3588]$ \\
-Static reference ($f_c=0$) & 0.4688 & 0.4509 & 0.3650 & 0.5125 & 0.3225 & 0.2838 & 0.3555 & 0.3747 & 0.5231 & 0.4172 & $0.4074\pm0.0254$ & $[0.3608,\,0.4547]$ \\
-Surface-coupled ($\beta_{\rm surf}=0.25$) & 0.1281 & 0.1552 & 0.1074 & 0.1162 & 0.1899 & 0.1446 & 0.2254 & 0.1007 & 0.1558 & 0.1211 & $0.1444\pm0.0124$ & $[0.1233,\,0.1694]$ \\
+TDI fiducial ($f_c=0.558$, Row F) & 0.3314 & 0.3290 & 0.3958 & 0.3404 & 0.3358 & 0.3422 & 0.3271 & 0.3246 & 0.3143 & 0.3820 & $0.3422\pm0.0082$ & $[0.3286,\,0.3586]$ \\
+White GLS (B3 / Row A) & 0.2765 & 0.3042 & 0.3253 & 0.2670 & 0.3026 & 0.2725 & 0.2461 & 0.2799 & 0.2652 & 0.3468 & $0.2886\pm0.0097$ & $[0.2718,\,0.3070]$ \\
+Exact profile, white (Row D) & 0.3305 & 0.3386 & 0.3961 & 0.3395 & 0.3438 & 0.3390 & 0.3214 & 0.3294 & 0.3263 & 0.3897 & $0.3454\pm0.0082$ & $[0.3319,\,0.3618]$ \\
+Approx.\ deflate, OU (Row C) & 0.3316 & 0.3289 & 0.3956 & 0.3402 & 0.3357 & 0.3421 & 0.3271 & 0.3246 & 0.3143 & 0.3819 & $0.3422\pm0.0082$ & $[0.3286,\,0.3585]$ \\
+Static reference ($f_c=0$) & 0.4688 & 0.4509 & 0.3650 & 0.5125 & 0.3225 & 0.2838 & 0.3555 & 0.3747 & 0.5231 & 0.4172 & $0.4074\pm0.0254$ & $[0.3602,\,0.4545]$ \\
+Surface-coupled ($\beta_{\rm surf}=0.25$) & 0.1281 & 0.1552 & 0.1074 & 0.1162 & 0.1899 & 0.1446 & 0.2254 & 0.1007 & 0.1558 & 0.1211 & $0.1444\pm0.0124$ & $[0.1234,\,0.1690]$ \\
 \midrule
 \multicolumn{13}{l}{\textit{Key Paired Contrasts:}} \\
-Profiling gain, white ($D - A$) & $+0.0540$ & $+0.0344$ & $+0.0708$ & $+0.0725$ & $+0.0412$ & $+0.0665$ & $+0.0753$ & $+0.0495$ & $+0.0611$ & $+0.0429$ & $+0.0568\pm0.0046$ & $[+0.0483,\,+0.0651]$ \\
-OU covariance effect ($F - D$) & $+0.0009$ & $-0.0096$ & $-0.0003$ & $+0.0009$ & $-0.0080$ & $+0.0032$ & $+0.0057$ & $-0.0048$ & $-0.0120$ & $-0.0077$ & $-0.0032\pm0.0019$ & $[-0.0067,\,+0.0004]$ \\
-Exact vs.\ approx.\ OU ($F - C$) & $-0.0002$ & $+0.0001$ & $+0.0002$ & $+0.0002$ & $+0.0001$ & $+0.0001$ & $0.0000$ & $0.0000$ & $0.0000$ & $+0.0001$ & $+4.1\times10^{-5}\pm3.0\times10^{-5}$ & $[-2.1\times10^{-5},\,+9.0\times10^{-5}]$ \\
+Profiling gain, white ($D - A$) & $+0.0540$ & $+0.0344$ & $+0.0708$ & $+0.0725$ & $+0.0412$ & $+0.0665$ & $+0.0753$ & $+0.0495$ & $+0.0611$ & $+0.0429$ & $+0.0568\pm0.0046$ & $[+0.0483,\,+0.0653]$ \\
+OU covariance effect ($F - D$) & $+0.0009$ & $-0.0096$ & $-0.0003$ & $+0.0009$ & $-0.0081$ & $+0.0031$ & $+0.0058$ & $-0.0048$ & $-0.0120$ & $-0.0077$ & $-0.0032\pm0.0019$ & $[-0.0067,\,+0.0004]$ \\
+Exact vs.\ approx.\ OU ($F - C$) & $-0.0002$ & $+0.0001$ & $+0.0002$ & $+0.0001$ & $0.0000$ & $+0.0001$ & $0.0000$ & $0.0000$ & $+0.0001$ & $0.0000$ & $+4.1\times10^{-5}\pm3.0\times10^{-5}$ & $[-2.1\times10^{-5},\,+9.0\times10^{-5}]$ \\
 \bottomrule
 \end{tabular}%
 }
@@ -3199,8 +3200,8 @@ the single-version consolidation: no revision markup or
 version narrative in the manuscript, no superseded directories, no
 version-bearing keys or labels inside the archives, version-free prose in the
 README and the demo app, working entry points, the test suite, and the presence
-of all 14 extension archives. The pytest suite (207 test functions, 354 collected
-checks, 333 of them in the default fast tier) checks
+of all 14 extension archives. The pytest suite (533 test functions, 722 collected
+checks, 701 of them in the default fast tier) checks
 physics and geometry against hand-derived values, checks the shipped archives
 against each other, and --- in its {\tt slow} tier, deselected by default ---
 re-solves the fiducial pipeline and reproduces five metrics for two estimators

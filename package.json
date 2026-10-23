@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "python3 -m pytest tests -q -m \"not slow\" --strict-markers --strict-config -rf",
+    "test:slow": "python3 -m pytest tests -q -m slow --strict-markers --strict-config",
+    "test:numbers": "bash tools/verify_numbers.sh",
+    "test:paper": "bash tools/verify_numbers.sh --with-pdf"
   },
   "dependencies": {
     "katex": "^0.16.11",

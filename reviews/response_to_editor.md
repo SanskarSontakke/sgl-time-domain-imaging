@@ -459,8 +459,8 @@ constant.
 
 *(f) Morphology sensitivity.* Now restored, and the v2 claim turns out to be half right. Section
 5.11 and Table 10 (archive `morphology_*`). Three truth fields from the same seed at the same
-quantile land fraction — 30% of the fine grid, mean albedo 0.235–0.237, SD within 2% of each
-other — differing only in arrangement: the fiducial *earthlike* field, a *supercontinent* field
+quantile land fraction — 30% of the fine grid, mean albedo 0.235–0.237, SD 0.191–0.199 across
+the three — differing only in arrangement: the fiducial *earthlike* field, a *supercontinent* field
 with its power pushed to the largest scales, and an *archipelago* field with its power pushed to
 the smallest. Each gets its own weather realization on the same cloud seeds and its own calibrated
 $\sigma_{\rm cl}$, because the cloud-induced variance depends on the albedo pattern it modulates.

@@ -4,6 +4,7 @@ Tests pure functions from tools/*.py: flat_name, remap/old_key inverses,
 word-boundary substitution round trip, brace matcher in strip_rev, the portable
 array manifest, and the shape of the CI LaTeX gate in tools/check_pdf_build.sh.
 """
+import json
 import sys
 import re
 import shutil
@@ -311,3 +312,216 @@ class TestPdfBuildGate:
         assert fast, "the gates job no longer runs the fast reproduction tier"
         for r in fast:
             assert "--tol" in r, "CI compares floats for exact equality: " + r
+
+
+class TestVerifyNumbersStack:
+    """tools/verify_numbers.sh -- the proof stack as one command.
+
+    The repository now has four numeric gates plus two structural ones, and a
+    reviewer is not going to remember the order.  The script is the order, so it
+    is worth pinning: a step that quietly disappears from it is a gate nobody ran,
+    and a step that starts compiling into the checkout breaks the mirror gate that
+    keeps ``public/docs/`` honest.
+    """
+
+    SCRIPT = ROOT / "tools" / "verify_numbers.sh"
+    WORKFLOW = ROOT / ".github" / "workflows" / "verify.yml"
+
+    def body(self) -> str:
+        return self.SCRIPT.read_text()
+
+    def test_it_exists_and_parses(self):
+        assert self.SCRIPT.is_file(), "the one-command proof stack is missing"
+        p = subprocess.run(["bash", "-n", str(self.SCRIPT)],
+                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                           text=True)
+        assert p.returncode == 0, p.stdout
+
+    def test_it_is_executable(self):
+        assert self.SCRIPT.stat().st_mode & 0o111, \
+            "a gate nobody can run without typing bash is a gate people skip"
+
+    def test_it_reports_a_count_and_fails_on_one(self):
+        body = self.body()
+        assert '[ "$fails" -eq 0 ] || exit 1' in body, \
+            "the script must not end green when a step went red"
+        assert 'printf' in body and "passed," in body
+
+    def test_every_proof_layer_is_in_the_stack(self):
+        body = self.body()
+        for tool, flag in (("tools/derive_stats.py", "--check"),
+                           ("tools/claims.py", "--check"),
+                           ("tools/claims.py", "--coverage"),
+                           ("tools/manuscript_outline.py", ""),
+                           ("tools/doc_numbers.py", ""),
+                           ("tools/verify_flat.sh", "bash"),
+                           ("src/make_app_docs.py", "--check")):
+            assert tool in body and flag in body, f"{tool} {flag} is not run"
+
+    def test_the_ledger_is_run_strictly_not_loosely(self):
+        """``--max-untraceable 0`` is the standard the manuscript claims."""
+        body = self.body()
+        assert "--max-untraceable 0" in body
+        assert re.search(r"--min-claims +\d+", body), \
+            "an empty ledger would pass a check with no floor"
+
+    def test_the_suites_that_test_the_tools_are_included(self):
+        body = self.body()
+        for suite in ("tests/test_claims_ledger.py", "tests/test_manuscript_outline.py",
+                      "tests/test_doc_numbers.py"):
+            assert suite in body, f"{suite} is not part of the stack"
+        assert "--strict-markers" in body and "--strict-config" in body
+
+    def test_it_delegates_the_build_rather_than_compiling(self):
+        """Same rule as CI: pdfTeX stamps a creation date, so the checkout is not
+        a build directory."""
+        body = self.body()
+        assert re.search(r"\blatexmk -pdf\b", body) is None, \
+            "the stack compiles on its own; it must call tools/check_pdf_build.sh"
+        assert "command -v latexmk" in body, "the toolchain is assumed, not probed"
+        assert "tools/check_pdf_build.sh" in body
+        assert "--with-pdf" in body, "the rebuild is opt-in, not skipped silently"
+        assert "mktemp -d" in body and 'rm -rf "$scratch"' in body
+
+    def test_the_pdf_branch_audits_the_fresh_build(self):
+        body = self.body()
+        assert "--build-dir" in body and "--pdf-text" in body
+        assert re.search(r"--compare-record[\s\S]{0,90}manuscript_build_record\.json",
+                         body), "the tracked record is not diffed against the build"
+
+    def test_quick_only_skips_the_slow_layers(self):
+        body = self.body()
+        assert "--quick" in body
+        assert body.count('[ "$QUICK" -eq 0 ]') == 2, \
+            "--quick must guard the suites and the gates, nothing else"
+        first_guard = body.index('[ "$QUICK" -eq 0 ]')
+        for tool in ("derive_stats.py", "claims.py", "doc_numbers.py",
+                     "manuscript_outline.py"):
+            assert body.index(tool) < first_guard, \
+                f"{tool} sits behind --quick, so a quick run skips a number gate"
+
+    def test_ci_runs_the_same_layers_the_script_does(self):
+        """The script is the local entry point and the ``numbers`` job is the
+        remote one; a step present in only half of them is a step that will pass
+        locally and surprise nobody until it is the only evidence."""
+        yaml = pytest.importorskip("yaml")
+        spec = yaml.safe_load(self.WORKFLOW.read_text())
+        steps = spec["jobs"]["numbers"]["steps"]
+        runs = "\n".join(str(s.get("run", "")) for s in steps)
+        body = self.body()
+        for tool in ("tools/derive_stats.py", "tools/claims.py",
+                     "tools/doc_numbers.py", "tools/manuscript_outline.py"):
+            assert (tool in runs) == (tool in body), f"{tool} is in one gate only"
+
+
+class TestPackageTestEntryPoints:
+    """package.json's test scripts, so the repository has one npm-shaped door."""
+
+    PKG = json.loads((ROOT / "package.json").read_text())
+
+    def test_the_app_scripts_are_untouched(self):
+        scripts = self.PKG["scripts"]
+        for name, value in (("dev", "next dev"), ("build", "next build"),
+                            ("start", "next start")):
+            assert scripts[name] == value, name
+
+    def test_a_test_script_exists_for_each_tier(self):
+        scripts = self.PKG["scripts"]
+        assert "test" in scripts and "test:slow" in scripts
+        assert "test:numbers" in scripts and "test:paper" in scripts
+
+    def test_the_default_test_script_is_the_fast_tier(self):
+        run = self.PKG["scripts"]["test"]
+        assert "-m \"not slow\"" in run, "npm test would re-run the simulation"
+        assert "--strict-markers" in run and "--strict-config" in run
+
+    def test_the_slow_script_selects_only_the_slow_tier(self):
+        assert "-m slow" in self.PKG["scripts"]["test:slow"]
+
+    def test_the_number_scripts_call_the_stack(self):
+        assert "tools/verify_numbers.sh" in self.PKG["scripts"]["test:numbers"]
+        assert "tools/verify_numbers.sh --with-pdf" in self.PKG["scripts"]["test:paper"]
+
+    def test_the_ci_gates_job_and_npm_test_ask_for_the_same_thing(self):
+        yaml = pytest.importorskip("yaml")
+        spec = yaml.safe_load((ROOT / ".github" / "workflows" / "verify.yml").read_text())
+        runs = [str(s.get("run", "")) for s in spec["jobs"]["gates"]["steps"]]
+        pytest_runs = [r for r in runs if "pytest tests" in r]
+        assert len(pytest_runs) == 1, "the gates job runs pytest more than once"
+        for flag in ("-q", '-m "not slow"', "--strict-markers", "--strict-config"):
+            assert flag in pytest_runs[0], f"CI does not pass {flag}: {pytest_runs[0]}"
+            assert flag in self.PKG["scripts"]["test"], f"npm test lacks {flag}"
+
+
+class TestCiNumbersJob:
+    """The third job: what makes a numeric defect fail a push, cheaply."""
+
+    WORKFLOW = ROOT / ".github" / "workflows" / "verify.yml"
+
+    def spec(self):
+        yaml = pytest.importorskip("yaml")
+        return yaml.safe_load(self.WORKFLOW.read_text())
+
+    def test_the_three_jobs_exist_and_are_split_by_dependency(self):
+        spec = self.spec()
+        assert set(spec["jobs"]) == {"gates", "numbers", "paper"}
+        paper_runs = "\n".join(str(s.get("run", ""))
+                               for s in spec["jobs"]["paper"]["steps"])
+        numbers_runs = "\n".join(str(s.get("run", ""))
+                                 for s in spec["jobs"]["numbers"]["steps"])
+        assert "apt-get install" in paper_runs, "TeX Live belongs to the paper job"
+        assert "apt-get" not in numbers_runs, \
+            "the numbers job must not pay for a distribution install"
+
+    def test_every_job_declares_its_own_ceiling(self):
+        for job, spec_ in self.spec()["jobs"].items():
+            assert "timeout-minutes" in spec_, job + " inherits the six-hour default"
+
+    def test_the_paper_ceiling_clears_the_install_that_cancelled_it(self):
+        """The failure this job was split to fix: 20m17s, cancelled mid-apt."""
+        assert self.spec()["jobs"]["paper"]["timeout-minutes"] >= 40
+
+    def test_pushes_cancel_the_previous_run(self):
+        conc = self.spec().get("concurrency")
+        assert isinstance(conc, dict) and conc.get("cancel-in-progress") is True, \
+            "a series of pushes queues identical TeX Live installs"
+
+    def test_the_numbers_job_is_a_build_and_test_cycle(self):
+        runs = "\n".join(str(s.get("run", ""))
+                         for s in self.spec()["jobs"]["numbers"]["steps"])
+        assert runs.index("derive_stats.py --check") < runs.index("claims.py --check"), \
+            "the ledger is checked before the statistics it cites are rebuilt"
+        assert "doc_numbers.py" in runs and "manuscript_outline.py" in runs
+        assert "tests/test_doc_numbers.py" in runs
+
+    def test_the_documentation_audit_has_a_floor_in_ci(self):
+        runs = "\n".join(str(s.get("run", ""))
+                         for s in self.spec()["jobs"]["numbers"]["steps"])
+        m = re.search(r"doc_numbers\.py.*?--min-claims (\d+)", runs, re.S)
+        assert m, "the documentation audit runs in CI without a floor on its size"
+        assert int(m.group(1)) >= 30
+
+    def test_the_paper_job_uploads_what_it_built(self):
+        steps = self.spec()["jobs"]["paper"]["steps"]
+        upload = [s for s in steps
+                  if "upload-artifact" in str(s.get("uses", ""))]
+        assert len(upload) == 1
+        with_ = upload[0]["with"]
+        assert with_["if-no-files-found"] == "error", \
+            "a build that produced nothing must not look like a pass"
+        assert any("main.log" in p for p in str(with_["path"]).split()), \
+            "the log is the only evidence about overfull boxes and references"
+
+    def test_the_build_is_audited_not_only_compiled(self):
+        runs = "\n".join(str(s.get("run", "")) for s in self.spec()["jobs"]["paper"]["steps"])
+        assert "--pdf-text" in runs, "the built PDF's digits are never checked"
+        assert "--strict-metadata" in runs
+        assert "--compare-record" in runs, \
+            "the tracked build record is never diffed against the real build"
+
+    def test_step_summaries_carry_the_numbers_a_reviewer_wants(self):
+        runs = "\n".join(str(s.get("run", "")) for s in
+                         self.spec()["jobs"]["numbers"]["steps"] +
+                         self.spec()["jobs"]["paper"]["steps"])
+        assert runs.count("GITHUB_STEP_SUMMARY") >= 3
+        assert "Unexplained" in runs and "fingerprint" not in runs

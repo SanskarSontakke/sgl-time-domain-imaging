@@ -78,6 +78,11 @@ tools/        flatten_archives.py (de-version checkpoints), verify_flat.py
               G-1..G-7), strip_rev.py (unwrap \rev{} spans), array_manifest.py
               (byte-level content manifest), run_ext_full.sh (full-tier
               regeneration of the 14 extension archives)
+              derive_stats.py (the numbers the paper derives but the pipeline
+              does not store), claims.py (numeric provenance ledger),
+              manuscript_outline.py (structural audit of the built document),
+              doc_numbers.py (audit of the counts this documentation makes),
+              verify_numbers.sh (run every proof layer in one command)
 docs/         HISTORY.md (provenance of the single-version consolidation)
 ```
 
@@ -204,6 +209,35 @@ bash tools/run_ext_full.sh         # regenerate every extension archive at full 
 
 `.github/workflows/verify.yml` runs the fast tier of all three, plus that LaTeX
 rebuild, on every push.
+
+### Proof layers
+
+The gates above answer "did the pipeline change?".  Four more tools answer the
+questions a manuscript actually has to answer, in the order a build would run
+them -- reduce, vouch, check the document, check the prose about the document:
+
+```bash
+bash tools/verify_numbers.sh          # all of the below, in one command
+```
+
+| Tool | Question it answers | What the tree currently says |
+| --- | --- | --- |
+| `tools/derive_stats.py` | Which numbers does the paper derive from archives rather than read off them? | 1033 statistics in 6 families, in `tools/derived_stats.json` |
+| `tools/claims.py` | Can every printed number be traced to an archived value, or to arithmetic over one? | 654 ledger entries, of which 629 are harvested claims and 25 are prose arithmetic re-evaluated from archived inputs; 2224 printed numbers examined, 0 unexplained |
+| `tools/manuscript_outline.py` | Is the document the shape its own abstract claims, in the order it claims? | 36 pages, 9 figures, 16 tables, 28 references, 18 numbered equations, 4 appendices, 0 findings |
+| `tools/doc_numbers.py` | Do the README, the test documentation, Appendix D and CI still state the same counts as the tree? | 34 documented claims, 62 numbers, 17 module rows, 0 findings |
+
+`tools/claims.py --check` is the strict one: a decimal printed in the manuscript
+either resolves to a path in `tools/derived_stats.json` or to a relation this tool
+evaluates itself, and an unresolvable number is an error.
+`tools/manuscript_outline.py` reads `main.aux` and `main.log` when a build has
+just happened, and falls back to the tracked `tools/manuscript_build_record.json`
+in a checkout with no TeX; its structure fingerprint is what stops a page number
+left over from an earlier skeleton being used to prove this one is in order.
+`tools/doc_numbers.py` re-measures the suite, the archives and the driver rather
+than trusting any of them to be written down correctly, which is how a stale
+`207 test functions` in a README becomes a failed gate instead of a fact nobody
+checks.
 
 ## Compiling the paper
 
