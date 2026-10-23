@@ -24,8 +24,8 @@
 \twocolumn[{%
 \begin{center}
 {\Large\bfseries Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets
-with the Solar Gravitational Lens: Reconstruction Algorithms,
-Observing-Cadence Requirements, and Mission Targets\par}
+with the Solar Gravitational Lens: An Open Inversion Framework, a Cloud-Limited
+Fidelity Ceiling, and Mission Cadence Requirements\par}
 \vspace{2.5mm}
 {\large Sanskar Sontakke\par}
 \vspace{1mm}
@@ -106,7 +106,6 @@ methods: numerical --- space vehicles: instruments
 }]
 
 
-
 \section{Introduction}
 \label{sec:intro}
 
@@ -170,46 +169,50 @@ the gate through which SGL imaging must pass, and none of the works cited above
 reports a rotating-planet reconstruction at Earth-like cloud cover with a fidelity
 that would support surface mapping. We emphasize that the present pipeline also does not achieve high fidelity at Earth-like cloud cover ($r = 0.249 \pm 0.010$ at $71\%$ cover under single-campaign budgets in our adopted scalar-photometry raster architecture), and that no matched head-to-head comparison against the 15-visit phase-registered architecture of \citet{tur26bench} is established here because our sampling budgets explore visit counts under constrained photon and wall-clock allocations rather than the dedicated phase-binning regime. Our results are strictly scoped to the single-pixel photometric raster-scan model.
 
-This paper attacks that gate directly, with five specific contributions.
-First (Sections~\ref{sec:model}--\ref{sec:methods}), we build a transparent,
+This paper attacks that gate directly, with six specific contributions, listed
+in the order the sections present them.
+First (Sections~\ref{sec:model}--\ref{sec:scene}), we build a transparent,
 end-to-end simulator---partially validated against the published photometric
 and deconvolution benchmarks---in which planetary rotation, orbital
 illumination, and stochastic advecting clouds are modeled explicitly.
-To that first item we add two rigorous audits: a
-convergence study of the intra-dwell exposure integral (Section~\ref{sec:quad}),
-which shows that the 3-node rule previously used aliases rotational harmonic
-$m=36$ at unit gain, and a numerical-precision and conditioning audit of the
-normal equations (Sections~\ref{sec:infaudit}, \ref{sec:precisionnum}), which
-identifies the constant-albedo mode as the quantity the slot nuisance actually
-regularizes.
-Second (Section~\ref{sec:results}), we formulate reconstruction as
-regularized generalized least squares on time-tagged samples (time-domain
-inversion, TDI; distinct from hardware time-delay integration in detector
-readouts), with the per-dwell-slot cloud mean handled by exact anchored nuisance
-profiling rather than approximate deflation heuristics. We isolate the
-observing-cadence law under two named, mutually exclusive resource ledgers
-(fixed photons per raster position, or fixed wall clock) rather than a single
-unconstrained budget, and ablate the estimator --- slot handling, whitening,
-anchoring --- holding data and operator fixed. Every number is reported as a
-mean and standard error over paired seeds, with paired $t$-statistics, win
-counts and the exact attainable significance floor, and with a physical
-cloud-only null in place of geometry-scrambled surrogates.
-Third, we broaden the robustness tests to non-stationary latitudinal cloud
-banding, multi-timescale weather, per-pass independent weather, surface-coupled
-clouds, and a full $5\times5$ grid of affine cloud-climatology errors. Crucially, we identify surface--cloud coupling as a major failure mode ($\Delta r = -0.198$, reducing $r$ to $0.144$) that cannot be bought off by cadence, and we
-state explicitly which metrics are blind to which errors ($r$ is exactly affine
-invariant; bias, RMSE and contrast are not).
-Fourth, we extend the geometric requirement to spin-pole tilt and initial
-phase with measured tolerances, and we demonstrate that
-the residual spin state is not refinable in flight from the profile likelihood:
-the whitened objective is exactly invariant to assumed initial phase.
-Fifth (Section~\ref{sec:mission}), we evaluate effective spatial resolution
-$r(\ell)$ with a real spherical-harmonic transform and an explicit quadrature
-error bound, land--ocean detection against two nulls with stated ensemble
-floors, and translate cadence requirements into mission terms using an
-effective-independent-look count that depends on the assumed weather
-decorrelation time; the target table is a reproducible nominal-proxy list, not
-an uncertainty propagation.
+Second (Sections~\ref{sec:tdi}, \ref{sec:profiling}), we formulate
+reconstruction as regularized generalized least squares on time-tagged samples
+(time-domain inversion, TDI; distinct from hardware time-delay integration in
+detector readouts), with the per-dwell-slot cloud mean handled by exact
+anchored nuisance profiling rather than approximate deflation heuristics.
+Third (Sections~\ref{sec:quad}, \ref{sec:infaudit}, \ref{sec:precisionnum}), we
+add two rigorous audits of that machinery: a convergence study of the
+intra-dwell exposure integral, which shows that the 3-node rule previously used
+aliases rotational harmonic $m=36$ at unit gain, and a numerical-precision and
+conditioning audit of the normal equations, which identifies the
+constant-albedo mode as the quantity the slot nuisance actually regularizes.
+Fourth (Section~\ref{sec:results}, and in particular
+Sections~\ref{sec:res}, \ref{sec:roc}, \ref{sec:ablation}, \ref{sec:cadence}),
+we evaluate effective spatial resolution $r(\ell)$ with a real
+spherical-harmonic transform and an explicit quadrature error bound, land--ocean
+detection against two nulls with stated ensemble floors, and a component-wise
+ablation of the estimator --- slot handling, whitening, anchoring --- holding
+data and operator fixed; we isolate the observing-cadence law under two named,
+mutually exclusive resource ledgers (fixed photons per raster position, or
+fixed wall clock) rather than a single unconstrained budget. Every number is
+reported as a mean and standard error over paired seeds, with paired
+$t$-statistics, win counts and the exact attainable significance floor, and
+with a physical cloud-only null in place of geometry-scrambled surrogates.
+Fifth (Sections~\ref{sec:geom}--\ref{sec:sys}), we extend the geometric
+requirement to spin-pole tilt and initial phase with measured tolerances, and
+we demonstrate that the residual spin state is not refinable in flight from the
+profile likelihood: the whitened objective is exactly invariant to assumed
+initial phase. We broaden the robustness tests to non-stationary latitudinal
+cloud banding, multi-timescale weather, per-pass independent weather,
+surface-coupled clouds, and a full $5\times5$ grid of affine cloud-climatology
+errors. Crucially, we identify surface--cloud coupling as a major failure mode
+($\Delta r = -0.198$, reducing $r$ to $0.144$) that cannot be bought off by
+cadence, and we state explicitly which metrics are blind to which errors ($r$
+is exactly affine invariant; bias, RMSE and contrast are not).
+Sixth (Section~\ref{sec:mission}), we translate the cadence requirements into
+mission terms using an effective-independent-look count that depends on the
+assumed weather decorrelation time; the target table is a reproducible
+nominal-proxy list, not an uncertainty propagation.
 
 \section{SGL Photometric Model and Validation}
 \label{sec:model}
@@ -845,6 +848,7 @@ competitor is not a straw man.
 \emph{Statistical reporting, geography conditioning, and error conventions.}
 All synthetic campaigns in Sections~\ref{sec:rotation}--\ref{sec:lamsens} use a single fixed planetary geography ($\mathrm{TRUTH\_SEED}=7$, generating the synthetic continental albedo map shown in Fig.~\ref{fig:model}b). Between realization seeds (seeds 11--20), this planetary geography is held strictly constant while the photon shot noise (keyed to $\mathrm{seed}$) and the dynamic stochastic cloud field (keyed to $100+\mathrm{seed}$) are varied independently. Consequently, all uncertainties and confidence intervals reported in Tables~\ref{tab:clouds}, \ref{tab:cadence_ablation}, \ref{tab:ablation}, \ref{tab:geom}, \ref{tab:morph}, \ref{tab:wx}, and \ref{tab:sys} represent weather-and-photon sampling variability conditional on this single synthetic planet, not dispersion across diverse exoplanetary geomorphologies. The only true geomorphic scene diversity explored in this work is the three-morphology sweep of Section~\ref{sec:morph} (Table~\ref{tab:morph}).
 
+The four fidelity metrics this paper reports -- Pearson $r$, SSIM, nRMSE and the contrast and land--ocean detectability statistics -- are defined, with the range each is computed over and the null it is measured against, in Appendix~\ref{app:metrics}.
 Throughout this paper, the notation $x \pm y$ denotes the ensemble mean and standard error of the mean (SE, $\sigma/\sqrt{N_{\rm seeds}}$ with $N_{\rm seeds}=10$ unless stated otherwise), while standard deviation is explicitly labelled as SD and bootstrap intervals as 95\% CI (computed using 20{,}000 percentile resamples of paired differences; Appendix~\ref{sec:appendix_stats} (Table~\ref{tab:app_seeds}) tabulates all individual paired per-seed values and 95\% bootstrap intervals).
 Because 10 seeds is a small ensemble, we report the exact attainable
 significance floor alongside every $p$-value: for $n=10$ paired samples the
@@ -2810,6 +2814,14 @@ quotable from the archived drift curve --- the honest statement is that optical
 refraction lies outside the tested range, and that the weak-refraction model
 itself fails beyond $1.594$~m ($188$~MHz).
 
+\acknowledgments
+This work used open-source software (NumPy, SciPy, Matplotlib, scikit-image).
+The author is grateful for the detailed reviewer comments recorded in the
+repository's {\tt reviews/} directory, which changed several of the numbers
+reported here rather than only their wording.  No external funding was
+received.
+
+
 \section*{Data and Code Availability}
 The simulation and inversion framework developed in this paper is publicly available
 on GitHub at \url{https://github.com/SanskarSontakke/sgl-time-domain-imaging} and permanently
@@ -2844,106 +2856,100 @@ ext.<module>}); Appendix~\ref{app:ext} states what each one contributes and how 
 recorded, and Appendix~\ref{app:repro} states the reproduction contract, including the exact meaning
 of ``identical'' in the diff above and the limits of what this environment can rebuild.
 
-\acknowledgments
-This work used open-source software (NumPy, SciPy, Matplotlib, scikit-image).
-The author is grateful for the detailed pre-submission review recorded in the
-repository's {\tt reviews/} directory; it was carried out internally, before
-submission, and changed several of the numbers reported here rather than only
-their wording.  No external funding was received.
-
-\begin{thebibliography}{}
-
-\bibitem[Anglada-Escud\'e et al.(2016)]{anglada16}
-Anglada-Escud\'e, G., Amado, P.~J., Barnes, J., et al.\ 2016, Nature, 536, 437
-
-\bibitem[Astudillo-Defru et al.(2017)]{astudillo17}
-Astudillo-Defru, N., Forveille, T., Bonfils, X., et al.\ 2017, A\&A, 602, A88
-
-\bibitem[Bonfils et al.(2018)]{bonfils18}
-Bonfils, X., Astudillo-Defru, N., D\'iaz, R., et al.\ 2018, A\&A, 613, A25
-
-\bibitem[Chen \& Kipping(2017)]{chenkipping17}
-Chen, J., \& Kipping, D.\ 2017, ApJ, 834, 17
-
-\bibitem[Dreizler et al.(2020)]{dreizler20}
-Dreizler, S., Jeffers, S.~V., Rodr\'iguez, E., et al.\ 2020, MNRAS, 493, 536
-
-\bibitem[Dreizler et al.(2024)]{dreizler24}
-Dreizler, S., Luque, R., Ribas, I., et al.\ 2024, A\&A, 684, A117
-
-\bibitem[Eshleman(1979)]{eshleman79}
-Eshleman, V.~R.\ 1979, Science, 205, 1133
-
-\bibitem[Feng et al.(2017)]{feng17}
-Feng, F., Tuomi, M., Jones, H.~R.~A., et al.\ 2017, AJ, 154, 135
-
-\bibitem[Figueira et al.(2025)]{figueira25}
-Figueira, P., Faria, J.~P., Silva, A.~M., et al.\ 2025, A\&A, 700, A174
-(A comprehensive study on radial velocity signals using ESPRESSO: Pushing
-precision to the 10\,cm/s level)
-
-\bibitem[Friedman et al.(2024)]{friedman24}
-Friedman, L.~D., Garber, D., Turyshev, S.~G., et al.\ 2024, Exp.\ Astron., 57, 1
-
-\bibitem[Helvajian et al.(2023)]{helvajian23}
-Helvajian, H., Rosenthal, A., Poklemba, J., et al.\ 2023, J.\ Spacecr.\ Rockets, 60, 829
-
-\bibitem[Madurowicz \& Macintosh(2022)]{mm22}
-Madurowicz, A., \& Macintosh, B.\ 2022, ApJ, 930, 19
-
-\bibitem[NASA/Aerospace Corp.(2022)]{apple22}
-Aerospace Corporation \& NASA NIAC 2022, Atomic Planar Power for Lightweight Exploration (APPLE), NIAC Phase II study
-
-\bibitem[Toth(2025)]{toth25clouds}
-Toth, V.~T.\ 2025, Res.\ Astron.\ Astrophys., 25, 065007, doi:10.1088/1674-4527/add3a3 (arXiv:2504.18630)
-
-\bibitem[Toth \& Turyshev(2021)]{toth21}
-Toth, V.~T., \& Turyshev, S.~G.\ 2021, Phys.\ Rev.\ D, 103, 124038
-
-\bibitem[Toth \& Turyshev(2023)]{toth23}
-Toth, V.~T., \& Turyshev, S.~G.\ 2023, MNRAS, 525, 5846
-
-\bibitem[Turyshev \& Toth(2022b)]{tt22spec}
-Turyshev, S.~G., \& Toth, V.~T.\ 2022b, Phys.\ Rev.\ D, 106, 044059
-(arXiv:2206.03037)
-
-\bibitem[Turyshev \& Toth(2023)]{tt23ext}
-Turyshev, S.~G., \& Toth, V.~T.\ 2023, Phys.\ Rev.\ D, 107, 104063
-(arXiv:2301.07495)
-
-\bibitem[Turyshev(2026a)]{tur26direct}
-Turyshev, S.~G.\ 2026a, Phys.\ Rev.\ D, 113, 023034 (arXiv:2506.20236)
-
-\bibitem[Turyshev(2026b)]{tur26bench}
-Turyshev, S.~G.\ 2026b, arXiv:2606.14899
-
-\bibitem[Turyshev(2026c)]{tur26prop}
-Turyshev, S.~G.\ 2026c, arXiv:2602.04198
-
-\bibitem[Turyshev(2026d)]{cov26}
-Turyshev, S.~G.\ 2026d, arXiv:2606.29138
-
-\bibitem[Turyshev \& Toth(2017)]{tt17}
-Turyshev, S.~G., \& Toth, V.~T.\ 2017, Phys.\ Rev.\ D, 96, 024008
-
-\bibitem[Turyshev \& Toth(2019)]{tt19}
-Turyshev, S.~G., \& Toth, V.~T.\ 2019, Phys.\ Rev.\ D, 99, 024044
-
-\bibitem[Turyshev \& Toth(2020)]{tt20psf}
-Turyshev, S.~G., \& Toth, V.~T.\ 2020, Phys.\ Rev.\ D, 102, 024038
-
-\bibitem[Turyshev \& Toth(2021)]{tt21quad}
-Turyshev, S.~G., \& Toth, V.~T.\ 2021, Phys.\ Rev.\ D, 103, 064076
-
-\bibitem[Turyshev \& Toth(2022a)]{tt22mnras}
-Turyshev, S.~G., \& Toth, V.~T.\ 2022a, MNRAS, 515, 6122
-
-\bibitem[Turyshev et al.(2020)]{niac20}
-Turyshev, S.~G., Shao, M., Toth, V.~T., et al.\ 2020, Direct Multipixel Imaging and Spectroscopy of an Exoplanet with a Solar Gravity Lens Mission, NASA NIAC Phase II Final Report
-
-\end{thebibliography}
 
 \appendix
+
+\section{Metric Definitions}
+\label{app:metrics}
+
+Five numbers are quoted throughout, and four of them are computed on a
+restricted region. This appendix fixes every convention, because the differences
+between our values and those of published SGL studies are almost always
+differences of definition rather than of method. All of it lives in
+{\tt sglsim.eval\_map}, {\tt expcommon.evaluate}, {\tt sglsim.detection\_dprime}
+and {\tt expcommon.paired\_stats}.
+
+\subsection{Region of application}
+Except where stated, every metric is evaluated on cell centres with
+$|{\rm lat}|\le60^\circ$. The exclusion is not cosmetic: the two polar rows of
+the $36\times72$ basis are never sampled by the circular raster at $n=64$
+(Section~\ref{sec:infaudit}), so including them would score regularisation
+artefacts in cells the data cannot constrain. \emph{One} metric breaks this
+rule: the albedo \texttt{bias} is the difference of full-grid means,
+$\langle\hat{\mathbf{s}}\rangle - \langle\mathbf{s}\rangle$ over all $2592$
+cells, because it is meant to be an energy-accounting statement about the
+debiasing step rather than a fidelity statement about imaged terrain. Readers
+comparing bias with $r$ should keep the two supports distinct.
+
+\subsection{The four fidelity metrics}
+\begin{itemize}
+\item \textbf{Pearson $r$} is the ordinary sample correlation of the debiased
+map against truth over the selected cells. It is invariant to any affine
+rescaling of the map, which is precisely why it is paired with contrast and bias
+rather than reported alone.
+\item \textbf{SSIM} is computed on the two-dimensional latitude--longitude grid
+with \texttt{data\_range} set to the truth range over the selection. Because it
+uses a fixed square window in \emph{index} space, its cells are not equal area:
+it weights high latitudes more than an area-corrected statistic would. We keep
+it because it is the field's convention, and note the distortion rather than
+silently correcting it.
+\item \textbf{NRMSE} is $\sqrt{\langle(\hat{s}-s)^2\rangle}$ divided by the same
+truth range, so it is a fraction of the albedo dynamic range, not of the RMS
+signal.
+\item \textbf{Contrast} is the ratio of the retrieved land--ocean mean
+separation to the true one, with land defined by a truth albedo threshold of
+$0.15$. It equals one when the reconstruction preserves the amplitude of the
+dichotomy, and it is the metric that distinguishes ``sharper'' from ``more
+accurate'' in the large-$\lambda$ control of Section~\ref{sec:lamsens}.
+\end{itemize}
+
+\subsection{Detectability and its nulls}
+The land--ocean statistic is
+$d'=(\mu_{\rm land}-\mu_{\rm ocean})/\sqrt{(\sigma^2_{\rm land}+\sigma^2_{\rm ocean})/2}$
+computed on the \emph{retrieved} map with the \emph{true} labels, the same
+$|{\rm lat}|\le60^\circ$ support, and a $10^{-12}$ guard in the pooled variance.
+Two nulls are reported against it and they answer different questions, which is
+why both are printed and neither is called ``the'' $p$-value. The
+\emph{label-permutation} null reassigns the class labels at random on the same
+map and asks whether this labelling is unusual; it is a statement about the
+labelling, not about detection. The \emph{cloud-only physical} null runs the
+whole pipeline on scenes with no surface contrast at all and asks whether the
+instrument produces this separation from weather alone; that is the null a
+detection claim must clear. With 2000 and 40 members respectively, the two
+floors are $1/2001=5.0\times10^{-4}$ and $1/41=0.024$, and both are quoted as
+saturation statements in Section~\ref{sec:nulls}. A Fourier phase-scrambling
+surrogate used in an earlier draft is retained in the code only for
+reproducibility and is deprecated: it ignores $\cos({\rm lat})$ cell areas, does
+not respect the sphere, and contains neither photon noise nor the reconstruction
+operator, so it is not a null for any statistic reported here.
+
+\subsection{Spectral fidelity}
+$r(\ell)$ is computed by projecting the map onto orthonormal \emph{real
+spherical harmonics} sampled at the cell centres, not by taking FFT magnitudes.
+The distinction matters: on an equirectangular grid the longitude cells are not
+equal area, the map is periodic in longitude but not in latitude, and the index
+$\sqrt{k_x^2+k_y^2}$ has no reason to coincide with degree $\ell$. Band means are
+reported both unweighted and $(2\ell+1)$-weighted, because the unweighted
+version hides a gain and a loss of similar size inside one band
+(Section~\ref{sec:lamsens}).
+
+\subsection{Ensemble statistics}
+A paired comparison of two configurations over the $N=10$ seeds reports the mean
+difference, the standard error with \texttt{ddof=1}, a paired $t$-test, an exact
+two-sided sign test using the central binomial tail
+$\min(1,\,2\sum_{i\le k}\binom{N}{i}/2^N)$ with $k$ the smaller of the positive
+and negative counts, and a 95\% percentile bootstrap over 20{,}000 resamples
+with a fixed seed. The sign-test convention is stated because the alternative
+(twice the point probability at the observed split) is anti-conservative: at
+$N=10$ with an 8/2 split it returns $0.088$ where the central tail returns
+$0.109$. The attainable floor is $2/2^{10}=1.95\times10^{-3}$, which is why no
+sign-flip $p$-value in this paper is printed below it. Effective independent
+looks are $N_{\rm eff}=M_p^2/\big(M_p+2\sum_{k}(M_p-k)\rho_k\big)$ with
+$\rho_k=e^{-k\Delta t/\tau}$, i.e.\ pair-weighted by the temporal covariance of
+the weather; dropping the weights collapses $N_{\rm eff}$ from $12.1$ to
+$59.8$-looking-like-independent at $M_p=64$, which is the error an earlier draft
+made.
+
 \section{Per-Seed Ensemble Statistics and Bootstrap Intervals}
 \label{app:seeds}
 \label{sec:appendix_stats}
@@ -2977,128 +2983,6 @@ Exact vs.\ approx.\ OU ($F - C$) & $-0.0002$ & $+0.0001$ & $+0.0002$ & $+0.0002$
 \end{tabular}%
 }
 \end{table*}
-
-\section{Reproduction Contract and Verification Gates}
-\label{app:repro}
-
-Every number in this paper is produced by one of two entry points, and the
-distinction between them is the distinction between a claim and a check.
-
-\subsection{The two entry points}
-The generation side is {\tt src/run\_experiments.py}, whose 28 subcommands each
-write one archive (or one set of per-seed checkpoints) under {\tt results/}, plus
-one standalone generator, {\tt src/targets.py}, which writes the target catalogue
-archive, this paper's target table and its figure; both are registered as stages of
-the driver, so no artifact-producing script sits outside it.
-The verification side is the module-level driver
-\mbox{{\tt python3 -m reproduce\_all}}, which never writes to the shipped tree:
-it copies {\tt results/} to a scratch directory, points the harness at the copy
-through the {\tt SGL\_RESULTS\_DIR} environment variable, re-runs stages there,
-and diffs the result against the shipped archives.
-
-\begin{table*}[t]
-\centering
-\caption{The reproduction driver's modes. ``Stages'' counts entries of
-{\tt reproduce\_all.full\_stages()}; the fast tier is the eight stages that
-re-derive every shipped archive from its checkpoints and require no simulation.}
-\label{tab:repro}
-\footnotesize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llp{0.60\textwidth}}
-\toprule
-Invocation & Stages & What it establishes \\
-\midrule
-{\tt --fast} & 8 & the analytic and diagnostic archives regenerate bit-for-bit
-on the machine that produced them; continuous integration reruns the same tier
-with {\tt --tol 1e-12}, because on a different BLAS the worst difference seen was
-$4.2\times10^{-15}$ relative, on 5 of 639 stored arrays \\
-{\tt --stages "quadrature clouds 3"} & 2 & an explicit subset, for a targeted
-audit \\
-{\tt --full} & 70 & every simulation stage re-runs from scratch, including the
-10-seed ensembles \\
-{\tt --full --from-zero} & 70 & as above with all per-seed checkpoints deleted,
-so nothing is inherited \\
-{\tt --fast --ext} & 8\,+\,14 & additionally runs the extension modules
-at their fast tier \\
-{\tt --make-baseline PATH} & 0 & freezes a byte-level manifest of the shipped
-tree \\
-{\tt --check} & 0 & compares the shipped tree against that manifest without
-running anything \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\subsection{What ``identical'' means in the diff}
-A numeric reproduction claim is only as good as its comparison operator, so we
-state ours. Each archive is reduced to a flat leaf map: JSON objects to
-dotted paths, arrays to \{$<$name$>$: shape, dtype, SHA-256 of the raw
-buffer\}. Five rules then apply.
-
-(1) \emph{Exact by default.} The tolerance is zero; a nonzero
-{\tt --tol} must be passed explicitly, and the only place we use it is
-$10^{-12}$ for quantities that depend on BLAS summation order.
-(2) \emph{Timestamps are ignored by leaf name}, not by value, so
-{\tt provenance.generated\_utc} cannot smuggle a real change past the check, and
-a field that \emph{becomes} a timestamp is still caught.
-(3) \emph{Types are part of the value}: {\tt true} and $1$ differ, and are
-reported as a \mbox{``bool''} mismatch.
-(4) \emph{NaN masks are compared}: two all-NaN arrays match, and an array whose
-NaN pattern changed does not, even if the finite entries agree.
-(5) \emph{String labels are compared with their dtype}: a
-{\tt $<$U9} and a {\tt $<$U8} label array holding the same text differ, which
-is how a renamed baseline is caught even when the values are untouched.
-
-\subsection{Gates}
-Three independent gates run over the tree. {\tt tools/verify\_flat.sh} enforces
-the single-version consolidation: no revision markup or
-version narrative in the manuscript, no superseded directories, no
-version-bearing keys or labels inside the archives, version-free prose in the
-README and the demo app, working entry points, the test suite, and the presence
-of all 14 extension archives. The pytest suite (207 test functions, 354 collected
-checks, 333 of them in the default fast tier) checks
-physics and geometry against hand-derived values, checks the shipped archives
-against each other, and --- in its {\tt slow} tier, deselected by default ---
-re-solves the fiducial pipeline and reproduces five metrics for two estimators
-to $10^{-12}$. {\tt tools/array\_manifest.py} provides the byte-level manifest
-behind the last two rows of Table~\ref{tab:repro}. All three are wired into
-{\tt .github/workflows/verify.yml}, which runs the fast tier of each on every
-push; the simulation tier is deliberately excluded from CI because it costs
-hours on four cores.
-
-\subsection{Rebuilding the manuscript itself, and what stays outside CI}
-Two limits should be stated rather than discovered by the reader. First, nothing
-in this paper is hand-maintained except the prose. Every figure is regenerated
-from the shipped archives ({\tt src/make\_figures.py}, or {\tt reproduce\_all
---figures} inside the scratch tree), the target table
-({\tt paper/targets\_table.tex}) is emitted by {\tt src/targets.py} rather than
-edited by hand, and {\tt main.pdf} is rebuilt from {\tt main.tex} in the same
-audit environment used for everything above: a single {\tt latexmk -pdf} pass
-over a standard two-column article, needing no class or style file beyond
-{\tt texlive-latex-base}, {\tt texlive-latex-recommended},
-{\tt texlive-latex-extra} and {\tt texlive-fonts-recommended} (pdfTeX 1.40.22,
-latexmk 4.76). The shipped PDF is that build --- 36 pages, no undefined
-references or citations, no overfull boxes --- and continuous integration now
-rebuilds it on every push, in a scratch copy of the sources rather than in the
-working tree. The reason is that pdfTeX stamps a creation date into every PDF it
-writes, so a PDF is not byte-reproducible and a build in place would break the
-byte-for-byte gate that keeps the shipped manuscript and the demo site's copies
-identical. A fresh build is therefore compared with the shipped one by page
-count and by flattened text: the typeset title breaks across a line, so a
-literal string match on the raw text stream of {\tt pdftotext} fails on a
-perfectly good PDF. A test of the brace balance of every generated {\tt .tex}
-fragment runs first, because a single stray closing brace in a
-generated caption is enough to abort the build and leave every cross-reference
-in the manuscript unresolved. The reproduction tier in CI is run with an explicit
-$10^{-12}$ relative tolerance rather than the default bit-for-bit comparison: on
-the machine that produced the archives the two agree exactly, and on a GitHub
-runner they agreed to $4.2\times10^{-15}$, so exactness there is a property of
-one build environment rather than of the result. What CI still does
-\emph{not} run is the simulation tier: it costs hours on four cores, so it is
-left to the {\tt slow} test tier and to {\tt reproduce\_all --full}.
-Second, reproducing the shipped numbers requires the pinned stack
-(Python 3.12.13, NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2, scikit-image
-0.26.0); the comparisons above are exact, so a different BLAS can legitimately
-fail them at the $10^{-12}$ level, which is why that tolerance exists.
 
 \section{Extension Modules and Their Provenance Contract}
 \label{app:ext}
@@ -3229,96 +3113,219 @@ $\mathsf{A}_{\rm prof}$ and its pseudo-inverse, not of the estimator, and the
 archive now carries that verdict as a flag instead of printing the number as a
 target.
 
-\section{Metric Definitions}
-\label{app:metrics}
+\section{Reproduction Contract and Verification Gates}
+\label{app:repro}
 
-Five numbers are quoted throughout, and four of them are computed on a
-restricted region. This appendix fixes every convention, because the differences
-between our values and those of published SGL studies are almost always
-differences of definition rather than of method. All of it lives in
-{\tt sglsim.eval\_map}, {\tt expcommon.evaluate}, {\tt sglsim.detection\_dprime}
-and {\tt expcommon.paired\_stats}.
+Every number in this paper is produced by one of two entry points, and the
+distinction between them is the distinction between a claim and a check.
 
-\subsection{Region of application}
-Except where stated, every metric is evaluated on cell centres with
-$|{\rm lat}|\le60^\circ$. The exclusion is not cosmetic: the two polar rows of
-the $36\times72$ basis are never sampled by the circular raster at $n=64$
-(Section~\ref{sec:infaudit}), so including them would score regularisation
-artefacts in cells the data cannot constrain. \emph{One} metric breaks this
-rule: the albedo \texttt{bias} is the difference of full-grid means,
-$\langle\hat{\mathbf{s}}\rangle - \langle\mathbf{s}\rangle$ over all $2592$
-cells, because it is meant to be an energy-accounting statement about the
-debiasing step rather than a fidelity statement about imaged terrain. Readers
-comparing bias with $r$ should keep the two supports distinct.
+\subsection{The two entry points}
+The generation side is {\tt src/run\_experiments.py}, whose 28 subcommands each
+write one archive (or one set of per-seed checkpoints) under {\tt results/}, plus
+one standalone generator, {\tt src/targets.py}, which writes the target catalogue
+archive, this paper's target table and its figure; both are registered as stages of
+the driver, so no artifact-producing script sits outside it.
+The verification side is the module-level driver
+\mbox{{\tt python3 -m reproduce\_all}}, which never writes to the shipped tree:
+it copies {\tt results/} to a scratch directory, points the harness at the copy
+through the {\tt SGL\_RESULTS\_DIR} environment variable, re-runs stages there,
+and diffs the result against the shipped archives.
 
-\subsection{The four fidelity metrics}
-\begin{itemize}
-\item \textbf{Pearson $r$} is the ordinary sample correlation of the debiased
-map against truth over the selected cells. It is invariant to any affine
-rescaling of the map, which is precisely why it is paired with contrast and bias
-rather than reported alone.
-\item \textbf{SSIM} is computed on the two-dimensional latitude--longitude grid
-with \texttt{data\_range} set to the truth range over the selection. Because it
-uses a fixed square window in \emph{index} space, its cells are not equal area:
-it weights high latitudes more than an area-corrected statistic would. We keep
-it because it is the field's convention, and note the distortion rather than
-silently correcting it.
-\item \textbf{NRMSE} is $\sqrt{\langle(\hat{s}-s)^2\rangle}$ divided by the same
-truth range, so it is a fraction of the albedo dynamic range, not of the RMS
-signal.
-\item \textbf{Contrast} is the ratio of the retrieved land--ocean mean
-separation to the true one, with land defined by a truth albedo threshold of
-$0.15$. It equals one when the reconstruction preserves the amplitude of the
-dichotomy, and it is the metric that distinguishes ``sharper'' from ``more
-accurate'' in the large-$\lambda$ control of Section~\ref{sec:lamsens}.
-\end{itemize}
+\begin{table*}[t]
+\centering
+\caption{The reproduction driver's modes. ``Stages'' counts entries of
+{\tt reproduce\_all.full\_stages()}; the fast tier is the eight stages that
+re-derive every shipped archive from its checkpoints and require no simulation.}
+\label{tab:repro}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llp{0.60\textwidth}}
+\toprule
+Invocation & Stages & What it establishes \\
+\midrule
+{\tt --fast} & 8 & the analytic and diagnostic archives regenerate bit-for-bit
+on the machine that produced them; continuous integration reruns the same tier
+with {\tt --tol 1e-12}, because on a different BLAS the worst difference seen was
+$4.2\times10^{-15}$ relative, on 5 of 639 stored arrays \\
+{\tt --stages "quadrature clouds 3"} & 2 & an explicit subset, for a targeted
+audit \\
+{\tt --full} & 70 & every simulation stage re-runs from scratch, including the
+10-seed ensembles \\
+{\tt --full --from-zero} & 70 & as above with all per-seed checkpoints deleted,
+so nothing is inherited \\
+{\tt --fast --ext} & 8\,+\,14 & additionally runs the extension modules
+at their fast tier \\
+{\tt --make-baseline PATH} & 0 & freezes a byte-level manifest of the shipped
+tree \\
+{\tt --check} & 0 & compares the shipped tree against that manifest without
+running anything \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-\subsection{Detectability and its nulls}
-The land--ocean statistic is
-$d'=(\mu_{\rm land}-\mu_{\rm ocean})/\sqrt{(\sigma^2_{\rm land}+\sigma^2_{\rm ocean})/2}$
-computed on the \emph{retrieved} map with the \emph{true} labels, the same
-$|{\rm lat}|\le60^\circ$ support, and a $10^{-12}$ guard in the pooled variance.
-Two nulls are reported against it and they answer different questions, which is
-why both are printed and neither is called ``the'' $p$-value. The
-\emph{label-permutation} null reassigns the class labels at random on the same
-map and asks whether this labelling is unusual; it is a statement about the
-labelling, not about detection. The \emph{cloud-only physical} null runs the
-whole pipeline on scenes with no surface contrast at all and asks whether the
-instrument produces this separation from weather alone; that is the null a
-detection claim must clear. With 2000 and 40 members respectively, the two
-floors are $1/2001=5.0\times10^{-4}$ and $1/41=0.024$, and both are quoted as
-saturation statements in Section~\ref{sec:nulls}. A Fourier phase-scrambling
-surrogate used in an earlier draft is retained in the code only for
-reproducibility and is deprecated: it ignores $\cos({\rm lat})$ cell areas, does
-not respect the sphere, and contains neither photon noise nor the reconstruction
-operator, so it is not a null for any statistic reported here.
+\subsection{What ``identical'' means in the diff}
+A numeric reproduction claim is only as good as its comparison operator, so we
+state ours. Each archive is reduced to a flat leaf map: JSON objects to
+dotted paths, arrays to \{$<$name$>$: shape, dtype, SHA-256 of the raw
+buffer\}. Five rules then apply.
 
-\subsection{Spectral fidelity}
-$r(\ell)$ is computed by projecting the map onto orthonormal \emph{real
-spherical harmonics} sampled at the cell centres, not by taking FFT magnitudes.
-The distinction matters: on an equirectangular grid the longitude cells are not
-equal area, the map is periodic in longitude but not in latitude, and the index
-$\sqrt{k_x^2+k_y^2}$ has no reason to coincide with degree $\ell$. Band means are
-reported both unweighted and $(2\ell+1)$-weighted, because the unweighted
-version hides a gain and a loss of similar size inside one band
-(Section~\ref{sec:lamsens}).
+(1) \emph{Exact by default.} The tolerance is zero; a nonzero
+{\tt --tol} must be passed explicitly, and the only place we use it is
+$10^{-12}$ for quantities that depend on BLAS summation order.
+(2) \emph{Timestamps are ignored by leaf name}, not by value, so
+{\tt provenance.generated\_utc} cannot smuggle a real change past the check, and
+a field that \emph{becomes} a timestamp is still caught.
+(3) \emph{Types are part of the value}: {\tt true} and $1$ differ, and are
+reported as a \mbox{``bool''} mismatch.
+(4) \emph{NaN masks are compared}: two all-NaN arrays match, and an array whose
+NaN pattern changed does not, even if the finite entries agree.
+(5) \emph{String labels are compared with their dtype}: a
+{\tt $<$U9} and a {\tt $<$U8} label array holding the same text differ, which
+is how a renamed baseline is caught even when the values are untouched.
 
-\subsection{Ensemble statistics}
-A paired comparison of two configurations over the $N=10$ seeds reports the mean
-difference, the standard error with \texttt{ddof=1}, a paired $t$-test, an exact
-two-sided sign test using the central binomial tail
-$\min(1,\,2\sum_{i\le k}\binom{N}{i}/2^N)$ with $k$ the smaller of the positive
-and negative counts, and a 95\% percentile bootstrap over 20{,}000 resamples
-with a fixed seed. The sign-test convention is stated because the alternative
-(twice the point probability at the observed split) is anti-conservative: at
-$N=10$ with an 8/2 split it returns $0.088$ where the central tail returns
-$0.109$. The attainable floor is $2/2^{10}=1.95\times10^{-3}$, which is why no
-sign-flip $p$-value in this paper is printed below it. Effective independent
-looks are $N_{\rm eff}=M_p^2/\big(M_p+2\sum_{k}(M_p-k)\rho_k\big)$ with
-$\rho_k=e^{-k\Delta t/\tau}$, i.e.\ pair-weighted by the temporal covariance of
-the weather; dropping the weights collapses $N_{\rm eff}$ from $12.1$ to
-$59.8$-looking-like-independent at $M_p=64$, which is the error an earlier draft
-made.
+\subsection{Gates}
+Three independent gates run over the tree. {\tt tools/verify\_flat.sh} enforces
+the single-version consolidation: no revision markup or
+version narrative in the manuscript, no superseded directories, no
+version-bearing keys or labels inside the archives, version-free prose in the
+README and the demo app, working entry points, the test suite, and the presence
+of all 14 extension archives. The pytest suite (207 test functions, 354 collected
+checks, 333 of them in the default fast tier) checks
+physics and geometry against hand-derived values, checks the shipped archives
+against each other, and --- in its {\tt slow} tier, deselected by default ---
+re-solves the fiducial pipeline and reproduces five metrics for two estimators
+to $10^{-12}$. {\tt tools/array\_manifest.py} provides the byte-level manifest
+behind the last two rows of Table~\ref{tab:repro}. All three are wired into
+{\tt .github/workflows/verify.yml}, which runs the fast tier of each on every
+push; the simulation tier is deliberately excluded from CI because it costs
+hours on four cores.
+
+\subsection{Rebuilding the manuscript itself, and what stays outside CI}
+Two limits should be stated rather than discovered by the reader. First, nothing
+in this paper is hand-maintained except the prose. Every figure is regenerated
+from the shipped archives ({\tt src/make\_figures.py}, or {\tt reproduce\_all
+--figures} inside the scratch tree), the target table
+({\tt paper/targets\_table.tex}) is emitted by {\tt src/targets.py} rather than
+edited by hand, and {\tt main.pdf} is rebuilt from {\tt main.tex} in the same
+audit environment used for everything above: a single {\tt latexmk -pdf} pass
+over a standard two-column article, needing no class or style file beyond
+{\tt texlive-latex-base}, {\tt texlive-latex-recommended},
+{\tt texlive-latex-extra} and {\tt texlive-fonts-recommended} (pdfTeX 1.40.22,
+latexmk 4.76). The shipped PDF is that build --- 36 pages, no undefined
+references or citations, no overfull boxes --- and continuous integration now
+rebuilds it on every push, in a scratch copy of the sources rather than in the
+working tree. The reason is that pdfTeX stamps a creation date into every PDF it
+writes, so a PDF is not byte-reproducible and a build in place would break the
+byte-for-byte gate that keeps the shipped manuscript and the demo site's copies
+identical. A fresh build is therefore compared with the shipped one by page
+count and by flattened text: the typeset title breaks across a line, so a
+literal string match on the raw text stream of {\tt pdftotext} fails on a
+perfectly good PDF. A test of the brace balance of every generated {\tt .tex}
+fragment runs first, because a single stray closing brace in a
+generated caption is enough to abort the build and leave every cross-reference
+in the manuscript unresolved. The reproduction tier in CI is run with an explicit
+$10^{-12}$ relative tolerance rather than the default bit-for-bit comparison: on
+the machine that produced the archives the two agree exactly, and on a GitHub
+runner they agreed to $4.2\times10^{-15}$, so exactness there is a property of
+one build environment rather than of the result. What CI still does
+\emph{not} run is the simulation tier: it costs hours on four cores, so it is
+left to the {\tt slow} test tier and to {\tt reproduce\_all --full}.
+Second, reproducing the shipped numbers requires the pinned stack
+(Python 3.12.13, NumPy 2.5.3, SciPy 1.18.1, Matplotlib 3.11.2, scikit-image
+0.26.0); the comparisons above are exact, so a different BLAS can legitimately
+fail them at the $10^{-12}$ level, which is why that tolerance exists.
+
+
+\begin{thebibliography}{}
+
+\bibitem[Anglada-Escud\'e et al.(2016)]{anglada16}
+Anglada-Escud\'e, G., Amado, P.~J., Barnes, J., et al.\ 2016, Nature, 536, 437
+
+\bibitem[Astudillo-Defru et al.(2017)]{astudillo17}
+Astudillo-Defru, N., Forveille, T., Bonfils, X., et al.\ 2017, A\&A, 602, A88
+
+\bibitem[Bonfils et al.(2018)]{bonfils18}
+Bonfils, X., Astudillo-Defru, N., D\'iaz, R., et al.\ 2018, A\&A, 613, A25
+
+\bibitem[Chen \& Kipping(2017)]{chenkipping17}
+Chen, J., \& Kipping, D.\ 2017, ApJ, 834, 17
+
+\bibitem[Dreizler et al.(2020)]{dreizler20}
+Dreizler, S., Jeffers, S.~V., Rodr\'iguez, E., et al.\ 2020, MNRAS, 493, 536
+
+\bibitem[Dreizler et al.(2024)]{dreizler24}
+Dreizler, S., Luque, R., Ribas, I., et al.\ 2024, A\&A, 684, A117
+
+\bibitem[Eshleman(1979)]{eshleman79}
+Eshleman, V.~R.\ 1979, Science, 205, 1133
+
+\bibitem[Feng et al.(2017)]{feng17}
+Feng, F., Tuomi, M., Jones, H.~R.~A., et al.\ 2017, AJ, 154, 135
+
+\bibitem[Figueira et al.(2025)]{figueira25}
+Figueira, P., Faria, J.~P., Silva, A.~M., et al.\ 2025, A\&A, 700, A174
+(A comprehensive study on radial velocity signals using ESPRESSO: Pushing
+precision to the 10\,cm/s level)
+
+\bibitem[Friedman et al.(2024)]{friedman24}
+Friedman, L.~D., Garber, D., Turyshev, S.~G., et al.\ 2024, Exp.\ Astron., 57, 1
+
+\bibitem[Helvajian et al.(2023)]{helvajian23}
+Helvajian, H., Rosenthal, A., Poklemba, J., et al.\ 2023, J.\ Spacecr.\ Rockets, 60, 829
+
+\bibitem[Madurowicz \& Macintosh(2022)]{mm22}
+Madurowicz, A., \& Macintosh, B.\ 2022, ApJ, 930, 19
+
+\bibitem[NASA/Aerospace Corp.(2022)]{apple22}
+Aerospace Corporation \& NASA NIAC 2022, Atomic Planar Power for Lightweight Exploration (APPLE), NIAC Phase II study
+
+\bibitem[Toth(2025)]{toth25clouds}
+Toth, V.~T.\ 2025, Res.\ Astron.\ Astrophys., 25, 065007, doi:10.1088/1674-4527/add3a3 (arXiv:2504.18630)
+
+\bibitem[Toth \& Turyshev(2021)]{toth21}
+Toth, V.~T., \& Turyshev, S.~G.\ 2021, Phys.\ Rev.\ D, 103, 124038
+
+\bibitem[Toth \& Turyshev(2023)]{toth23}
+Toth, V.~T., \& Turyshev, S.~G.\ 2023, MNRAS, 525, 5846
+
+\bibitem[Turyshev \& Toth(2022b)]{tt22spec}
+Turyshev, S.~G., \& Toth, V.~T.\ 2022b, Phys.\ Rev.\ D, 106, 044059
+(arXiv:2206.03037)
+
+\bibitem[Turyshev \& Toth(2023)]{tt23ext}
+Turyshev, S.~G., \& Toth, V.~T.\ 2023, Phys.\ Rev.\ D, 107, 104063
+(arXiv:2301.07495)
+
+\bibitem[Turyshev(2026a)]{tur26direct}
+Turyshev, S.~G.\ 2026a, Phys.\ Rev.\ D, 113, 023034 (arXiv:2506.20236)
+
+\bibitem[Turyshev(2026b)]{tur26bench}
+Turyshev, S.~G.\ 2026b, arXiv:2606.14899
+
+\bibitem[Turyshev(2026c)]{tur26prop}
+Turyshev, S.~G.\ 2026c, arXiv:2602.04198
+
+\bibitem[Turyshev(2026d)]{cov26}
+Turyshev, S.~G.\ 2026d, arXiv:2606.29138
+
+\bibitem[Turyshev \& Toth(2017)]{tt17}
+Turyshev, S.~G., \& Toth, V.~T.\ 2017, Phys.\ Rev.\ D, 96, 024008
+
+\bibitem[Turyshev \& Toth(2019)]{tt19}
+Turyshev, S.~G., \& Toth, V.~T.\ 2019, Phys.\ Rev.\ D, 99, 024044
+
+\bibitem[Turyshev \& Toth(2020)]{tt20psf}
+Turyshev, S.~G., \& Toth, V.~T.\ 2020, Phys.\ Rev.\ D, 102, 024038
+
+\bibitem[Turyshev \& Toth(2021)]{tt21quad}
+Turyshev, S.~G., \& Toth, V.~T.\ 2021, Phys.\ Rev.\ D, 103, 064076
+
+\bibitem[Turyshev \& Toth(2022a)]{tt22mnras}
+Turyshev, S.~G., \& Toth, V.~T.\ 2022a, MNRAS, 515, 6122
+
+\bibitem[Turyshev et al.(2020)]{niac20}
+Turyshev, S.~G., Shao, M., Toth, V.~T., et al.\ 2020, Direct Multipixel Imaging and Spectroscopy of an Exoplanet with a Solar Gravity Lens Mission, NASA NIAC Phase II Final Report
+
+\end{thebibliography}
 
 \end{document}
-

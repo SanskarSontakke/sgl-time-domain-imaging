@@ -1,8 +1,8 @@
 # sgl-time-domain-imaging
 
-**Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the
-Solar Gravitational Lens: Reconstruction Algorithms, Observing-Cadence
-Requirements, and Mission Targets**
+**Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar
+Gravitational Lens: An Open Inversion Framework, a Cloud-Limited Fidelity
+Ceiling, and Mission Cadence Requirements**
 
 Sanskar Sontakke (Independent Researcher)
 [ORCID 0009-0008-4531-5707](https://orcid.org/0009-0008-4531-5707) · sanskarsontakke@gmail.com

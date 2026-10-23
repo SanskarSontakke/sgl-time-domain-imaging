@@ -18,8 +18,12 @@ sits.
 # Pre-Submission Review Record: Comments and Responses
 
 **Manuscript:** Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar
-Gravitational Lens: Reconstruction Algorithms, Observing-Cadence Requirements, and Mission
-Targets
+Gravitational Lens: An Open Inversion Framework, a Cloud-Limited Fidelity Ceiling, and
+Mission Cadence Requirements
+**Former title at submission:** "... Reconstruction Algorithms, Observing-Cadence
+Requirements, and Mission Targets" — retitled during the revision because the three things
+the revised manuscript actually establishes are the open framework, the measured ceiling, and
+the cadence requirements, in that order, and the section list now follows it.
 **Author:** Sanskar Sontakke (Independent Researcher)
 **Journal (targeted):** *The Open Journal of Astrophysics*
 **Review outcome:** revise before submission (internal pre-submission review; no editorial

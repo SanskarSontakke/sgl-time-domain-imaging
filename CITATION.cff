@@ -13,8 +13,8 @@ license: MIT
 preferred-citation:
   type: article
   title: "Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with
-    the Solar Gravitational Lens: Reconstruction Algorithms,
-    Observing-Cadence Requirements, and Mission Targets"
+    the Solar Gravitational Lens: An Open Inversion Framework, a
+    Cloud-Limited Fidelity Ceiling, and Mission Cadence Requirements"
   authors:
     - family-names: Sontakke
       given-names: Sanskar

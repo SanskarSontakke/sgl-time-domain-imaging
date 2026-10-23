@@ -1,4 +1,4 @@
-Title: Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar Gravitational Lens: Reconstruction Algorithms, Observing-Cadence Requirements, and Mission Targets
+Title: Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar Gravitational Lens: An Open Inversion Framework, a Cloud-Limited Fidelity Ceiling, and Mission Cadence Requirements
 
 Authors: Sanskar Sontakke
 
