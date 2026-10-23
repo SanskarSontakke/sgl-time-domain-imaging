@@ -124,10 +124,6 @@ TITLE_FILES = [
     "paper/main.tex",
     "README.md",
     "CITATION.cff",
-    "submission/arxiv_metadata.txt",
-    "submission/cover_letter.tex",
-    "reviews/response_to_editor.md",
-    "public/docs/response_to_editor.md",
 ]
 
 RECORD = ROOT / "tools" / "manuscript_build_record.json"

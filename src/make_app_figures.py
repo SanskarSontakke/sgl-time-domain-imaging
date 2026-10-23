@@ -21,7 +21,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 SRC = ROOT / "paper" / "figures"
-DST = ROOT / "public" / "figures"
+DST = ROOT / "web" / "public" / "figures"
 DPI = 200
 
 

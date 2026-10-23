@@ -427,22 +427,15 @@ CLAIMS: list[Claim] = [
           "the tolerance comment's denominators are properties of the tree; the "
           "numerators are what one runner measured and are not audited"),
 
-    # ---- the referee response ------------------------------------------ #
-    Claim("response.shape", "reviews/response_to_editor.md",
-          r"currently (\d+) pages, (\d+)\s*\nfigures, (\d+) tables, (\d+) numbered equations",
-          ("manuscript.pages", "manuscript.figures", "manuscript.tables",
-           "manuscript.equations"),
-          "the letter to the editor states the manuscript's shape"),
-
     # ---- the demo app -------------------------------------------------- #
-    Claim("app.pages", "components/*.tsx",
+    Claim("app.pages", "web/components/*.tsx",
           r"(\d+) pages, OJA two-column format",
           ("manuscript.pages",),
           "the public demo advertises the same page count as the paper"),
 ]
 
 # Files the app claim fans out over; everything else is a single path.
-APP_GLOB = "components/*.tsx"
+APP_GLOB = "web/components/*.tsx"
 
 
 # --------------------------------------------------------------------------- #

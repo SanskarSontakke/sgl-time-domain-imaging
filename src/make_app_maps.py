@@ -118,9 +118,10 @@ def main():
         payload["clouds"][f"fc_{i}"] = np.round(north_up(op), 3).tolist()
 
     blob = json.dumps(payload, separators=(",", ":"))
-    (ROOT / "data" / "reconstructionMaps.ts").write_text(
-        "export const RECONSTRUCTION_DATA = " + blob + ";\n")
-    out = ROOT / "public" / "data" / "reconstruction_maps.json"
+    maps_ts = ROOT / "web" / "data" / "reconstructionMaps.ts"
+    maps_ts.parent.mkdir(parents=True, exist_ok=True)
+    maps_ts.write_text("export const RECONSTRUCTION_DATA = " + blob + ";\n")
+    out = ROOT / "web" / "public" / "data" / "reconstruction_maps.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(blob)
     print(f"wrote {len(blob) / 1e6:.2f} MB payload "

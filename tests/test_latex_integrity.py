@@ -234,12 +234,12 @@ class TestDocumentMirrorsAreFresh:
             assert (ROOT / src).exists(), f"{src} is not shipped"
 
     def test_no_unmirrored_duplicates_in_public_docs(self):
-        """public/docs/ may only contain files the generator writes."""
         produced = {m for mirrors in self.MIRRORS.values() for m in mirrors}
+        docs_dir = ROOT / "web" / "public" / "docs"
         extra = [p.relative_to(ROOT).as_posix()
-                 for p in (ROOT / "public" / "docs").iterdir()
+                 for p in docs_dir.iterdir()
                  if p.relative_to(ROOT).as_posix() not in produced]
-        assert not extra, (f"public/docs/ holds copies with no source: {extra}; "
+        assert not extra, (f"web/public/docs/ holds copies with no source: {extra}; "
                            "they will go stale silently")
 
     @pytest.mark.parametrize("mirror", sorted(sum(MIRRORS.values(), [])))

@@ -146,22 +146,6 @@ export default function HomePage() {
               Paper PDF
             </a>
             <span className="text-slate-300">•</span>
-            <a
-              href="/docs/response_to_editor.md"
-              download
-              className="text-blue-600 hover:text-blue-800 font-semibold"
-            >
-              Pre-Submission Review Record
-            </a>
-            <span className="text-slate-300">•</span>
-            <a
-              href="/docs/cover_letter.pdf"
-              download
-              className="text-blue-600 hover:text-blue-800 font-semibold"
-            >
-              Cover Letter
-            </a>
-            <span className="text-slate-300">•</span>
             <span className="text-slate-400">MIT License</span>
           </div>
         </div>

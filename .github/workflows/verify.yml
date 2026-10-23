@@ -145,7 +145,7 @@ jobs:
           tests/test_doc_numbers.py -q --strict-markers --strict-config -rfs
 
       - name: Documentation numbers audit (counts the prose makes about the tree)
-        run: python3 tools/doc_numbers.py --min-claims 34
+        run: python3 tools/doc_numbers.py --min-claims 33
 
       - name: Structural outline from the tracked build record
         run: python3 tools/manuscript_outline.py

@@ -29,7 +29,8 @@ def main():
         if not p.exists():
             raise SystemExit(f"missing src/{name}")
         snippets[name] = p.read_text()
-    out = ROOT / "data" / "codeSnippets.json"
+    out = ROOT / "web" / "data" / "codeSnippets.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(snippets, ensure_ascii=True, indent=1) + "\n")
     total = sum(len(v) for v in snippets.values())
     print(f"wrote {out} :: {len(snippets)} files, {total / 1e3:.0f} kB of source")

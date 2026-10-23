@@ -193,6 +193,7 @@ payload = {
     },
 }
 
-out = ROOT / "public" / "data" / "project_data.json"
+out = ROOT / "web" / "public" / "data" / "project_data.json"
+out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(json.dumps(payload, indent=2, allow_nan=False) + "\n")
 print("wrote", out, f"{out.stat().st_size / 1024:.0f} KB")

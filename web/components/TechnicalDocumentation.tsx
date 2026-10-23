@@ -130,14 +130,6 @@ export default function TechnicalDocumentation() {
               <span>Download Paper PDF</span>
               <Download size={13} />
             </a>
-            <a
-              href="/docs/response_to_editor.md"
-              download
-              className="w-full btn btn-sm btn-outline text-xs flex items-center justify-between"
-            >
-              <span>Pre-Submission Review Record</span>
-              <Download size={13} />
-            </a>
           </div>
         </div>
 
@@ -628,48 +620,18 @@ export default function TechnicalDocumentation() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-              <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <div className="text-xs font-bold text-slate-800">Main Manuscript PDF</div>
-                  <div className="text-[11px] text-slate-500">36 pages, OJA two-column format, zero overfull errors</div>
+                  <div className="text-sm font-bold text-slate-800">Main Manuscript PDF</div>
+                  <div className="text-xs text-slate-500">36 pages, OJA two-column format, zero overfull errors</div>
                 </div>
                 <a
                   href="/docs/sgl_time_domain_imaging.pdf"
                   download
-                  className="btn btn-sm btn-primary text-xs flex items-center justify-between"
+                  className="btn btn-sm btn-primary text-xs flex items-center justify-center gap-2"
                 >
                   <span>Download Paper (PDF)</span>
-                  <Download size={13} />
-                </a>
-              </div>
-
-              <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
-                <div>
-                  <div className="text-xs font-bold text-slate-800">Cover Letter and Pre-Submission Review Record</div>
-                  <div className="text-[11px] text-slate-500">Itemized record of the author-commissioned pre-submission review and the changes it forced</div>
-                </div>
-                <a
-                  href="/docs/response_to_editor.md"
-                  download
-                  className="btn btn-sm btn-outline text-xs flex items-center justify-between"
-                >
-                  <span>Download Review Record (Markdown)</span>
-                  <Download size={13} />
-                </a>
-              </div>
-
-              <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
-                <div>
-                  <div className="text-xs font-bold text-slate-800">Official Cover Letter</div>
-                  <div className="text-[11px] text-slate-500">Submission letter to OJA, with the point-by-point record of the pre-submission review</div>
-                </div>
-                <a
-                  href="/docs/cover_letter.pdf"
-                  download
-                  className="btn btn-sm btn-outline text-xs flex items-center justify-between"
-                >
-                  <span>Download Cover Letter (PDF)</span>
                   <Download size={13} />
                 </a>
               </div>

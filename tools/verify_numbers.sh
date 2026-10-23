@@ -81,8 +81,8 @@ fi
 
 # --------------------------------------------------------------------------- #
 step "N-4  documentation: README, tests/README, Appendix D and CI state the tree"
-TAIL=2 run "$PY tools/doc_numbers.py (>= 34 claims, 0 findings)" \
-    "$PY" tools/doc_numbers.py --min-claims 34
+TAIL=2 run "$PY tools/doc_numbers.py (>= 33 claims, 0 findings)" \
+    "$PY" tools/doc_numbers.py --min-claims 33
 
 # --------------------------------------------------------------------------- #
 if [ "$QUICK" -eq 0 ]; then

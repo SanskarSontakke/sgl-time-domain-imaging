@@ -128,7 +128,7 @@ class TestRegistry:
     """The registry is code, so its invariants are testable before its output."""
 
     def test_it_is_big_enough_to_be_a_gate(self):
-        assert len(DN.CLAIMS) >= 34, (
+        assert len(DN.CLAIMS) >= 33, (
             "the documentation audit has shrunk; --min-claims in CI is the floor")
 
     def test_rule_ids_are_unique(self):
@@ -158,7 +158,6 @@ class TestRegistry:
     def test_rule_namespace_follows_the_file(self):
         want = {"README.md": "readme.", "tests/README.md": "tests.",
                 "paper/main.tex": "paper.", DN.WORKFLOW: "ci.",
-                "reviews/response_to_editor.md": "response.",
                 DN.APP_GLOB: "app."}
         for claim in DN.CLAIMS:
             prefix = want.get(claim.file)
@@ -645,7 +644,7 @@ class TestSelfRow:
         assert "12 documented claims" in findings[0]
 
     def test_every_number_of_the_row_is_checked_separately(self, fake_read):
-        fake_read("| `tools/doc_numbers.py` | does it? | 34 documented claims, "
+        fake_read("| `tools/doc_numbers.py` | does it? | 33 documented claims, "
                   "99 numbers, 8 module rows, 0 findings |\n")
         findings: list[str] = []
         DN.audit_self(findings, values=34, rows=16)
@@ -692,7 +691,7 @@ class TestRealTreeIsClean:
     def test_the_json_is_strict_and_parseable(self, capsys):
         assert DN.main(["--json"]) == 0
         report = json.loads(capsys.readouterr().out)
-        assert report["findings"] == [] and report["checked"] >= 34
+        assert report["findings"] == [] and report["checked"] >= 33
 
     def test_the_human_report_counts_what_it_checked(self, capsys):
         assert DN.main([]) == 0
@@ -725,5 +724,5 @@ class TestCommandLineRefusesADeletedGate:
     def test_the_registry_covers_every_documented_number_source(self):
         files = {c.file for c in DN.CLAIMS}
         for wanted in ("README.md", "tests/README.md", "paper/main.tex",
-                       DN.WORKFLOW, "reviews/response_to_editor.md"):
+                       DN.WORKFLOW):
             assert wanted in files, f"{wanted} states counts nobody audits"

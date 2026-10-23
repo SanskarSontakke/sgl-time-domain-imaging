@@ -33,9 +33,13 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 build="${1:-$(mktemp -d)}"
 mkdir -p "$build"
 
-echo "== copying paper/ and submission/ to $build =="
-cp -a "$root/paper" "$root/submission" "$build"/
+echo "== copying paper/ to $build =="
+cp -a "$root/paper" "$build"/
+if [ -d "$root/submission" ]; then
+  cp -a "$root/submission" "$build"/
+fi
 for d in paper submission; do
+  [ -d "$build/$d" ] || continue
   # drop every built artifact, but keep the figures, which are sources
   find "$build/$d" -mindepth 1 -maxdepth 1 \
     \( -name '*.pdf' -o -name '*.aux' -o -name '*.log' -o -name '*.out' \
@@ -155,10 +159,12 @@ compile_doc() {
 echo
 echo "== compiling (from scratch, in $build) =="
 compile_doc "$build/paper" main.tex
-compile_doc "$build/submission" cover_letter.tex
-
 check_doc "$build/paper" main "${main_needles[@]}"
-check_doc "$build/submission" cover_letter "${cover_letter_needles[@]}"
+
+if [ -d "$build/submission" ]; then
+  compile_doc "$build/submission" cover_letter.tex
+  check_doc "$build/submission" cover_letter "${cover_letter_needles[@]}"
+fi
 
 echo
-echo "RESULT: OK (both documents build clean and match the shipped page counts)"
+echo "RESULT: OK (paper builds clean and matches the shipped page counts)"

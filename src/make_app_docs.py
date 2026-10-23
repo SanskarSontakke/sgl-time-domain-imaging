@@ -34,10 +34,7 @@ ROOT = HERE.parent
 #: record is the item-by-item audit behind it, and mirroring one file under two
 #: names made them look like two documents that say the same thing.
 MIRRORS = {
-    "paper/main.pdf": ["paper/sgl_time_domain_imaging.pdf",
-                       "public/docs/sgl_time_domain_imaging.pdf"],
-    "submission/cover_letter.pdf": ["public/docs/cover_letter.pdf"],
-    "reviews/response_to_editor.md": ["public/docs/response_to_editor.md"],
+    "paper/main.pdf": ["web/public/docs/sgl_time_domain_imaging.pdf"],
 }
 
 
@@ -79,10 +76,6 @@ def main():
         print("document mirrors match their sources")
         return
     sync()
-    removed = ROOT / "public" / "docs" / "response_to_editor.pdf"
-    if removed.exists():
-        print(f"note: {removed.relative_to(ROOT)} is no longer a mirror "
-              f"(the review record ships as .md); delete it from the tree")
 
 
 if __name__ == "__main__":
