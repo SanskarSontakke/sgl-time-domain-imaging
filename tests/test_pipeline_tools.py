@@ -609,6 +609,34 @@ class TestCiTexInstallStep:
         assert f"its own {cap}-minute cap" in text, \
             "the number needs a reason next to it, as the job ceiling has"
 
+    def test_the_installed_set_is_the_measured_closure_and_nothing_bigger(self):
+        """What the job installs, pinned against what the build opens.
+
+        Scanning the fresh build logs for every path under ``/usr/share/texlive``
+        that pdfTeX opened (77 of them, both documents) attributes all of them to
+        texlive-base, texlive-latex-base, texlive-latex-recommended and
+        texlive-fonts-recommended.  texlive-latex-extra opens nothing, and on the
+        runner it was part of a 94.6 MB download that a throttled mirror served at
+        50.5 kB/s -- 31 minutes for packages neither document reads.
+        """
+        run = self.install_step()["run"]
+        # texlive-base is not listed: apt pulls it as a dependency of
+        # texlive-latex-base, and naming a dependency the resolver already
+        # resolves is how an install list quietly stops matching reality.
+        for deb in ("texlive-latex-base", "texlive-latex-recommended",
+                    "texlive-fonts-recommended", "latexmk", "poppler-utils"):
+            assert deb in run, f"{deb} is needed by the build but not installed"
+        assert "texlive-latex-extra" not in run, \
+            "the install grew back the 13 MB+ package no document loads"
+        assert "GITHUB_STEP_SUMMARY" in run, \
+            "the step no longer reports what its download cost"
+
+    def test_the_install_does_not_hide_apt_behind_a_pipe(self):
+        """A ``apt | tee`` step reports tee's exit status, not apt's."""
+        run = self.install_step()["run"]
+        assert "| tee" not in run, "apt's failure would be masked by the pipeline"
+        assert "if ! sudo apt-get" in run, "the install has no explicit failure path"
+
     def test_no_other_step_in_the_paper_job_is_uncapped_by_accident(self):
         """Only the mirror-dependent step is capped; the rest are local cost."""
         steps = self.spec()["jobs"]["paper"]["steps"]

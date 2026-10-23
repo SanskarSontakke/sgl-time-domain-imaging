@@ -164,17 +164,24 @@ jobs:
     # public/docs/ honest.  For the same reason the fresh build is compared to the
     # shipped PDF by page count and by text, not by checksum.
     #
-    # the paper job has 45 minutes.  The ceiling is nearly all apt: TeX Live is
-    # hundreds of megabytes and the install is the only slow step in the job, the
-    # compile itself having been measured at about three seconds for the
-    # manuscript.  The previous ceiling of 20 minutes cancelled the job during
-    # that install, which looked exactly like a broken manuscript and was not one.
+    # the paper job has 45 minutes.  The ceiling is nearly all apt: the package
+    # download is the only slow step in the job, the compile itself having been
+    # measured at about three seconds for the manuscript.  The previous ceiling of
+    # 20 minutes cancelled the job during that download, which looked exactly like
+    # a broken manuscript and was not one.
     #
-    # The install step carries its own 12-minute cap for the same reason.  Measured
-    # on a healthy runner the step costs about a minute, so the cap is headroom
-    # rather than a budget; what it removes is the stalled-mirror case, where an
-    # uncapped hang quietly ate most of the job ceiling and the job only reported
-    # that it had run out of time.
+    # The install step carries its own 20-minute cap for the same reason, and the
+    # numbers behind both are measured rather than assumed.  On a healthy runner the
+    # step costs about a minute.  On 2026-10-23 a runner throttled its mirror to
+    # 50.5 kB/s and pulled 94.6 MB in 31m12s -- so that install was not a hang, and
+    # an uncapped step spent 32 of the job's 45 minutes getting packages while the
+    # manuscript itself was never compiled.  Two things followed.  The download was
+    # cut to what the two documents actually load: a scan of the build log's opened
+    # files attributes them to texlive-latex-base, texlive-base,
+    # texlive-latex-recommended and texlive-fonts-recommended, and to nothing in
+    # texlive-latex-extra, which is therefore not installed.  And the cap was set at
+    # 20 minutes, which bounds a real hang while leaving the job ceiling for the
+    # build, the structure audit and the record comparison that follow.
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -182,18 +189,34 @@ jobs:
 
       # The only step in this job that depends on a package mirror.  Retries and a
       # short per-request timeout keep a transient failure from becoming a hang,
-      # and the step ceiling keeps a hang from becoming the whole job.
+      # the step ceiling keeps a hang from becoming the whole job, and the step
+      # reports what its download actually cost so the numbers above stay current.
       - name: Install TeX Live
-        timeout-minutes: 12
+        timeout-minutes: 20
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          set -e
+          # No pipe here on purpose: the step's exit status has to be apt's, not a
+          # tee's.  GitHub's bash shell sets pipefail by default, but a gate that
+          # depends on a default is a gate that fails silently on a runner change.
           sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 update
-          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 \
-            install -y --no-install-recommends \
-            texlive-latex-base texlive-latex-recommended texlive-latex-extra \
-            texlive-fonts-recommended latexmk poppler-utils
+          if ! sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 \
+                 install -y --no-install-recommends \
+                 texlive-latex-base texlive-latex-recommended \
+                 texlive-fonts-recommended latexmk poppler-utils \
+                 > "${RUNNER_TEMP}/apt-install.log" 2>&1; then
+            cat "${RUNNER_TEMP}/apt-install.log"
+            exit 1
+          fi
           python3 -m pip install --quiet numpy
+          {
+            echo "## TeX Live install"
+            echo
+            grep -E "^Fetched |^E: " "${RUNNER_TEMP}/apt-install.log" \
+              | sed 's/^/- /' || echo "- no fetch summary emitted"
+            echo "- cap: 20 minutes (step), 45 minutes (job)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       # Must run before anything is built, against the untouched checkout: once a
       # build has run in this job the working-tree PDFs are no longer the shipped
