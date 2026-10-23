@@ -1,6 +1,6 @@
 """Shared, checkpointed experiment harness for the revised manuscript.
 
-Design constraints (referee comments 6, 8, 9; editor's reproducibility request):
+Design constraints (single source of truth, resumable, cache-keyed):
 
 * Every expensive object (forward operator F, Laplacian, sigma_cl) is built once
   and cached under results/cache, keyed by the parameters that actually change
@@ -22,10 +22,13 @@ import numpy as np
 import sglsim as S
 
 HERE = Path(__file__).resolve().parent
-DATA = HERE.parent / "results"
+# SGL_RESULTS_DIR redirects the whole harness (archives, checkpoints, cache) to
+# another directory.  `reproduce_all` uses it to re-run the pipeline into a
+# scratch copy so a verification run cannot perturb the shipped results.
+DATA = Path(os.environ.get("SGL_RESULTS_DIR") or (HERE.parent / "results"))
 PARTS = DATA / "parts"
 CACHE = DATA / "cache"
-PART_PREFIX = "v3_"            # see part_path() -- avoids a v2 name collision
+PART_PREFIX = ""               # single-version suite: parts are unprefixed
 for _d in (DATA, PARTS, CACHE):
     _d.mkdir(parents=True, exist_ok=True)
 
@@ -64,6 +67,20 @@ ARM_PHOTONS = [(7200.0, 4), (3600.0, 8), (1800.0, 16), (900.0, 32), (450.0, 64)]
 # Arm B: fixed wall clock -- exposure time FALLS, photons are not conserved.
 ARM_WALL = 90.0
 METHODS = ("gls", "white", "b2")
+
+# ----------------------------------------------------------------------
+# Method / component identifiers (single source of truth).
+#
+# The ORDER of these tuples is part of the archive schema: `*_mat` arrays store
+# the method on axis 0, and `make_figures.py` indexes by METHODS.index(...).
+# Renaming a label is safe; reordering is not.  Every writer uses these names,
+# and tests/test_archive_schema.py asserts the stored `methods` label arrays are
+# element-for-element equal to them.
+# ----------------------------------------------------------------------
+RECON_METHODS = ("profiled", "deflate", "white", "b2", "b1", "b2coarse")
+ABLATION_COMPONENTS = ("A_white_nodefl", "B_ou_nodefl", "C_deflate",
+                       "D_profiled_anchor", "E_profiled_free", "F_full_tdi")
+SIGCL_ESTIMATORS = ("free", "deflate")
 
 
 def log(*a):
@@ -172,7 +189,7 @@ def fit(solver, F, dat, camp, sigma_cl, white=False, deflate=True, anchor=True):
         return S.solve_gls_profiled(F, y, camp, sg, sigma_cl, TAU_DAYS, LAM_GLS,
                                     get_LtL(), white=white, deflate=deflate,
                                     anchor=anchor)
-    if solver == "v2":
+    if solver == "deflate":
         return S.solve_gls(F, y, camp, sg, sigma_cl, TAU_DAYS, LAM_GLS,
                            get_LtL(), white=white, deflate=deflate)
     raise ValueError(solver)
@@ -205,18 +222,27 @@ def get_sigcl(fc, camp, sglop, truthF, tau=TAU_DAYS, geometry="fixed", tag="",
     return d[key]
 
 
-def truth(morphology="earthlike"):
-    tF = S.make_truth_map(NLATF, NLONF, seed=TRUTH_SEED, morphology=morphology)
+def truth(morphology="earthlike", seed=None):
+    """Truth map on the fine grid + the coarsened analysis grid.
+
+    `seed` defaults to TRUTH_SEED (the shipped fiducial map).  Passing an
+    explicit seed is what makes the truth-map ensemble possible: the same
+    campaign, the same noise seeds and the same solvers, only a different
+    surface, so the between-map spread can be reported separately from the
+    Monte-Carlo error.
+    """
+    tF = S.make_truth_map(NLATF, NLONF, seed=(TRUTH_SEED if seed is None else seed),
+                          morphology=morphology)
     return tF, S.coarsen(tF, 2)
 
 
 def part_path(name):
-    """Revised-suite parts live under a v3_ prefix.
+    """Path of one checkpoint part.
 
-    The v2 part files in results/parts use the SAME bare names (clouds_f0_s0,
-    cad_c2_s1, ...), so an unprefixed checkpoint would let the old, wrong-
-    quadrature numbers silently satisfy a new skip-if-done test.  The prefix
-    keeps both suites in the tree and makes the collision impossible.
+    Parts are named by (configuration, seed) only; PART_PREFIX exists so a
+    parallel sweep (for example the truth-map ensemble, which varies
+    TRUTH_SEED) can write into the same directory without colliding with the
+    fiducial checkpoints.  An empty prefix is the shipped suite.
     """
     return PARTS / f"{PART_PREFIX}{name}.npz"
 

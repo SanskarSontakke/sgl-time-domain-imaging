@@ -257,7 +257,7 @@ const SLIDES: Slide[] = [
       "Ross 128 b (quiet host, β_ecl ≈ 0.5°, D_img = 13.1 km) needs 2.94 km/s; GJ 273 b needs only 1.34 km/s, but its M·sin i = 2.89 M⊕ lies above the Chen & Kipping Terran/Neptunian transition, so the rocky radius used for it is an extrapolation rather than a measurement.",
       "The Δv spread is a factor of 53 across the six rows (0.11–5.81 km/s; 1.34–5.81 km/s among the confirmed five), computed as the time integral of the projected Keplerian transverse acceleration, not the circular estimate.",
     ],
-    speakerNotes: "Could we actually fly this? The paper maps the requirements rather than the hardware. As a planet orbits its star, its focal cylinder sweeps across space, so the fleet has to steer to keep up. We integrate |a_perp| over the 90-day window: that is the honest number, and it varies by a factor of 53 across the rows, which is why the v2 presentation of ~10% uncertainties was replaced. I want to be careful about τ Ceti e: it appears here because the v2 target list used it, and the RV signal has since been attributed to stellar activity and classified as a false positive. We keep the row for its dynamics — its 163-day orbit makes the tracking cost trivially small at 0.11 km/s — and we label it as illustrative.",
+    speakerNotes: "Could we actually fly this? The paper maps the requirements rather than the hardware. As a planet orbits its star, its focal cylinder sweeps across space, so the fleet has to steer to keep up. We integrate |a_perp| over the 90-day window: that is the honest number, and it varies by a factor of 53 across the rows, which is why the earlier presentation of ~10% uncertainties was replaced. I want to be careful about τ Ceti e: it appears here because the earlier target list used it, and the RV signal has since been attributed to stellar activity and classified as a false positive. We keep the row for its dynamics — its 163-day orbit makes the tracking cost trivially small at 0.11 km/s — and we label it as illustrative.",
     judgeFaq: [
       {
         q: "What kind of thrusters can provide 3 km/s Δv?",
@@ -310,7 +310,7 @@ const SLIDES: Slide[] = [
     stats: [
       { label: "Deliverable", value: "r = 0.342", desc: "± 0.008, 55% cover, 10 seeds" },
       { label: "Usable Band", value: "ℓ ≲ 9", desc: "≈ 2200 km elements" },
-      { label: "Status", value: "Revise & Resubmit", desc: "TOJA, under review" },
+      { label: "Status", value: "Revised after pre-submission review; ready to submit", desc: "OJA (Open Journal of Astrophysics)" },
       { label: "Code Status", value: "Open Source", desc: "Seeds fixed, figures reproducible" },
     ],
   },

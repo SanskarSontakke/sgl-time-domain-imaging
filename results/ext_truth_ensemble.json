@@ -1,0 +1,255 @@
+{
+  "provenance": {
+    "module": "truth_ensemble",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T09:08:54Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    },
+    "n_truth_seeds": 5,
+    "n_noise_seeds": 4,
+    "fast_tier": false
+  },
+  "caveats": [
+    "Dominant cloudy uncertainty is within-map (noise seeds): between-map sd 0.02118 vs within-map (noise-seed) sd 0.02549; cloud-free between-map (0.00374 vs 0.00054)",
+    "Profiled-minus-deflate sign is NOT stable across truth maps (3 positive, 2 negative of 5 maps): mean difference +3.72e-06, member-to-member scatter 2.80e-04; the two solvers are indistinguishable under a geography change, which is a weaker statement than 'profiled is better'",
+    "Validation: truth_seed=7 reproduces archived fiducial to <1e-6",
+    "Full tier reduced to 5 truth x 4 noise seeds (20 members); the solve took 13.7 min, so the grid is a budget decision, not a convergence check"
+  ],
+  "headline": {
+    "cloudy_profiled_r": {
+      "mean": 0.3173107929803568,
+      "sd": 0.030394776021578064,
+      "se": 0.0067964785345129165,
+      "n": 20,
+      "mean_over_sd": 10.439648996100164
+    },
+    "cloudfree_profiled_r": {
+      "mean": 0.9789200431085424,
+      "sd": 0.0034693171752270885,
+      "se": 0.0007757629039315319,
+      "n": 20,
+      "mean_over_sd": 282.16504679900476
+    },
+    "mean_over_sd_cloudy": 10.439648996100164,
+    "mean_over_sd_cloudfree": 282.16504679900476,
+    "cloudy_between_map_sd": 0.02117856641722818,
+    "cloudy_within_map_sd": 0.02549076234948628,
+    "sign_stable_cloudy": false,
+    "sign_stable_cloudfree": true,
+    "conclusion": "Across 5 independent planetary geographies the cloudy profiled correlation is 0.3173 +/- 0.0304 (sd), of which 0.0212 is between maps and 0.0255 within-map; the fiducial map ranks 1 of 5 on this metric. The profiled-minus-deflate gap is +3.72e-06 cloudy and +4.88e-05 cloud-free, with the sign stable across maps in the cloud-free case only, so the solver comparison is a null result under a geography change, while the fiducial map's place at the top of the ensemble is a real property of that map and not of the noise."
+  },
+  "validation": {
+    "truth_seed": 7,
+    "noise_seed": 11,
+    "cloudy_pearson": 0.33141453286752487,
+    "cloudy_archived": 0.3314145328675251,
+    "cloudy_deviation": 2.220446049250313e-16,
+    "cloudfree_pearson": 0.978645861794167,
+    "cloudfree_archived": 0.9786458617941672,
+    "cloudfree_deviation": 2.220446049250313e-16,
+    "pass": true
+  },
+  "summary": {
+    "cloudy": {
+      "profiled": {
+        "pearson": {
+          "mean": 0.3173107929803568,
+          "sd": 0.030394776021578064,
+          "se": 0.0067964785345129165,
+          "n": 20,
+          "mean_over_sd": 10.439648996100164
+        },
+        "ssim": {
+          "mean": 0.12772246896305647,
+          "sd": 0.022768416281740717,
+          "se": 0.005091172654598524,
+          "n": 20
+        },
+        "nrmse": {
+          "mean": 0.7388547199739242,
+          "sd": 0.025502122400485366,
+          "se": 0.005702447925800539,
+          "n": 20
+        },
+        "bias": {
+          "mean": 0.23439861308891766,
+          "sd": 0.004674075810784833,
+          "se": 0.001045155124490233,
+          "n": 20
+        },
+        "contrast": {
+          "mean": 0.4594368993323224,
+          "sd": 0.051077791395977006,
+          "se": 0.011421341370195846,
+          "n": 20
+        }
+      },
+      "deflate": {
+        "pearson": {
+          "mean": 0.317307073769401,
+          "sd": 0.030411420928417778,
+          "se": 0.006800200448830191,
+          "n": 20,
+          "mean_over_sd": 10.433812826973014
+        },
+        "ssim": {
+          "mean": 0.1275453873668932,
+          "sd": 0.02262159070856732,
+          "se": 0.005058341458353416,
+          "n": 20
+        },
+        "nrmse": {
+          "mean": 0.7401478989716381,
+          "sd": 0.02555500146881312,
+          "se": 0.005714272044937311,
+          "n": 20
+        },
+        "bias": {
+          "mean": 0.2349761044603002,
+          "sd": 0.004836333194162077,
+          "se": 0.0010814369783985092,
+          "n": 20
+        },
+        "contrast": {
+          "mean": 0.4593789255288847,
+          "sd": 0.05115526632227277,
+          "se": 0.011438665290370758,
+          "n": 20
+        }
+      }
+    },
+    "cloudfree": {
+      "profiled": {
+        "pearson": {
+          "mean": 0.9789200431085424,
+          "sd": 0.0034693171752270885,
+          "se": 0.0007757629039315319,
+          "n": 20,
+          "mean_over_sd": 282.16504679900476
+        },
+        "ssim": {
+          "mean": 0.7993070651208862,
+          "sd": 0.03835070586777283,
+          "se": 0.00857547853054401,
+          "n": 20
+        },
+        "nrmse": {
+          "mean": 0.05768915928170215,
+          "sd": 0.005541037799819934,
+          "se": 0.0012390137186293244,
+          "n": 20
+        },
+        "bias": {
+          "mean": -5.3371229210201486e-05,
+          "sd": 0.0013016568989039363,
+          "se": 0.0002910593309330773,
+          "n": 20
+        },
+        "contrast": {
+          "mean": 1.0504841526727364,
+          "sd": 0.013287227410137534,
+          "se": 0.0029711143721566,
+          "n": 20
+        }
+      },
+      "deflate": {
+        "pearson": {
+          "mean": 0.9788712887332014,
+          "sd": 0.0034737235830378703,
+          "se": 0.0007767482066716814,
+          "n": 20,
+          "mean_over_sd": 281.79308610305446
+        },
+        "ssim": {
+          "mean": 0.7991218976103666,
+          "sd": 0.03838493272024402,
+          "se": 0.008583131887422154,
+          "n": 20
+        },
+        "nrmse": {
+          "mean": 0.05776189669200745,
+          "sd": 0.005542123358175475,
+          "se": 0.0012392564568569776,
+          "n": 20
+        },
+        "bias": {
+          "mean": 3.203172868378734e-05,
+          "sd": 0.0013189293274268182,
+          "se": 0.0002949215633644443,
+          "n": 20
+        },
+        "contrast": {
+          "mean": 1.0504990339463665,
+          "sd": 0.013298945036547574,
+          "se": 0.00297373451307538,
+          "n": 20
+        }
+      }
+    },
+    "sign_stability": {
+      "cloudy": {
+        "n_positive": 3,
+        "n_negative": 2,
+        "n_total": 5,
+        "stable": false
+      },
+      "cloudfree": {
+        "n_positive": 5,
+        "n_negative": 0,
+        "n_total": 5,
+        "stable": true
+      }
+    },
+    "variance_decomposition": {
+      "cloudy": {
+        "between_map_sd": 0.02117856641722818,
+        "within_map_sd": 0.02549076234948628,
+        "dominant": "within-map (noise seeds)"
+      },
+      "cloudfree": {
+        "between_map_sd": 0.00374220810872572,
+        "within_map_sd": 0.0005437523158341528,
+        "dominant": "between-map"
+      }
+    }
+  },
+  "sign_stability": {
+    "cloudy": {
+      "n_positive": 3,
+      "n_negative": 2,
+      "n_total": 5,
+      "stable": false
+    },
+    "cloudfree": {
+      "n_positive": 5,
+      "n_negative": 0,
+      "n_total": 5,
+      "stable": true
+    }
+  }
+}

@@ -1,19 +1,41 @@
-# Response to the Editor and Referee
+**Terminology note:** This letter was written when the repository carried parallel version trees. The labels v1/v2/v3 and the `v2` estimator have since been consolidated into a single version; the `v2` estimator is now named `deflate` (the approximate-deflation baseline). See `docs/HISTORY.md` for the full rename map and provenance.
+
+**Provenance note — what this document is.** This is the record of an *author-commissioned
+pre-submission review*, conducted on the manuscript in the *Open Journal of Astrophysics*
+referee-report format before submission. It is **not** a journal referee report: no OJA referee
+read this manuscript, no editorial decision was issued, and no editor is named here. The
+"referee" and "the referee asked" phrasing retained in the body below is a shorthand for that
+internal review, and the answers are the author's own.
+
+**Numbering note — this record is contemporaneous, not current.** The manuscript was restructured
+after it was written, so every section, table, figure and equation number quoted below refers to
+the numbering *at the time of writing* and several have since shifted. `paper/main.tex` and its
+compiled `paper/main.aux` are authoritative for the current numbering (currently 36 pages, 9
+figures, 16 tables, 18 numbered equations); `submission/cover_letter.tex` carries the corrected
+cross-references. Read the items below for *what* was found and changed, not for *where* it now
+sits.
+
+# Pre-Submission Review Record: Comments and Responses
 
 **Manuscript:** Time-Domain Imaging of Rotating, Cloud-Covered Exoplanets with the Solar
-Gravitational Lens: Reconstruction Algorithms, Observing-Cadence Requirements, and Mission
-Targets
+Gravitational Lens: An Open Inversion Framework, a Cloud-Limited Fidelity Ceiling, and
+Mission Cadence Requirements
+**Former title at submission:** "... Reconstruction Algorithms, Observing-Cadence
+Requirements, and Mission Targets" — retitled during the revision because the three things
+the revised manuscript actually establishes are the open framework, the measured ceiling, and
+the cadence requirements, in that order, and the section list now follows it.
 **Author:** Sanskar Sontakke (Independent Researcher)
-**Journal:** *The Open Journal of Astrophysics*
-**Decision:** Revise and resubmit (editor: Dr. Alexis Smith)
+**Journal (targeted):** *The Open Journal of Astrophysics*
+**Review outcome:** revise before submission (internal pre-submission review; no editorial
+decision by any journal is recorded or implied)
 
 ---
 
-Dear Dr. Smith,
-
-Thank you and the referee for a review of unusual specificity. Every one of the twenty
-comments was actionable, and acting on them changed the paper's content materially rather than
-cosmetically. We summarise the four structural changes before the point-by-point response.
+This section records the review itself and the response to it. The review was run in the referee
+format on purpose, so that its twenty comments could be answered one by one rather than absorbed
+silently. Every one of them was actionable, and acting on them changed the paper's content
+materially rather than cosmetically. The four structural changes are summarised before the
+point-by-point response.
 
 **1. The v2 experiment was re-run, not re-described.** The referee correctly identified that
 several quantitative claims in v2 could not have been produced by the shipped pipeline. We found
@@ -59,11 +81,13 @@ numbers on what those assumptions have to deliver — and on the two assumptions
 to matter at all (the assumed cloud amplitude, and the choice of regularizer the objective cannot
 make).
 
-**Formatting.** All changed text is enclosed in a `\rev{}` macro and sets boldface.
-`\revflagfalse` produces a clean version; the change bars and boldface are then removed and the
-line numbering and page count are unchanged. Equation numbers are not preserved between versions
-(v2 had 5, v3 has 17), so we list the correspondence explicitly below and refer to sections and
-labels rather than to old equation numbers.
+**Formatting.** At the time of writing, all changed text was enclosed in a `\rev{}` macro that set
+boldface, and `\revflagfalse` produced the clean version. That markup has since been removed from
+the manuscript entirely: `paper/main.tex` is now the single clean version, and a test
+(`tests/test_latex_integrity.py::TestNoRevMarkup`) fails if a `\rev{}` reappears. Equation numbers
+were not preserved between the earlier drafts (the old v2 had 5, the revision had 17, the current
+manuscript has 18 numbered equations), so the correspondence was listed explicitly rather than
+referred to by old equation numbers.
 
 ---
 
@@ -435,8 +459,8 @@ constant.
 
 *(f) Morphology sensitivity.* Now restored, and the v2 claim turns out to be half right. Section
 5.11 and Table 10 (archive `morphology_*`). Three truth fields from the same seed at the same
-quantile land fraction — 30% of the fine grid, mean albedo 0.235–0.237, SD within 2% of each
-other — differing only in arrangement: the fiducial *earthlike* field, a *supercontinent* field
+quantile land fraction — 30% of the fine grid, mean albedo 0.235–0.237, SD 0.191–0.199 across
+the three — differing only in arrangement: the fiducial *earthlike* field, a *supercontinent* field
 with its power pushed to the largest scales, and an *archipelago* field with its power pushed to
 the smallest. Each gets its own weather realization on the same cloud seeds and its own calibrated
 $\sigma_{\rm cl}$, because the cloud-induced variance depends on the albedo pattern it modulates.
@@ -595,7 +619,7 @@ a symmetric bang-bang profile at 0.041 m/s²) and no longer presented as literat
 
 ---
 
-## Change log for the editor
+## Change log (contemporaneous: draft numbering, see the numbering note above)
 
 **Structure.** v2: 5 sections, 5 equations, 2 tables, 7 figures. v3: 8 sections, 17 numbered
 equations, 13 tables, 8 figures, 24 pages. New in v3: §3.4 resource ledgers, §4.2 exact nuisance

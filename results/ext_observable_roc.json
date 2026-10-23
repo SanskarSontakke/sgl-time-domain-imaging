@@ -1,0 +1,707 @@
+{
+  "headline": {
+    "observed_dprime_mean": 0.7321137892861135,
+    "observed_dprime_se": 0.025572339140325646,
+    "observed_dprime_sd": 0.08086683678170126,
+    "null_physical_max": 0.1304274469178845,
+    "null_physical_mean": 0.0013061684792299495,
+    "null_physical_sd": 0.0899537863385844,
+    "null_physical_p95": 0.11376865726343745,
+    "null_physical_n": 40,
+    "null_physical_p_leq": 0.02439,
+    "label_permutation_p_median": 0.0004997501249375312,
+    "label_permutation_dprime_per_seed": [
+      0.6723289025705229,
+      0.6616024942243629,
+      0.9087029478116608,
+      0.7522957239701937,
+      0.747979483727823,
+      0.7006975597801204,
+      0.7080811159607894,
+      0.674334844464757,
+      0.6666679659574305,
+      0.828446854393474
+    ]
+  },
+  "roc_auc": {
+    "profiled": {
+      "auc_mean": 0.6943073657578319,
+      "auc_se": 0.006759939869079639,
+      "auc_per_seed": [
+        0.6871590349282035,
+        0.6750576257579535,
+        0.7404925101719346,
+        0.700755064680732,
+        0.6877352925077391,
+        0.689970381272693,
+        0.6829914306392658,
+        0.6793134172226514,
+        0.6769825389391996,
+        0.7226163614579469
+      ],
+      "n_seeds": 10
+    },
+    "deflate": {
+      "auc_mean": 0.6942679856224494,
+      "auc_se": 0.006753771621664723,
+      "auc_per_seed": [
+        0.6873354092797237,
+        0.674986163736217,
+        0.7404073639332697,
+        0.700659275162234,
+        0.6875741228416948,
+        0.6899977497065495,
+        0.6828637112812684,
+        0.6793666336218168,
+        0.6769354044142242,
+        0.7225540222474958
+      ],
+      "n_seeds": 10
+    },
+    "white": {
+      "auc_mean": 0.6626274912877153,
+      "auc_se": 0.006821734315891408,
+      "auc_per_seed": [
+        0.6519282582120507,
+        0.6662343467763026,
+        0.697971086770099,
+        0.6528131709067466,
+        0.6758847606478411,
+        0.6472224080572668,
+        0.6366490697773426,
+        0.6558784354986834,
+        0.6439518802114059,
+        0.6977414960194134
+      ],
+      "n_seeds": 10
+    },
+    "b2": {
+      "auc_mean": 0.6859314086228813,
+      "auc_se": 0.009883985850831396,
+      "auc_per_seed": [
+        0.6585651034222706,
+        0.6913616099937356,
+        0.7436125116315844,
+        0.6579417113177597,
+        0.683566167750254,
+        0.6816883890939832,
+        0.6576011263631001,
+        0.6700127111170578,
+        0.6767012522578958,
+        0.7382635032811711
+      ],
+      "n_seeds": 10
+    },
+    "b1": {
+      "auc_mean": 0.5189683012717199,
+      "auc_se": 0.010194089226798608,
+      "auc_per_seed": [
+        0.5364289059316518,
+        0.5058978974960925,
+        0.46744676839614896,
+        0.5015037433935642,
+        0.5265108895957378,
+        0.4758838483667126,
+        0.5543385049536865,
+        0.55218704195885,
+        0.5587448228045955,
+        0.5107405898201589
+      ],
+      "n_seeds": 10
+    },
+    "b2coarse": {
+      "auc_mean": 0.4812485175431661,
+      "auc_se": 0.014688658215063138,
+      "auc_per_seed": [
+        0.5285255104212915,
+        0.48142747669121716,
+        0.4152855744026079,
+        0.4686099268350535,
+        0.5095348582619219,
+        0.39852697007109705,
+        0.4837249046666221,
+        0.466580101324024,
+        0.5263877316433833,
+        0.5338821211144427
+      ],
+      "n_seeds": 10
+    }
+  },
+  "area_contrast_recovery": {
+    "profiled": {
+      "area_recovery": {
+        "mean": 0.7010600706713781,
+        "se": 0.008553864619724528
+      },
+      "false_positive_rate": {
+        "mean": 0.402065404475043,
+        "se": 0.004166512370709194
+      },
+      "est_contrast": {
+        "mean": 0.2554333389153566,
+        "se": 0.006723527951557274
+      },
+      "true_contrast": {
+        "mean": 0.23839940927792963,
+        "se": 0.0
+      },
+      "contrast_recovery": {
+        "mean": 1.0714512241830618,
+        "se": 0.02820278780019495
+      }
+    },
+    "deflate": {
+      "area_recovery": {
+        "mean": 0.7001766784452297,
+        "se": 0.008647623317306816
+      },
+      "false_positive_rate": {
+        "mean": 0.4024956970740103,
+        "se": 0.004212181409290584
+      },
+      "est_contrast": {
+        "mean": 0.2554079743233145,
+        "se": 0.006733457147638053
+      },
+      "true_contrast": {
+        "mean": 0.23839940927792963,
+        "se": 0.0
+      },
+      "contrast_recovery": {
+        "mean": 1.071344828818582,
+        "se": 0.02824443721581578
+      }
+    },
+    "white": {
+      "area_recovery": {
+        "mean": 0.6717314487632507,
+        "se": 0.009366735148207794
+      },
+      "false_positive_rate": {
+        "mean": 0.41635111876075726,
+        "se": 0.004562454469781078
+      },
+      "est_contrast": {
+        "mean": 0.25164746376390024,
+        "se": 0.009810785462449489
+      },
+      "true_contrast": {
+        "mean": 0.23839940927792963,
+        "se": 0.0
+      },
+      "contrast_recovery": {
+        "mean": 1.0555708360440015,
+        "se": 0.041152725554835276
+      }
+    },
+    "b2": {
+      "area_recovery": {
+        "mean": 0.6765017667844524,
+        "se": 0.010608719651838964
+      },
+      "false_positive_rate": {
+        "mean": 0.41402753872633385,
+        "se": 0.005167414219398325
+      },
+      "est_contrast": {
+        "mean": 0.1969639829879056,
+        "se": 0.009761901011809338
+      },
+      "true_contrast": {
+        "mean": 0.23839940927792963,
+        "se": 0.0
+      },
+      "contrast_recovery": {
+        "mean": 0.8261932510003918,
+        "se": 0.04094767282090354
+      }
+    },
+    "b1": {
+      "area_recovery": {
+        "mean": 0.5309187279151943,
+        "se": 0.014014139027433207
+      },
+      "false_positive_rate": {
+        "mean": 0.48493975903614456,
+        "se": 0.0068261641045845
+      },
+      "est_contrast": {
+        "mean": 0.033638389105298976,
+        "se": 0.010814736427486963
+      },
+      "true_contrast": {
+        "mean": 0.23839940927792963,
+        "se": 0.0
+      },
+      "contrast_recovery": {
+        "mean": 0.14110097507029826,
+        "se": 0.045363939702044234
+      }
+    },
+    "b2coarse": {
+      "area_recovery": {
+        "mean": 0.47703180212014135,
+        "se": 0.013302477751272251
+      },
+      "false_positive_rate": {
+        "mean": 0.5111876075731497,
+        "se": 0.006479520143907135
+      },
+      "est_contrast": {
+        "mean": -0.018732515387353373,
+        "se": 0.016260756873188807
+      },
+      "true_contrast": {
+        "mean": 0.23839940927792963,
+        "se": 0.0
+      },
+      "contrast_recovery": {
+        "mean": -0.07857618206391917,
+        "se": 0.06820804180027044
+      }
+    }
+  },
+  "histogram_moments": {
+    "truth": {
+      "mean": 0.14084332604078978,
+      "std": 0.12224327286800281,
+      "skew": 1.1691340511118322,
+      "kurtosis": -0.10815019260943481
+    },
+    "reconstructed": {
+      "profiled": {
+        "mean": {
+          "mean": 0.14710439519973967,
+          "se": 0.00768435054316952
+        },
+        "std": {
+          "mean": 0.3861194695733562,
+          "se": 0.002809244410350466
+        },
+        "skew": {
+          "mean": -0.31375032427538635,
+          "se": 0.04325244662861416
+        },
+        "kurtosis": {
+          "mean": -0.009990859859674694,
+          "se": 0.06398899776541919
+        }
+      },
+      "deflate": {
+        "mean": {
+          "mean": 0.14800643281825215,
+          "se": 0.00811583945522905
+        },
+        "std": {
+          "mean": 0.3861403334907995,
+          "se": 0.002793044613011266
+        },
+        "skew": {
+          "mean": -0.3136028303234658,
+          "se": 0.04274917983985902
+        },
+        "kurtosis": {
+          "mean": -0.011689574782411016,
+          "se": 0.0639489948638059
+        }
+      },
+      "white": {
+        "mean": {
+          "mean": 0.1478160926351038,
+          "se": 0.007487607017863104
+        },
+        "std": {
+          "mean": 0.4505160492583511,
+          "se": 0.0030227260011244945
+        },
+        "skew": {
+          "mean": -0.33160131804040993,
+          "se": 0.022821229121615126
+        },
+        "kurtosis": {
+          "mean": -0.11205271055217483,
+          "se": 0.03318019275158602
+        }
+      },
+      "b2": {
+        "mean": {
+          "mean": 0.22407427226148907,
+          "se": 0.007095710114463702
+        },
+        "std": {
+          "mean": 0.31623817677478405,
+          "se": 0.0035424137033982454
+        },
+        "skew": {
+          "mean": 0.17825958087299654,
+          "se": 0.022291764739243203
+        },
+        "kurtosis": {
+          "mean": -0.17538829619295743,
+          "se": 0.06523722690752551
+        }
+      },
+      "b1": {
+        "mean": {
+          "mean": -0.023730233311331436,
+          "se": 0.004784689503321011
+        },
+        "std": {
+          "mean": 0.5580356302470613,
+          "se": 0.003627151495217578
+        },
+        "skew": {
+          "mean": -0.1869506028141077,
+          "se": 0.01652916405066788
+        },
+        "kurtosis": {
+          "mean": -0.7046609535593072,
+          "se": 0.033692072731166776
+        }
+      },
+      "b2coarse": {
+        "mean": {
+          "mean": 0.2503665738088556,
+          "se": 0.008919508101851388
+        },
+        "std": {
+          "mean": 0.30780770096747095,
+          "se": 0.0038807526928389337
+        },
+        "skew": {
+          "mean": 0.21351260229636634,
+          "se": 0.03493123268079802
+        },
+        "kurtosis": {
+          "mean": -0.13621181429574322,
+          "se": 0.06637052053210402
+        }
+      }
+    }
+  },
+  "dprime_completeness_curves": {
+    "profiled": {
+      "fc": [
+        0.0,
+        0.25,
+        0.4,
+        0.55,
+        0.7
+      ],
+      "dprime_mean": [
+        3.584921864701039,
+        1.4223410978545885,
+        1.011521876052385,
+        0.7321137892861135,
+        0.5199386294481372
+      ],
+      "dprime_se": [
+        0.008793028990089127,
+        0.03706617937433169,
+        0.027037463245390556,
+        0.025572339140325646,
+        0.02962772748141318
+      ]
+    },
+    "deflate": {
+      "fc": [
+        0.0,
+        0.25,
+        0.4,
+        0.55,
+        0.7
+      ],
+      "dprime_mean": [
+        3.584416173145243,
+        1.4220348307970807,
+        1.0113522258563334,
+        0.7319502593645305,
+        0.5198386195447988
+      ],
+      "dprime_se": [
+        0.008808897653936429,
+        0.03716387750815603,
+        0.027002996004641625,
+        0.02555007016214142,
+        0.029706753388420423
+      ]
+    },
+    "white": {
+      "fc": [
+        0.0,
+        0.25,
+        0.4,
+        0.55,
+        0.7
+      ],
+      "dprime_mean": [
+        3.605785061385741,
+        1.2188817793511135,
+        0.8429381969253716,
+        0.6143161299183137,
+        0.4444743494156689
+      ],
+      "dprime_se": [
+        0.0069334595846602,
+        0.03101282884067328,
+        0.024859061932003015,
+        0.027233758768108046,
+        0.02907531020071837
+      ]
+    },
+    "b2": {
+      "fc": [
+        0.0,
+        0.25,
+        0.4,
+        0.55,
+        0.7
+      ],
+      "dprime_mean": [
+        3.0379032709370324,
+        1.4445087773948,
+        0.9870706728864473,
+        0.6741252787899888,
+        0.42450955652344663
+      ],
+      "dprime_se": [
+        0.0014339845759432422,
+        0.03285475161666757,
+        0.0370234358556968,
+        0.04133402119293165,
+        0.03790539025048124
+      ]
+    },
+    "b1": {
+      "fc": [
+        0.0,
+        0.25,
+        0.4,
+        0.55,
+        0.7
+      ],
+      "dprime_mean": [
+        0.1964588846167534,
+        0.12886165221295956,
+        0.08850366444042865,
+        0.05967380750678379,
+        0.04156484940538718
+      ],
+      "dprime_se": [
+        0.0007383974225606003,
+        0.029026666807714638,
+        0.026873362102799614,
+        0.019082442217308246,
+        0.012256910013484959
+      ]
+    },
+    "b2coarse": {
+      "fc": [
+        0.0,
+        0.25,
+        0.4,
+        0.55,
+        0.7
+      ],
+      "dprime_mean": [
+        0.13547189752479835,
+        0.028783530714090188,
+        -0.02640301326649359,
+        -0.06366782314262238,
+        -0.08370344332991854
+      ],
+      "dprime_se": [
+        0.0012218640224055635,
+        0.03831409284992334,
+        0.046525261254198765,
+        0.05387159345317431,
+        0.05010780410739324
+      ]
+    }
+  },
+  "metric_availability": {
+    "profiled": {
+      "available": {
+        "dprime": true,
+        "roc_auc": true,
+        "area_contrast_recovery": true,
+        "histogram_moments": true,
+        "pearson_r": true,
+        "ssim": true
+      },
+      "estimable_without_truth": {
+        "dprime": false,
+        "roc_auc": false,
+        "area_contrast_recovery": false,
+        "histogram_moments": false,
+        "pearson_r": false,
+        "ssim": false
+      }
+    },
+    "deflate": {
+      "available": {
+        "dprime": true,
+        "roc_auc": true,
+        "area_contrast_recovery": true,
+        "histogram_moments": true,
+        "pearson_r": true,
+        "ssim": true
+      },
+      "estimable_without_truth": {
+        "dprime": false,
+        "roc_auc": false,
+        "area_contrast_recovery": false,
+        "histogram_moments": false,
+        "pearson_r": false,
+        "ssim": false
+      }
+    },
+    "white": {
+      "available": {
+        "dprime": true,
+        "roc_auc": true,
+        "area_contrast_recovery": true,
+        "histogram_moments": true,
+        "pearson_r": true,
+        "ssim": true
+      },
+      "estimable_without_truth": {
+        "dprime": false,
+        "roc_auc": false,
+        "area_contrast_recovery": false,
+        "histogram_moments": false,
+        "pearson_r": false,
+        "ssim": false
+      }
+    },
+    "b2": {
+      "available": {
+        "dprime": true,
+        "roc_auc": true,
+        "area_contrast_recovery": true,
+        "histogram_moments": true,
+        "pearson_r": true,
+        "ssim": true
+      },
+      "estimable_without_truth": {
+        "dprime": false,
+        "roc_auc": false,
+        "area_contrast_recovery": false,
+        "histogram_moments": false,
+        "pearson_r": false,
+        "ssim": false
+      }
+    },
+    "b1": {
+      "available": {
+        "dprime": true,
+        "roc_auc": true,
+        "area_contrast_recovery": true,
+        "histogram_moments": true,
+        "pearson_r": true,
+        "ssim": true
+      },
+      "estimable_without_truth": {
+        "dprime": false,
+        "roc_auc": false,
+        "area_contrast_recovery": false,
+        "histogram_moments": false,
+        "pearson_r": false,
+        "ssim": false
+      }
+    },
+    "b2coarse": {
+      "available": {
+        "dprime": true,
+        "roc_auc": true,
+        "area_contrast_recovery": true,
+        "histogram_moments": true,
+        "pearson_r": true,
+        "ssim": true
+      },
+      "estimable_without_truth": {
+        "dprime": false,
+        "roc_auc": false,
+        "area_contrast_recovery": false,
+        "histogram_moments": false,
+        "pearson_r": false,
+        "ssim": false
+      }
+    }
+  },
+  "validation": {
+    "dprime_profiled_fc055_mean": {
+      "computed": 0.7321137892861135,
+      "archived": 0.7321137892861135,
+      "manuscript_value": 0.732,
+      "matches_manuscript": true
+    },
+    "null_physical_max": {
+      "computed": 0.1304274469178845,
+      "manuscript_value": 0.13,
+      "match": true
+    },
+    "pearson_r_profiled_fc055": {
+      "mean": 0.3422471987555486,
+      "se": 0.008234009442233339,
+      "manuscript_value": 0.3422,
+      "match": 1.0
+    }
+  },
+  "caveats": [
+    "ROC AUC and area/contrast metrics require the truth map; they are not estimable in flight",
+    "d' uses the same land/ocean threshold (truth_c > 0.15) as S.detection_dprime",
+    "Label-permutation null uses 2000 permutations per seed (floor 1/2001 = 5.0e-4)",
+    "Physical null ensemble has 40 realisations (p-value floor 1/41 = 0.0244)",
+    "Histogram moments computed on mid-latitude (|lat| <= 60 deg) pixels only",
+    "Area recovery and its false-positive rate classify the retrieved map at its own MEDIAN, an uncalibrated balanced split: they say how the retrieved ordering of pixels partitions the true classes, not whether a thresholded map would be usable. Contrast recovery uses the truth labels for both groups and is the load-bearing number of the two.",
+    "Maps are read from results/parts/clouds_f*_s*.npz, where run_experiments stores them AFTER debiasing; _surface_map verifies that against the archived bias instead of re-applying the transform, which would leave r, d' and AUC untouched and corrupt only the albedo-scale statistics."
+  ],
+  "provenance": {
+    "module": "observable_roc",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T08:20:41Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    },
+    "seeds_used": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "fc_index": 3,
+    "fast": false,
+    "wall_time_s": 2.0
+  }
+}

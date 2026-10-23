@@ -1,0 +1,56 @@
+{
+  "headline": {
+    "r_airy": 0.1985,
+    "ssim_airy": 0.0642,
+    "r_sgl_paired": 0.3314,
+    "ssim_sgl_paired": 0.0922,
+    "r_ratio_paired": 0.5988,
+    "delta_r_paired": -0.133,
+    "r_sgl_ensemble": 0.3422,
+    "seed": 11,
+    "fc": 0.55,
+    "pitch_m": 20.91,
+    "status": "paired_single_seed_kernel_swap"
+  },
+  "caveats": [
+    "Paired at ONE seed (the tier's first); the ensemble value is quoted separately and is context, not the comparison.",
+    "NOT a test of the surface-coupling (phase-locking) collapse: the fiducial CloudModel has surf_coupling=0, so its screens are not rotationally locked and -0.198 cannot be reproduced or refuted here.",
+    "The Airy FWHM is set equal to the SGL image-plane pitch DIMG/n by construction; this is a matched-resolution swap, not a realistic conventional-telescope design study.",
+    "The Airy kernel is a far-field diffraction pattern; near-field SGL effects, solar J2/limb structure and occultation are neglected.",
+    "The forward operator is rebuilt from scratch, so operator-construction differences beyond the kernel itself may contribute to the loss.",
+    "Only the profiled solver is tested; white-noise and deflation baselines are not re-run under the alternative kernel."
+  ],
+  "provenance": {
+    "module": "portability",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T03:53:13Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    }
+  },
+  "wall_clock_s": 72.0
+}

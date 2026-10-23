@@ -7,6 +7,10 @@
     "cellmean_formula": 0.010535992301146936,
     "offdiag_rel_err_point": 0.036558407111781044,
     "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "cellmean_formula_vs_brute": 0.019224155018933153,
+    "energy_frac_3x3": 0.09210723695228021,
+    "energy_frac_r4": 0.2793915972888093,
+    "peak_to_offdiag_cm": 3.5254943480781713,
     "point_over_cellmean": 94.91274968862128
   },
   "32": {
@@ -17,6 +21,10 @@
     "cellmean_formula": 0.021071984602293873,
     "offdiag_rel_err_point": 0.036558407111781044,
     "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "cellmean_formula_vs_brute": 0.019224155018933153,
+    "energy_frac_3x3": 0.0459679595736169,
+    "energy_frac_r4": 0.13943596697004487,
+    "peak_to_offdiag_cm": 3.5254943480781713,
     "point_over_cellmean": 47.45637484431064
   },
   "64": {
@@ -27,6 +35,10 @@
     "cellmean_formula": 0.042143969204587746,
     "offdiag_rel_err_point": 0.036558407111781044,
     "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "cellmean_formula_vs_brute": 0.019224155018933153,
+    "energy_frac_3x3": 0.022963749299248555,
+    "energy_frac_r4": 0.06965661775068584,
+    "peak_to_offdiag_cm": 3.5254943480781713,
     "point_over_cellmean": 23.72818742215532
   },
   "128": {
@@ -37,6 +49,10 @@
     "cellmean_formula": 0.08428793840917549,
     "offdiag_rel_err_point": 0.036558407111781044,
     "offdiag_rel_err_cellmean": 0.036558407111781044,
+    "cellmean_formula_vs_brute": 0.019224155018933153,
+    "energy_frac_3x3": 0.011476964232570818,
+    "energy_frac_r4": 0.03481341396252917,
+    "peak_to_offdiag_cm": 3.5254943480781713,
     "point_over_cellmean": 11.86409371107766
   }
 }

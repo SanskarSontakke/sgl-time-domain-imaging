@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-30T10:03:38Z",
+  "generated_utc": "2026-10-22T08:20:30Z",
   "conventions": {
     "nsub": 16,
     "truth_seed": 7,
@@ -28,7 +28,7 @@
       16
     ],
     "kernel_core": "point",
-    "solver": "solve_gls_profiled (exact anchored R11 profiling)",
+    "solver": "solve_gls_profiled (exact anchored slot-nuisance profiling)",
     "overhead_s": 45.0,
     "snr_c_1800": 43.158875285522335,
     "qcor_over_qexo": 77403.24594257178
@@ -36,7 +36,7 @@
   "clouds": {
     "methods": [
       "profiled",
-      "v2",
+      "deflate",
       "white",
       "b2",
       "b1",
@@ -51,7 +51,7 @@
         "se": 0.03660342406046883,
         "n": 50
       },
-      "v2": {
+      "deflate": {
         "mean": 0.5240407463366801,
         "sd": 0.25881526133522875,
         "se": 0.03660200527294174,
@@ -84,7 +84,7 @@
     },
     "pearson_sd_pooled": {
       "profiled": 0.2588252936780434,
-      "v2": 0.25881526133522875,
+      "deflate": 0.25881526133522875,
       "white": 0.2760762615344789,
       "b2": 0.2606441334663753,
       "b1": 0.042040267502417496,
@@ -98,7 +98,7 @@
         "se": 0.00020784599668709048,
         "n": 10
       },
-      "r_v2": {
+      "r_deflate": {
         "mean": 0.9785908468066167,
         "sd": 0.0006592952738459377,
         "se": 0.00020848747159376028,
@@ -163,7 +163,7 @@
         "se": 0.008793028990089127,
         "n": 10
       },
-      "v2": {
+      "deflate": {
         "mean": 3.584416173145243,
         "sd": 0.02785618026175282,
         "se": 0.008808897653936429,
@@ -201,7 +201,7 @@
         "se": 0.025572339140325646,
         "n": 10
       },
-      "v2": {
+      "deflate": {
         "mean": 0.7319502593645305,
         "sd": 0.0807964160894745,
         "se": 0.02555007016214142,
@@ -357,7 +357,7 @@
         "n": 6
       }
     ],
-    "r_v2": [
+    "r_deflate": [
       {
         "mean": 0.04720593255705787,
         "sd": 0.011812612236930144,
@@ -576,7 +576,7 @@
         "n": 6
       }
     ],
-    "r_v2": [
+    "r_deflate": [
       {
         "mean": 0.048123903700520276,
         "sd": 0.014684763541467524,
@@ -1346,7 +1346,7 @@
       "reldev_vs_D_mean": 0.7901944853598699,
       "norm_mean": 28.60206700791907
     },
-    "C_v2_deflate": {
+    "C_deflate": {
       "r": {
         "mean": 0.3422061026180039,
         "sd": 0.02600196288702986,
@@ -1433,6 +1433,26 @@
       },
       "reldev_vs_D_mean": 0.09219744336954058,
       "norm_mean": 22.886727275637675
+    },
+    "paired_F_vs_C": {
+      "mean": 4.109613754473829e-05,
+      "se": 2.9862682405527054e-05,
+      "ci_lo": -2.010086177434589e-05,
+      "ci_hi": 8.987346469052915e-05,
+      "p_t": 0.20203961715567997,
+      "p_sign": 0.109375,
+      "n": 10,
+      "sd": 9.443409344370153e-05
+    },
+    "paired_reldev_F_vs_C": {
+      "mean": 0.008303850716343233,
+      "se": 0.002239061472835545,
+      "ci_lo": 0.004788560973390738,
+      "ci_hi": 0.01295782480390085,
+      "p_t": 0.004855263631263651,
+      "p_sign": 0.001953125,
+      "n": 10,
+      "sd": 0.007080534075291554
     },
     "paired_D_vs_C": {
       "mean": 0.0032279834677159613,
@@ -1985,6 +2005,42 @@
       0.01677413231192304,
       0.018347577351872868
     ],
+    "band_labels": [
+      "1-4",
+      "5-8",
+      "9-12",
+      "13-16",
+      "17-20"
+    ],
+    "r_cf_band_unweighted": [
+      0.9999512282702896,
+      0.9994542469681644,
+      0.9987680295080585,
+      0.9941788235955067,
+      0.9923693495171333
+    ],
+    "r_cf_band_weighted": [
+      0.9999501978133442,
+      0.9993854120828897,
+      0.9987774470157885,
+      0.9940051157038409,
+      0.9925308283943781
+    ],
+    "r_cl_band_unweighted": [
+      0.7002149909723197,
+      0.5943080598924084,
+      0.41763326995632577,
+      0.24375433839366586,
+      0.2630387942031228
+    ],
+    "r_cl_band_weighted": [
+      0.736087269105707,
+      0.5833851326054262,
+      0.4176789211886863,
+      0.2441603014011743,
+      0.26700095863604656
+    ],
+    "band_weighting_note": "weighted = sum (2l+1) r(l) / sum (2l+1) over the band; unweighted = arithmetic mean of the degrees in the band. The two differ most at high l, which is why an unweighted mean of 13-16 and 17-20 can conceal a resolved gain in 13-16.",
     "l_eff_cf": [
       null,
       null,
@@ -2009,6 +2065,37 @@
       9,
       7
     ],
+    "l_eff_cf90": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "l_eff_cl90": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "l_eff_thresholds": {
+      "crossing": 0.5,
+      "fidelity": 0.9
+    },
+    "l_eff_cf_note": "null means NO crossing: on a 36x72 grid the cloud-free r(l) never falls below 0.90 within the supported band, so an effective degree is undefined and is reported as null rather than as a fabricated number. The ceiling is the minimum of the curve, r_cf_min, at l_at_r_cf_min.",
+    "r_cf_min": 0.9866285338292963,
+    "l_at_r_cf_min": 17,
     "scale_km": [
       {
         "half_wavelength_km": 20015.086796020572,
@@ -3560,7 +3647,7 @@
         "n": 10
       }
     },
-    "v2": {
+    "deflate": {
       "factors": [
         0.25,
         1.0,

@@ -1,0 +1,300 @@
+name: verify
+
+# The fast gates must run on every push, not only when a human remembers to
+# type them.  Everything here is the tier that costs minutes rather than hours;
+# the simulation tier is deliberately left out (see tests/README.md for how to
+# run it).
+#
+# Three jobs, split by what they need rather than by what they check:
+#
+#   gates    the physics and archive gates -- numpy, scipy, the shipped results/
+#   numbers  the proof layers -- derived statistics, the claims ledger, the
+#            manuscript's structural outline, the documentation's own numbers
+#   paper    a TeX Live install and two compiles, which is the only job that
+#            needs the distribution at all
+#
+# Splitting them is not cosmetic.  The paper job used to run in the same job as
+# everything else with a twenty-minute ceiling and was cancelled at 20m17s while
+# apt was still fetching TeX Live -- a build that takes about three seconds once
+# the toolchain exists.  Each job now carries its own ceiling and its own
+# dependency install, so a slow install can no longer cancel a check that had not
+# started.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# A force-push or a rapid series of pushes to the same branch cancels the run
+# already in flight for it.  Without this, three pushes mean three concurrent
+# TeX Live installs competing for the same runner time, and the results are
+# identical bar the last one.
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned scientific stack
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: G-1..G-4 consolidation gates (single-version narrative)
+        run: bash tools/verify_flat.sh
+
+      # --strict-markers and --strict-config make an unregistered marker or an
+      # unknown pytest.ini key an error rather than a warning nobody reads.  The
+      # suite's two tiers are a claim about selection: without the marker
+      # registered, "-m slow" silently deselects nothing.
+      - name: Unit + archive-consistency tests (fast tier)
+        run: python -m pytest tests -q -m "not slow" --strict-markers --strict-config -rf
+
+      - name: Cheap end-to-end stage through the public entry point
+        run: python -m reproduce_all --stages quadrature
+
+      # Default --tol is 0 (bit-for-bit), which is the right claim to make about
+      # the machine the archives were produced on.  It is the wrong claim to make
+      # about a GitHub runner: there the same tier differs from the shipped
+      # archives on 5 of 2,987 audit leaves and 5 of 639 stored arrays, by at most
+      # 4.2e-15 relative -- the signature of a different BLAS and libm, not of a
+      # changed result.  1e-12 is the tolerance the manuscript already quotes for
+      # these comparisons.  Both denominators are audited by
+      # tools/doc_numbers.py, so this comment cannot rot quietly.
+      - name: Fast-tier reproduction in a scratch tree (diff against shipped archives)
+        run: python -m reproduce_all --fast --tol 1e-12
+
+      - name: Byte-level archive drift check against the frozen baseline
+        run: python -m reproduce_all --check
+
+  numbers:
+    # The proof layers, run as a build-and-test cycle of their own: derive the
+    # statistics, check the ledger against them, audit the manuscript's structure
+    # from the tracked build record, audit the documentation's numbers against the
+    # tree, then run the suites that prove those tools can fail.
+    #
+    # It needs no TeX and no simulation, so it costs about a minute -- which is
+    # what makes it safe to run on every push, and what makes it the place a
+    # numeric defect is reported rather than a page-count defect.
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned scientific stack
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      # The build step.  --check re-derives every statistic from the shipped
+      # archives and fails if the committed artifact differs: results/ changed
+      # without the derived statistics being rebuilt, or the artifact was edited
+      # by hand.
+      - name: Re-derive the statistics and require the committed artifact
+        run: python3 tools/derive_stats.py --check
+
+      # Every number the manuscript prints must resolve to an archived value or to
+      # a relation this tool re-evaluates.  --min-claims stops the ledger being
+      # emptied to pass the gate; --max-untraceable 0 is the actual standard, and
+      # it is the reason the paper has no orphan decimals.
+      - name: Numeric provenance ledger
+        run: |
+          python3 tools/claims.py --check --min-claims 620 --max-untraceable 0
+          python3 tools/claims.py --coverage --json > "${RUNNER_TEMP}/coverage.json"
+
+      - name: Report the provenance coverage
+        if: always()
+        run: |
+          python3 - "${RUNNER_TEMP}/coverage.json" <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, pathlib, sys
+          cov = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          print("## Numeric provenance")
+          print()
+          print("| Quantity | Value |")
+          print("| --- | --- |")
+          print(f"| Ledger entries | {cov['claims']} |")
+          print(f"| Printed numbers examined | {cov['numbers']} |")
+          print(f"| Vouched by the ledger | {cov['buckets']['ledgered']} |")
+          print(f"| Straight from an archive | {cov['buckets']['archival']} |")
+          print(f"| External (cited quantities) | {cov['buckets']['external']} |")
+          print(f"| **Unexplained** | **{cov['buckets']['unexplained']}** |")
+          print(f"| Ledger share of printed numbers | {cov['pct']:.2f}% |")
+          PY
+
+      - name: Ledger and proof-layer suites
+        run: >
+          python -m pytest tests/test_claims_ledger.py tests/test_manuscript_outline.py
+          tests/test_doc_numbers.py -q --strict-markers --strict-config -rfs
+
+      - name: Documentation numbers audit (counts the prose makes about the tree)
+        run: python3 tools/doc_numbers.py --min-claims 34
+
+      - name: Structural outline from the tracked build record
+        run: python3 tools/manuscript_outline.py
+
+  paper:
+    # The manuscript and the submission letter are built artifacts that live in
+    # the repository, and both had gone stale relative to their sources: a
+    # generated table fragment with one stray closing brace aborts the build and
+    # silently loses every cross-reference.  Compiling here is what makes the
+    # shipped PDFs a claim rather than a hope.
+    #
+    # The build happens in a scratch copy, not in the checkout.  pdfTeX embeds a
+    # creation date and a file ID, so recompiling changes the bytes of the PDF
+    # without changing a word of it; building in place would then fail the
+    # byte-for-byte mirror gate below, which is exactly the gate that keeps
+    # public/docs/ honest.  For the same reason the fresh build is compared to the
+    # shipped PDF by page count and by text, not by checksum.
+    #
+    # the paper job has 45 minutes.  The ceiling is nearly all apt: the package
+    # download is the only slow step in the job, the compile itself having been
+    # measured at about three seconds for the manuscript.  The previous ceiling of
+    # 20 minutes cancelled the job during that download, which looked exactly like
+    # a broken manuscript and was not one.
+    #
+    # The install step carries its own 20-minute cap for the same reason, and the
+    # numbers behind both are measured rather than assumed.  On a healthy runner the
+    # step costs about a minute.  On 2026-10-23 a runner throttled its mirror to
+    # 50.5 kB/s and pulled 94.6 MB in 31m12s -- so that install was not a hang, and
+    # an uncapped step spent 32 of the job's 45 minutes getting packages while the
+    # manuscript itself was never compiled.  Two things followed.  The download was
+    # cut to what the two documents actually load: a scan of the build log's opened
+    # files attributes them to texlive-latex-base, texlive-base,
+    # texlive-latex-recommended and texlive-fonts-recommended, and to nothing in
+    # texlive-latex-extra, which is therefore not installed.  And the cap was set at
+    # 20 minutes, which bounds a real hang while leaving the job ceiling for the
+    # build, the structure audit and the record comparison that follow.
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      # The only step in this job that depends on a package mirror.  Retries and a
+      # short per-request timeout keep a transient failure from becoming a hang,
+      # the step ceiling keeps a hang from becoming the whole job, and the step
+      # reports what its download actually cost so the numbers above stay current.
+      - name: Install TeX Live
+        timeout-minutes: 20
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          set -e
+          # No pipe here on purpose: the step's exit status has to be apt's, not a
+          # tee's.  GitHub's bash shell sets pipefail by default, but a gate that
+          # depends on a default is a gate that fails silently on a runner change.
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 update
+          if ! sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=20 \
+                 install -y --no-install-recommends \
+                 texlive-latex-base texlive-latex-recommended \
+                 texlive-fonts-recommended latexmk poppler-utils \
+                 > "${RUNNER_TEMP}/apt-install.log" 2>&1; then
+            cat "${RUNNER_TEMP}/apt-install.log"
+            exit 1
+          fi
+          python3 -m pip install --quiet numpy
+          {
+            echo "## TeX Live install"
+            echo
+            grep -E "^Fetched |^E: " "${RUNNER_TEMP}/apt-install.log" \
+              | sed 's/^/- /' || echo "- no fetch summary emitted"
+            echo "- cap: 20 minutes (step), 45 minutes (job)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Must run before anything is built, against the untouched checkout: once a
+      # build has run in this job the working-tree PDFs are no longer the shipped
+      # bytes, and the comparison stops meaning anything.
+      - name: Assert the document mirrors are byte-identical to their sources
+        run: python3 src/make_app_docs.py --check
+
+      - name: Build both documents from scratch and assert they are the shipped documents
+        run: bash tools/check_pdf_build.sh "${RUNNER_TEMP}/cibuild"
+
+      # The outline audit on the build that just happened: chapter order, page
+      # monotonicity, float numbering and placement, equation numbers, unresolved
+      # references, log ceilings, PDF metadata, and --pdf-text, which requires every
+      # number the claims ledger vouches for to be present in the file a reader
+      # downloads.  That last check is what caught a shipped PDF two prose repairs
+      # behind its source.
+      - name: Audit the built document's structure against its own claims
+        run: |
+          pdftotext "${RUNNER_TEMP}/cibuild/paper/main.pdf" "${RUNNER_TEMP}/main.txt"
+          python3 tools/manuscript_outline.py \
+            --build-dir "${RUNNER_TEMP}/cibuild/paper" \
+            --pdf-text "${RUNNER_TEMP}/main.txt" \
+            --strict-metadata --json > "${RUNNER_TEMP}/outline.json"
+
+      - name: Report the outline audit
+        if: always()
+        run: |
+          python3 - "${RUNNER_TEMP}/outline.json" <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, pathlib, sys
+          blob = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          log = blob["metrics"]["log"]
+          print("## Manuscript outline")
+          print()
+          print(f"- title: {blob['title']}")
+          print(f"- spine: {' -> '.join(blob['sections'])}")
+          print(f"- appendices: {', '.join(blob['appendices'])}")
+          print(f"- pages {log['pages']}, aux labels {blob['metrics']['aux_labels']}, "
+                f"floats {blob['metrics']['floats']}, bibitems {blob['metrics']['bibitems']}, "
+                f"overfull {log['overfull']}, errors {log['errors']}")
+          print(f"- findings: {blob['n_findings']}")
+          for line in blob["findings"]:
+              print(f"  - {line}")
+          PY
+
+      # The tracked build record is the only build evidence a checkout without TeX
+      # can have, so it has to be provably the record of *this* manuscript.  Diffing
+      # it against a fresh distillation of the build above fails the job when a
+      # label, a page number, a citation or a counter moved, and tells the author to
+      # regenerate the file rather than guess at it.
+      - name: Require the tracked build record to describe this build
+        run: >
+          python3 tools/manuscript_outline.py --compare-record
+          tools/manuscript_build_record.json
+          --build-dir "${RUNNER_TEMP}/cibuild/paper"
+
+      - name: Report the built document
+        if: always()
+        run: |
+          {
+            echo "## Manuscript build"
+            echo
+            echo "| Property | Value |"
+            echo "| --- | --- |"
+            echo "| Pages (fresh build) | $(pdfinfo "${RUNNER_TEMP}/cibuild/paper/main.pdf" | awk '/^Pages/{print $2}') |"
+            echo "| Pages (shipped) | $(pdfinfo paper/main.pdf | awk '/^Pages/{print $2}') |"
+            echo "| Title | $(pdfinfo "${RUNNER_TEMP}/cibuild/paper/main.pdf" | sed -n 's/^Title: *//p') |"
+            echo "| Overfull boxes in main.log | $(grep -cE '^Overfull' "${RUNNER_TEMP}/cibuild/paper/main.log" || true) |"
+            echo "| Undefined references or citations | $(grep -ciE 'undefined (references|citations)' "${RUNNER_TEMP}/cibuild/paper/main.log" || true) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the built document and its log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manuscript-build
+          path: |
+            ${{ runner.temp }}/cibuild/paper/main.pdf
+            ${{ runner.temp }}/cibuild/paper/main.log
+            ${{ runner.temp }}/cibuild/submission/cover_letter.pdf
+          retention-days: 14
+          if-no-files-found: error

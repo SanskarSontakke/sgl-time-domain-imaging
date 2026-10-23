@@ -91,7 +91,7 @@ res = AUDIT["resolution"]
 nul = AUDIT["nulls"]
 prec = json.loads((ROOT / "results" / "precision.json").read_text())
 
-CONFIGS = ["A_white_nodefl", "B_ou_nodefl", "C_v2_deflate",
+CONFIGS = ["A_white_nodefl", "B_ou_nodefl", "C_deflate",
            "D_profiled_anchor", "E_profiled_free", "F_full_tdi"]
 
 payload = {
@@ -99,7 +99,7 @@ payload = {
         "generated_from": "results/audit.json + results/clouds.npz "
                           "(src/run_experiments.py merge)",
         "conventions": AUDIT["conventions"],
-        "note": "Every value here is a v3 archive number. The manuscript tables "
+        "note": "Every value here is generated from results/ by this script. The tables "
                 "in paper/main.tex are the authoritative presentation; this file "
                 "exists so the demo site can ship a machine-readable blob.",
     },
@@ -156,6 +156,10 @@ payload = {
         "r_l_cf": [r4(v) for v in res["r_cf_mean"]],
         "r_l_cl": [r4(v) for v in res["r_cl_mean"]],
         "l_eff_cf": res["l_eff_cf"], "l_eff_cl": res["l_eff_cl"],
+        "l_eff_cf90": res["l_eff_cf90"], "l_eff_cl90": res["l_eff_cl90"],
+        "l_eff_thresholds": res["l_eff_thresholds"],
+        "l_eff_cf_note": res["l_eff_cf_note"],
+        "r_cf_min": res["r_cf_min"], "l_at_r_cf_min": res["l_at_r_cf_min"],
         "quadrature_err_by_l": [r4(v) for v in res["quadrature_err_mean"]],
         "note": "36x72 grid: degrees above l ~ 18-20 are not representable; "
                 "the cloud-free curve stays at r >= 0.986 across the whole "

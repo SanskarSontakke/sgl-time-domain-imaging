@@ -21,7 +21,7 @@ export default function HomePage() {
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="badge badge-primary text-[10px] sm:text-xs font-mono font-bold">
-                  NASA NIAC & ApJ Phase Research
+                  NASA NIAC &amp; OJA Phase Research
                 </span>
                 <span className="text-[11px] sm:text-xs text-slate-500 font-medium">
                   Peer-Reviewed Astrophysical Research
@@ -96,8 +96,8 @@ export default function HomePage() {
 
             <div className="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200/80 shadow-xs">
               <div className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400 truncate">Habitable Targets</div>
-              <div className="text-sm sm:text-base font-extrabold font-mono text-slate-800 mt-0.5">6 Systems</div>
-              <div className="text-[9px] sm:text-[10px] text-slate-500 truncate">Δv90 &lt; 3 km/s</div>
+              <div className="text-sm sm:text-base font-extrabold font-mono text-slate-800 mt-0.5">5+1 Rows</div>
+              <div className="text-[9px] sm:text-[10px] text-slate-500 truncate">Δv90 1.34–5.81 km/s</div>
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function HomePage() {
               Solar Gravitational Lens (SGL) Time-Domain Imaging Research
             </div>
             <p className="text-[11px] text-slate-400">
-              Original research by Sanskar Sontakke and Collaborators. Prepared for The Astrophysical Journal (ApJ).
+              Original research by Sanskar Sontakke. Prepared for The Open Journal of Astrophysics (OJA).
             </p>
           </div>
 
@@ -147,11 +147,11 @@ export default function HomePage() {
             </a>
             <span className="text-slate-300">•</span>
             <a
-              href="/docs/response_to_editor.pdf"
+              href="/docs/response_to_editor.md"
               download
               className="text-blue-600 hover:text-blue-800 font-semibold"
             >
-              Response to Editor
+              Pre-Submission Review Record
             </a>
             <span className="text-slate-300">•</span>
             <a

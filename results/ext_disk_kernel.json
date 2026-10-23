@@ -1,0 +1,120 @@
+{
+  "headline": {
+    "offdiag_rel_err_n16": 4.523954,
+    "offdiag_rel_err_n64": 2.05007,
+    "offdiag_rel_err_n128": 1.970071,
+    "e3x3_disk_n64": 0.166148,
+    "e_r4_disk_n64": 0.77286,
+    "K00_disk_n64": 0.120809,
+    "K00_point_n64": 1.0,
+    "j2_adopted": 2.2e-07,
+    "j2_rel_dev_max": 4.4e-07,
+    "j2_ring_shift_cells_n64": 2.816e-05,
+    "status": "n_dependent_diagnostics_computed"
+  },
+  "caveats": [
+    "Limb-darkening coefficients are approximate (Claret 2000 tables at 1 um); wavelength-dependent coefficients would change the result.",
+    "Solar J2 oblateness is NOT applied to the shipped kernel: the operator stays axisymmetric. solar_oblateness_factor() is used only to bound the omitted term at the adopted dynamical J2 = 2.2e-07, whose largest effect on the Einstein-ring radius is 5.889e-04 m = 2.816e-05 cells at n=64, i.e. below one imaging cell.",
+    "Occultation of the limb ring by a planet or the Moon is not modelled in this module at all; it requires a specific ephemeris and observer timeline and is left to the ephemeris module.",
+    "The disk-integrated kernel is a simplified model; a full wave-optics treatment would be needed for precise predictions.",
+    "The offdiag_rel_err is computed vs the point kernel; comparison with the cell-mean kernel would give a different value."
+  ],
+  "provenance": {
+    "module": "disk_kernel",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:57:54Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    }
+  },
+  "n_grid": [
+    16,
+    32,
+    64,
+    128
+  ],
+  "j2_bound": {
+    "applied_to_kernel": false,
+    "j2": 2.2e-07,
+    "deflection_rel_min": -2.1999999999522402e-07,
+    "deflection_rel_max": 4.3999999999044803e-07,
+    "dimg_shift_m": 0.00058892127814173,
+    "shift_cells_by_n": {
+      "16": 7.0399999998471685e-06,
+      "32": 1.4079999999694337e-05,
+      "64": 2.8159999999388674e-05,
+      "128": 5.631999999877735e-05
+    }
+  },
+  "results": {
+    "16": {
+      "pitch": 83.65359064694813,
+      "K00_point": 1.0,
+      "K00_disk": 0.025827860340392528,
+      "K00_cell": 0.010535992301146936,
+      "e3x3_point": 0.769881471488144,
+      "e3x3_disk": 0.16960808154987186,
+      "e_r4_point": 0.8016150991165091,
+      "e_r4_disk": 0.777786627162812,
+      "offdiag_rel_err": 4.523953729089218
+    },
+    "32": {
+      "pitch": 41.826795323474066,
+      "K00_point": 1.0,
+      "K00_disk": 0.04488706978157986,
+      "K00_cell": 0.021071984602293873,
+      "e3x3_point": 0.44762196415020283,
+      "e3x3_disk": 0.16822145466363647,
+      "e_r4_point": 0.4837993848808134,
+      "e_r4_disk": 0.7758096783053292,
+      "offdiag_rel_err": 2.4900342273098985
+    },
+    "64": {
+      "pitch": 20.913397661737033,
+      "K00_point": 1.0,
+      "K00_disk": 0.12080929044117823,
+      "K00_cell": 0.042143969204587746,
+      "e3x3_point": 0.1703963161307175,
+      "e3x3_disk": 0.16614756873822598,
+      "e_r4_point": 0.19690033451498082,
+      "e_r4_disk": 0.772859918567739,
+      "offdiag_rel_err": 2.050069674253554
+    },
+    "128": {
+      "pitch": 10.456698830868516,
+      "K00_point": 1.0,
+      "K00_disk": 0.42013914783073547,
+      "K00_cell": 0.08428793840917549,
+      "e3x3_point": 0.05173614062903483,
+      "e3x3_disk": 0.16351464606715652,
+      "e_r4_point": 0.06670119729505279,
+      "e_r4_disk": 0.7691150215161947,
+      "offdiag_rel_err": 1.9700710989212367
+    }
+  },
+  "wall_clock_s": 0.0
+}

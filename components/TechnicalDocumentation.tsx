@@ -26,10 +26,10 @@ export default function TechnicalDocumentation() {
 
   const bibtex = `@article{sgl_tdi_2026,
   title = {Time-Domain Imaging of a Rotating, Cloudy Exo-Earth with the Solar Gravitational Lens},
-  author = {Sontakke, Sanskar and Collaborators},
-  journal = {The Astrophysical Journal (ApJ)},
+  author = {Sontakke, Sanskar},
+  journal = {The Open Journal of Astrophysics (OJA)},
   year = {2026},
-  note = {Revised Manuscript Under Review}
+  note = {Manuscript Under Review}
 }`;
 
   const copyBibtex = () => {
@@ -131,11 +131,11 @@ export default function TechnicalDocumentation() {
               <Download size={13} />
             </a>
             <a
-              href="/docs/response_to_editor.pdf"
+              href="/docs/response_to_editor.md"
               download
               className="w-full btn btn-sm btn-outline text-xs flex items-center justify-between"
             >
-              <span>Response to Editor</span>
+              <span>Pre-Submission Review Record</span>
               <Download size={13} />
             </a>
           </div>
@@ -245,7 +245,7 @@ export default function TechnicalDocumentation() {
                   At a mission distance of <LatexMath math="z = 650\text{ AU}" />, an Earth-sized exoplanet (<LatexMath math="R_p = 6,371\text{ km}" />) at distance <LatexMath math="d_L = 30\text{ pc}" /> projects a focal image cylinder of diameter:
                 </p>
                 <div className="p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-lg font-mono text-xs overflow-x-auto">
-                  <LatexMath math="D_{\rm img} = 2 R_p \frac{z}{d_L} \approx 1,343 \text{ meters}" block />
+                  <LatexMath math="D_{\rm img} = 2 R_p \frac{z}{d_L} \approx 1,338 \text{ meters}" block />
                 </div>
               </div>
 
@@ -596,7 +596,7 @@ export default function TechnicalDocumentation() {
                 Publication Figures Gallery
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                Browse all 7 publication figures with captions, high-resolution zoom, and PDF vector downloads.
+                Browse all 9 publication figures with captions, high-resolution zoom, and PDF vector downloads.
               </p>
             </div>
             <FigureGallery />
@@ -631,8 +631,8 @@ export default function TechnicalDocumentation() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
               <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
                 <div>
-                  <div className="text-xs font-bold text-slate-800">Main Revised Manuscript PDF</div>
-                  <div className="text-[11px] text-slate-500">45 pages, ApJ format, zero overfull errors</div>
+                  <div className="text-xs font-bold text-slate-800">Main Manuscript PDF</div>
+                  <div className="text-[11px] text-slate-500">36 pages, OJA two-column format, zero overfull errors</div>
                 </div>
                 <a
                   href="/docs/sgl_time_domain_imaging.pdf"
@@ -646,15 +646,15 @@ export default function TechnicalDocumentation() {
 
               <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
                 <div>
-                  <div className="text-xs font-bold text-slate-800">Response to Editor & Reviewers</div>
-                  <div className="text-[11px] text-slate-500">Itemized point-by-point rebuttal & ablation notes</div>
+                  <div className="text-xs font-bold text-slate-800">Cover Letter and Pre-Submission Review Record</div>
+                  <div className="text-[11px] text-slate-500">Itemized record of the author-commissioned pre-submission review and the changes it forced</div>
                 </div>
                 <a
-                  href="/docs/response_to_editor.pdf"
+                  href="/docs/response_to_editor.md"
                   download
                   className="btn btn-sm btn-outline text-xs flex items-center justify-between"
                 >
-                  <span>Download Response (PDF)</span>
+                  <span>Download Review Record (Markdown)</span>
                   <Download size={13} />
                 </a>
               </div>
@@ -662,7 +662,7 @@ export default function TechnicalDocumentation() {
               <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2.5">
                 <div>
                   <div className="text-xs font-bold text-slate-800">Official Cover Letter</div>
-                  <div className="text-[11px] text-slate-500">Formal letter of resubmission to ApJ</div>
+                  <div className="text-[11px] text-slate-500">Submission letter to OJA, with the point-by-point record of the pre-submission review</div>
                 </div>
                 <a
                   href="/docs/cover_letter.pdf"

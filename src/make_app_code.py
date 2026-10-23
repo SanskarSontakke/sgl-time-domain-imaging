@@ -1,7 +1,7 @@
 """Rebuild data/codeSnippets.json from the shipped sources.
 
 The demo "Source Code" viewer used to read a hand-copied JSON blob that still
-held the v2-era text (including a `cad_solve_one.py` worker whose APIs no longer
+held stale text (including a `cad_solve_one.py` worker whose APIs no longer
 exist anywhere in `src/`).  This script makes that panel a pure projection of the
 repository: each listed file is read verbatim from `src/` and embedded, so the
 site cannot show code the archive was not produced by.

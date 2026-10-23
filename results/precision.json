@@ -15,6 +15,15 @@
   "map_diff_normal_vs_qr": 1.6672697114635312e-13,
   "max_abs_map": 1.7492046156188594,
   "rank_A_unregularized": 2016,
+  "nullity_unregularized": 576,
+  "zero_columns": 288,
+  "zero_column_lat_rows": [
+    0,
+    1,
+    34,
+    35
+  ],
+  "nullity_note": "unregularized nullity = 2 x the identically-zero polar columns; the partners are their near-degenerate twins",
   "ns": 2592,
   "regime": {
     "n": 32,
@@ -26,6 +35,6 @@
     "note": "reduced size; the fiducial n=64 design would need ~2.8 GB in two float64 copies"
   },
   "fiducial_chunk_order_rel_diff": 3.4000660015301285e-13,
-  "fiducial_profiled_vs_v2_rel_diff": 0.0035824207027970213,
+  "fiducial_profiled_vs_deflate_rel_diff": 0.0035824207027970213,
   "fiducial_absmax": 1.0735624657653635
 }

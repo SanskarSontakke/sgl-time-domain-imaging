@@ -26,13 +26,13 @@ export default function ImageReconstructionSandbox() {
 
   // Real Pearson r and SSIM directly from publication simulation results
   // (payload rows are ordered [profiled TDI, white-noise GLS, phase-binned
-  // coadd], matching the selector below; means over the 10 paired v3 seeds).
+  // coadd], matching the selector below; means over the 10 paired seeds).
   const methodRowIdx = method === "gls" ? 0 : method === "white" ? 1 : 2;
   const baseR = RECONSTRUCTION_DATA.pearson[methodRowIdx][fcIndex];
   const baseSSIM = RECONSTRUCTION_DATA.ssim[methodRowIdx][fcIndex];
 
   // Fleet size is an *illustrative* control only.  Every r and SSIM shown here
-  // is an archived v3 number computed at the nominal N_sc = 16 (Table 1); the
+  // is an archived number computed at the nominal N_sc = 16 (Table 1); the
   // paired ablation in the paper compares slot profiling against a fit that
   // ignores the offsets at that same fleet size, so there is no archived
   // N_sc-dependence of r to plot and inventing one would be worse than
@@ -383,7 +383,7 @@ export default function ImageReconstructionSandbox() {
               <span className={numCrafts === 32 ? "text-blue-600 font-bold" : ""}>32 (Dense)</span>
             </div>
             <div className="text-[10px] text-amber-700 leading-tight pt-1">
-              Illustrative only. Every archived v3 number on this screen was
+              Illustrative only. Every archived number on this screen was
               computed at the nominal N_sc = 16; the paper has no measured
               fleet-size dependence of r, so the maps and metrics above do not
               change with this slider.

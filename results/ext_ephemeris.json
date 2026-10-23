@@ -1,0 +1,121 @@
+{
+  "headline": {
+    "beta_ecl_max_diff_deg": 0.032,
+    "z_drift_90d_au": 1.559,
+    "z_drift_90d_frac_of_z": 0.0024,
+    "phase_err_8_64s_deg": 0.036,
+    "phase_err_1s_deg": 0.0042,
+    "top_target": "Ross 128 b",
+    "top_target_rank": 1,
+    "n_targets": 6
+  },
+  "caveats": [
+    "No ephemeris package used; geometry computed from analytic elements + J2000 obliquity 23.43928 deg.",
+    "Access window model is simplified; actual windows depend on spacecraft trajectory and Sun avoidance constraints.",
+    "Plane-change delta-v uses impulsive approximation; finite-burn trajectories would cost more.",
+    "z drift assumes constant velocity; actual trajectory includes gravitational acceleration from the Sun.",
+    "The spin-ephemeris phase requirement is derived from the timing error, not from a full navigation analysis.",
+    "feasibility_score here is SNR x access_window_fraction / (1 + impulsive plane-change dv in km/s), with plane-change dv from the image-plane transverse velocity, NOT the 1.34-5.81 km/s 90-day transfer budget the manuscript's mission-rule score uses. The two proxies order the table differently (Ross 128 b first here, GJ 273 b first there) because they price different quantities; neither is a trajectory optimisation and no single ranking should be quoted as the target list."
+  ],
+  "provenance": {
+    "module": "ephemeris",
+    "tier": "full",
+    "argv": [],
+    "generated_utc": "2026-10-22T04:21:07Z",
+    "numpy": "2.5.3",
+    "python": "3.12.13",
+    "fiducial": {
+      "nlat": 36,
+      "nlon": 72,
+      "nlat_fine": 72,
+      "nlon_fine": 144,
+      "ts": 1800.0,
+      "mp": 16,
+      "fc": 0.55,
+      "tau_days": 4.0,
+      "lam": 0.003,
+      "nsub": 16,
+      "truth_seed": 7,
+      "campaign_seed": 2026
+    },
+    "constants": {
+      "dtel": 1.0,
+      "dimg": 1338.45745035117,
+      "z": 97238615955000.0,
+      "z0": 9.257032744474102e+17,
+      "rpl": 6371000.0,
+      "prot": 86400.0,
+      "qexo": 80100.0,
+      "qcor": 6200000000.0
+    }
+  },
+  "prioritisation_table": [
+    {
+      "name": "Ross 128 b",
+      "beta_ecl": 0.5,
+      "beta_ecl_archived": 0.5,
+      "beta_ecl_diff": 0.011,
+      "access_window_fraction": 1.0,
+      "dv_kms": 0.0,
+      "snr_nominal": 581.4,
+      "feasibility_score": 581.1,
+      "rank": 1
+    },
+    {
+      "name": "tau Cet e (alt.)",
+      "beta_ecl": 24.8,
+      "beta_ecl_archived": 24.8,
+      "beta_ecl_diff": 0.015,
+      "access_window_fraction": 0.604,
+      "dv_kms": 0.013,
+      "snr_nominal": 909.2,
+      "feasibility_score": 541.6,
+      "rank": 2
+    },
+    {
+      "name": "GJ 273 b (Luyten b)",
+      "beta_ecl": 16.5,
+      "beta_ecl_archived": 16.5,
+      "beta_ecl_diff": 0.002,
+      "access_window_fraction": 0.77,
+      "dv_kms": 0.013,
+      "snr_nominal": 490.5,
+      "feasibility_score": 373.0,
+      "rank": 3
+    },
+    {
+      "name": "Proxima Cen b",
+      "beta_ecl": 44.8,
+      "beta_ecl_archived": 44.8,
+      "beta_ecl_diff": 0.032,
+      "access_window_fraction": 0.552,
+      "dv_kms": 0.087,
+      "snr_nominal": 665.8,
+      "feasibility_score": 338.3,
+      "rank": 4
+    },
+    {
+      "name": "Teegarden c",
+      "beta_ecl": -0.3,
+      "beta_ecl_archived": -0.3,
+      "beta_ecl_diff": 0.024,
+      "access_window_fraction": 1.0,
+      "dv_kms": 0.0,
+      "snr_nominal": 130.0,
+      "feasibility_score": 130.0,
+      "rank": 5
+    },
+    {
+      "name": "GJ 1061 d",
+      "beta_ecl": 60.8,
+      "beta_ecl_archived": 60.8,
+      "beta_ecl_diff": 0.023,
+      "access_window_fraction": 0.4,
+      "dv_kms": 0.039,
+      "snr_nominal": 282.3,
+      "feasibility_score": 108.7,
+      "rank": 6
+    }
+  ],
+  "wall_clock_s": 0.0
+}
